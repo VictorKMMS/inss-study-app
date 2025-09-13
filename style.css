@@ -58,4 +58,61 @@ aside { flex: 1; min-width: 250px; }
 .flashcard.exiting { transform: translateX(120%) rotateY(45deg); opacity: 0; }
 .flashcard-question { font-size: 1.2rem; margin-bottom: 1.5rem; min-height: 80px; }
 .flashcard-actions { display: flex; justify-content: center; gap: 1rem; }
-.flash
+.flashcard-actions button { width: auto; min-width: 120px; padding: 12px 20px; font-size: 1rem; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
+.flashcard-actions button:hover { transform: scale(1.05); }
+.btn-certo { background-color: var(--success-color); color: white; }
+.btn-errado { background-color: var(--danger-color); color: white; }
+.btn-proximo { background-color: var(--info-color); color: white; }
+.btn-proximo-acerto { background-color: var(--success-color); color: white; }
+
+.flashcard-answer { margin-top: 1.5rem; padding: 1rem; border-radius: 5px; }
+.flashcard-answer.correct { border-left: 5px solid var(--success-color); background-color: rgba(40, 167, 69, 0.1); }
+.flashcard-answer.incorrect { border-left: 5px solid var(--danger-color); background-color: rgba(220, 53, 69, 0.1); }
+.flashcard-answer.correct .answer-source { margin-top: 1rem; padding: 0.5rem; background-color: rgba(0, 123, 255, 0.1); border-left: 3px solid var(--info-color); font-size: 0.9rem; font-style: italic; color: var(--info-color); }
+.ai-explanation { margin-top: 1rem; }
+
+#scoreboard { padding: 1.5rem; align-self: flex-start; }
+#scoreboard h3 { text-align: center; margin-top: 0; color: var(--primary-accent-color); border-bottom: 2px solid var(--border-color); padding-bottom: 1rem; }
+.score-item { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color); }
+#reset-score { width: 100%; margin-top: 1rem; padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; }
+
+/* --- GERAL MODAL --- */
+.hidden { display: none !important; }
+
+/* --- ESTILOS DO CHAT --- */
+#chat-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+#chat-container { width: 90%; max-width: 600px; height: 80%; max-height: 700px; background-color: var(--card-bg-color); border-radius: 10px; box-shadow: 0 10px 30px var(--shadow-color); display: flex; flex-direction: column; }
+#chat-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background-color: var(--header-bg-color); color: #fff; border-top-left-radius: 10px; border-top-right-radius: 10px; }
+#chat-header h3 { margin: 0; }
+#close-chat-btn { background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }
+#chat-history { flex-grow: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+.chat-message { padding: 0.75rem 1rem; border-radius: 15px; max-width: 80%; line-height: 1.4; }
+.chat-message.user { background-color: var(--info-color); color: white; align-self: flex-end; border-bottom-right-radius: 3px; }
+.chat-message.ai { background-color: var(--bg-color); color: var(--text-color); align-self: flex-start; border-bottom-left-radius: 3px; border: 1px solid var(--border-color); }
+.chat-message.tutor-context { background-color: rgba(255, 204, 0, 0.1); border: 1px solid #ffcc00; width: 100%; max-width: 100%; box-sizing: border-box; font-size: 0.9rem; }
+#chat-input-area { display: flex; padding: 1rem; border-top: 1px solid var(--border-color); }
+#chat-input { flex-grow: 1; border: 1px solid var(--border-color); border-radius: 20px; padding: 0.75rem; font-size: 1rem; background-color: var(--bg-color); color: var(--text-color); }
+#chat-send-btn { background-color: var(--info-color); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; margin-left: 0.5rem; cursor: pointer; font-size: 1.2rem; }
+
+/* --- MODO SIMULADO --- */
+#simulado-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); z-index: 1000; display: flex; justify-content: center; align-items: center; }
+.simulado-container, .simulado-results-container { width: 90%; max-width: 800px; background-color: var(--card-bg-color); border-radius: 10px; padding: 2rem; box-shadow: 0 10px 30px var(--shadow-color); }
+#simulado-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+#simulado-info { font-weight: bold; font-size: 1.2rem; }
+#simulado-progress-bar-container { width: 100%; background-color: var(--border-color); border-radius: 5px; height: 10px; margin-bottom: 2rem; }
+#simulado-progress-bar { height: 100%; width: 0%; background-color: var(--info-color); border-radius: 5px; transition: width 0.3s; }
+#simulado-question-container { font-size: 1.3rem; min-height: 150px; }
+#simulado-actions { margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; }
+#simulado-actions button { width: 150px; padding: 15px; font-size: 1.2rem; border-radius: 8px; color: white; border: none; cursor: pointer; }
+.simulado-results-container { max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; }
+#simulado-results-summary { text-align: center; font-size: 1.5rem; font-weight: bold; margin: 1rem 0 2rem 0; }
+#simulado-results-list .result-item { display: grid; grid-template-columns: auto 1fr; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--border-color); align-items: center; }
+#simulado-results-list .result-item.correct { background-color: rgba(40, 167, 69, 0.1); }
+#simulado-results-list .result-item.incorrect { background-color: rgba(220, 53, 69, 0.1); }
+#simulado-results-list .result-item-icon { font-size: 1.5rem; }
+#simulado-results-list .result-item-details p { margin: 0.25rem 0; }
+#simulado-results-list .result-item-details .user-answer.incorrect { color: var(--danger-color); text-decoration: line-through; }
+#simulado-results-list .result-item-details .user-answer.correct { color: var(--success-color); }
+#close-results-btn { display: block; margin: 2rem auto 0; padding: 12px 30px; font-size: 1rem; font-weight: bold; cursor: pointer; border-radius: 8px; border: none; background-color: var(--info-color); color: white; }
+
+footer { text-align: center; padding: 1rem; margin-top: 2rem; background-color: var(--card-bg-color); border-top: 1px solid var(--border-color); color: #6c757d; }
