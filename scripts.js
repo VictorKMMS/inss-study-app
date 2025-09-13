@@ -49,17 +49,26 @@ document.addEventListener('DOMContentLoaded', function() {
         let availableQuestions = questionBank[selectedCategory].filter(q => !recentlyAsked.includes(q.id));
 
         if (availableQuestions.length === 0) {
+            // Se não há questões disponíveis (todas foram vistas recentemente)
             if (questionBank[selectedCategory].length < 50) {
+                // Se o banco de questões da categoria é pequeno, busca novas na IA
                 await fetchNewQuestionsFromAI(selectedCategory);
                 return;
             } else {
+                // Se o banco de questões é grande, libera as mais antigas da lista para repetição
                 recentlyAsked = recentlyAsked.slice(Math.floor(recentlyAsked.length / 2));
                 availableQuestions = questionBank[selectedCategory].filter(q => !recentlyAsked.includes(q.id));
             }
         }
         
-        if(availableQuestions.length === 0) {
-            availableQuestions = questionBank[selectedCategory];
+        // --- BLOCO DE CÓDIGO PROBLEMÁTICO REMOVIDO ---
+        // O "failsafe" que estava aqui foi removido pois era a causa do bug da repetição.
+
+        // Se mesmo após tudo isso não houver questão, é porque a categoria está realmente vazia.
+        if (availableQuestions.length === 0) {
+            flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Parece que não há questões disponíveis para esta matéria no momento. Tentando buscar uma nova com a IA...</p></div>`;
+            await fetchNewQuestionsFromAI(selectedCategory);
+            return;
         }
 
         const questionData = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
@@ -110,6 +119,8 @@ document.addEventListener('DOMContentLoaded', function() {
         updateScoreboard();
     }
 
+    // --- O restante do código (funções do chat, fetch, inicialização, etc.) permanece o mesmo ---
+
     function openChat() {
         chatHistory = [];
         chatHistoryDiv.innerHTML = '';
@@ -126,7 +137,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function handleSendMessage() {
-        // Esta função permanece a mesma da versão anterior
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
 
@@ -159,7 +169,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function fetchNewQuestionsFromAI(category) {
-        // Esta função permanece a mesma da versão anterior
         console.log(`Buscando nova questão de IA para: ${category}...`);
         const card = document.querySelector('.flashcard');
         if (card) {
@@ -174,6 +183,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
             const newQuestion = await response.json();
             if (!questionBank[category]) questionBank[category] = [];
+            
+            // Adiciona um ID único para a nova questão para o sistema de repetição funcionar
+            newQuestion.id = `${category.substring(0,1).toUpperCase()}${Date.now()}`;
+            
             questionBank[category].push(newQuestion);
             saveDataToLocalStorage();
             console.log("Nova questão recebida e salva!", newQuestion);
@@ -183,19 +196,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (card) {
                 card.innerHTML = `<p class="flashcard-question">Ocorreu um erro ao conectar com a IA. Reiniciando com as questões existentes em 3 segundos...</p>`;
             }
-            // --- CORREÇÃO SUTIL NO TRATAMENTO DE ERRO ---
             setTimeout(() => {
-                // Não reseta mais o histórico, apenas tenta gerar uma nova questão do que já existe
                 generateFlashcard();
             }, 3000);
         }
     }
     
-    // Função de inicialização
     function initialize() {
-        // O event listener que garante a atualização ao mudar de matéria
         categorySelector.addEventListener('change', generateFlashcard);
-
         chatSendBtn.addEventListener('click', handleSendMessage);
         chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendMessage(); });
         closeChatBtn.addEventListener('click', closeChat);
