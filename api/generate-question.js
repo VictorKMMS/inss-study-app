@@ -12,7 +12,11 @@ export default async function handler(request, response) {
   }
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+
+  // --- LINHA ATUALIZADA ---
+  // Trocamos 'gemini-pro' pelo modelo mais recente e eficiente.
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
+  // --- FIM DA ATUALIZAÇÃO ---
 
   const prompt = `
     Crie uma única questão de concurso, no estilo "Certo ou Errado" da banca Cebraspe, para o cargo de Técnico do Seguro Social do INSS.
@@ -25,12 +29,8 @@ export default async function handler(request, response) {
     const result = await model.generateContent(prompt);
     const textResponse = result.response.text();
     
-    // --- LINHA CORRIGIDA ---
-    // Esta linha agora usa uma expressão regular para encontrar e extrair
-    // apenas o bloco de texto que começa com { e termina com }, garantindo que seja um JSON válido.
     const jsonString = textResponse.match(/\{[\s\S]*\}/)[0];
     const newQuestion = JSON.parse(jsonString);
-    // --- FIM DA CORREÇÃO ---
 
     return response.status(200).json(newQuestion);
   } catch (error) {
