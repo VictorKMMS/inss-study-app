@@ -6,7 +6,7 @@ import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/fi
 document.addEventListener('DOMContentLoaded', function() {
     // --- VARIÁVEIS DE ESTADO GLOBAIS ---
     let user = null;
-    let userData = {}; // Objeto único que guarda TODO o progresso do usuário da nuvem.
+    let userData = {};
     const defaultQuestionBank = {
         seguridade: [
             { id: "S001", question: 'O princípio da seletividade e distributividade na prestação dos benefícios significa que o legislador deve selecionar os riscos sociais a serem cobertos, distribuindo a renda de forma a beneficiar os mais necessitados.', answer: 'Certo', explanation: 'Correto. Este princípio orienta a escolha das contingências sociais que serão amparadas (seletividade) e a forma de distribuir os benefícios para alcançar a justiça social (distributividade).', law: 'CF/88, Art. 194, Parágrafo único, III' },
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatSendBtn = document.getElementById('chat-send-btn');
     const closeChatBtn = document.getElementById('close-chat-btn');
 
-    // --- LÓGICA DE AUTENTICAÇÃO E DADOS ---
+    // --- LÓGICA DE AUTENTICAÇÃO ---
     onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
             user = firebaseUser;
@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // --- FUNÇÕES DE LOGIN/LOGOUT (RESTAURADAS) ---
     async function signInWithGoogle() {
         const provider = new GoogleAuthProvider();
         try {
@@ -76,22 +77,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // --- LÓGICA DE DADOS COM FIRESTORE ---
     async function loadUserData() {
         if (!user) return;
         const userDocRef = doc(db, 'users', user.uid);
         const docSnap = await getDoc(userDocRef);
-
         if (docSnap.exists()) {
             userData = docSnap.data();
-            // Garante que a estrutura de dados local seja compatível com a da nuvem
             if (!userData.scores) userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
             if (!userData.userStats) userData.userStats = { streak: 0, lastVisit: null };
             if (!userData.erroredQuestions) userData.erroredQuestions = [];
             if (!userData.recentlyAsked) userData.recentlyAsked = [];
             if (!userData.questionBank) userData.questionBank = defaultQuestionBank;
-
         } else {
-            // Cria dados padrão para um novo usuário
             userData = {
                 questionBank: defaultQuestionBank,
                 scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } },
@@ -114,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // --- LÓGICA DO APLICATIVO DE ESTUDOS ---
+    // --- LÓGICA DO APLICATIVO DE ESTUDOS (INICIALIZADOR) ---
     function initializeAppLogic() {
         let currentQuestion = null;
         let chatHistory = [];
@@ -123,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
         let simuladoCurrentIndex = 0;
         let isReviewMode = false;
         
-        // Adiciona todos os event listeners
         categorySelector.addEventListener('change', generateFlashcard);
         themeToggleBtn.addEventListener('click', toggleTheme);
         reviewModeToggle.addEventListener('change', (e) => {
@@ -148,14 +145,31 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Executa as funções iniciais
         checkTheme();
         updateStreaks();
         updateScoreboard();
         generateFlashcard();
 
         // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
-        
+        function checkTheme() { /* ... */ }
+        function toggleTheme() { /* ... */ }
+        function updateStreaks() { /* ... */ }
+        async function generateFlashcard() { /* ... */ }
+        function checkAnswer(event) { /* ... */ }
+        function updateScoreboard() { /* ... */ }
+        function startSimulado() { /* ... */ }
+        function displaySimuladoQuestion() { /* ... */ }
+        function handleSimuladoAnswer(userAnswer) { /* ... */ }
+        function endSimulado() { /* ... */ }
+        function closeResults() { /* ... */ }
+        function openChat() { /* ... */ }
+        function closeChat() { /* ... */ }
+        async function handleSendMessage() { /* ... */ }
+        async function fetchNewQuestionsFromAI(category) { /* ... */ }
+
+        // COLE A IMPLEMENTAÇÃO COMPLETA DAS FUNÇÕES ACIMA AQUI
+        // (Para manter a legibilidade, o código completo está abaixo)
+
         function checkTheme() {
             if (localStorage.getItem('inssTheme') === 'dark') {
                 document.body.classList.add('dark-mode');
@@ -165,7 +179,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 themeToggleBtn.textContent = '🌙';
             }
         }
-
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             if (document.body.classList.contains('dark-mode')) {
@@ -176,7 +189,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 themeToggleBtn.textContent = '🌙';
             }
         }
-
         function updateStreaks() {
             const today = new Date().toISOString().split('T')[0];
             const lastVisit = userData.userStats.lastVisit;
@@ -191,7 +203,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             streakCounter.textContent = `🔥 ${userData.userStats.streak}`;
         }
-        
         async function generateFlashcard() {
             let questionPool;
             if (isReviewMode) {
@@ -211,26 +222,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 questionPool = userData.questionBank[selectedCategory] || [];
             }
-
             let availableQuestions = questionPool.filter(q => q && !userData.recentlyAsked.includes(q.id));
             if (availableQuestions.length === 0 && questionPool.length > 0) {
                 userData.recentlyAsked = userData.recentlyAsked.slice(Math.floor(userData.recentlyAsked.length / 2));
                 availableQuestions = questionPool.filter(q => q && !userData.recentlyAsked.includes(q.id));
             }
-            
             if (availableQuestions.length === 0) {
                 if (isReviewMode) {
-                     flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você revisou todas as suas questões erradas. Ótimo trabalho!</p></div>`;
-                     return;
+                    flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você revisou todas as suas questões erradas. Ótimo trabalho!</p></div>`;
+                    return;
                 }
                 flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Buscando novas questões sobre o tema com a IA...</p></div>`;
                 await fetchNewQuestionsFromAI(categorySelector.value === 'all' ? 'Seguridade Social' : categorySelector.value);
                 return;
             }
-
             const questionData = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
             currentQuestion = { ...questionData, category: questionData.category || categorySelector.value };
-            
             const card = document.createElement('div');
             card.className = 'flashcard';
             card.innerHTML = `<p class="flashcard-question">${currentQuestion.question}</p><div class="flashcard-actions"><button type="button" class="btn-certo" data-choice="Certo">Certo</button><button type="button" class="btn-errado" data-choice="Errado">Errado</button></div><div class="flashcard-answer"></div>`;
@@ -238,17 +245,14 @@ document.addEventListener('DOMContentLoaded', function() {
             flashcardContainer.appendChild(card);
             card.querySelectorAll('.flashcard-actions button').forEach(button => button.addEventListener('click', checkAnswer));
         }
-
         function checkAnswer(event) {
             const userChoice = event.target.dataset.choice;
             const isCorrect = userChoice === currentQuestion.answer;
             const answerDiv = document.querySelector('.flashcard-answer');
             const actionsDiv = document.querySelector('.flashcard-actions');
-            
             actionsDiv.innerHTML = '';
             userData.recentlyAsked.push(currentQuestion.id);
-            if(userData.recentlyAsked.length > 50) userData.recentlyAsked.shift();
-            
+            if (userData.recentlyAsked.length > 50) userData.recentlyAsked.shift();
             if (!isCorrect) {
                 if (!userData.erroredQuestions.includes(currentQuestion.id)) {
                     userData.erroredQuestions.push(currentQuestion.id);
@@ -257,7 +261,6 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 userData.scores[currentQuestion.category].correct++;
             }
-            
             if (isCorrect) {
                 answerDiv.classList.add('correct');
                 answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br>Parabéns, sua resposta está correta!<div class="answer-source"><strong>Fonte:</strong> ${currentQuestion.law}</div>`;
@@ -282,7 +285,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             updateScoreboard();
         }
-        
         function updateScoreboard() {
             if (!scoreContainer || !userData.scores) return;
             scoreContainer.innerHTML = '';
@@ -292,7 +294,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             saveUserData();
         }
-        
         function startSimulado() {
             const SIMULADO_QUESTION_COUNT = 20;
             const SIMULADO_DURATION_MINUTES = 30;
@@ -322,7 +323,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 1000);
             displaySimuladoQuestion();
         }
-
         function displaySimuladoQuestion() {
             const question = simuladoQuestions[simuladoCurrentIndex];
             document.getElementById('simulado-question-container').textContent = question.question;
@@ -330,7 +330,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const progressPercent = ((simuladoCurrentIndex + 1) / simuladoQuestions.length) * 100;
             document.getElementById('simulado-progress-bar').style.width = `${progressPercent}%`;
         }
-
         function handleSimuladoAnswer(userAnswer) {
             const currentSimuladoQuestion = simuladoQuestions[simuladoCurrentIndex];
             currentSimuladoQuestion.userAnswer = userAnswer;
@@ -342,7 +341,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 displaySimuladoQuestion();
             }
         }
-
         function endSimulado() {
             clearInterval(simuladoTimer);
             simuladoContainer.classList.add('hidden');
@@ -365,13 +363,11 @@ document.addEventListener('DOMContentLoaded', function() {
             userData.erroredQuestions = [...new Set([...userData.erroredQuestions, ...newErroredIds])];
             saveUserData();
         }
-        
         function closeResults() {
             simuladoModal.classList.add('hidden');
             mainApp.classList.remove('hidden');
             generateFlashcard();
         }
-        
         function openChat() {
             chatHistory = [];
             chatHistoryDiv.innerHTML = '';
@@ -416,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
                 const newQuestion = await response.json();
                 if (!userData.questionBank[category]) userData.questionBank[category] = [];
-                newQuestion.id = `${category.substring(0,1).toUpperCase()}${Date.now()}`;
+                newQuestion.id = `${category.substring(0, 1).toUpperCase()}${Date.now()}`;
                 newQuestion.category = category;
                 userData.questionBank[category].push(newQuestion);
                 saveUserData();
