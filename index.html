@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Estudos INSS - Dinâmico</title>
+    <title>Tutor de Estudos INSS com IA</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Plataforma de Estudos INSS</h1>
-        <h2>Questões Dinâmicas para Técnico do Seguro Social</h2>
+        <h1>Tutor de Estudos INSS</h1>
+        <h2>Questões Dinâmicas com IA Conversacional</h2>
     </header>
 
     <div class="main-container">
@@ -34,14 +34,28 @@
 
         <aside id="scoreboard">
             <h3>Seu Desempenho</h3>
-            <div id="score-container">
-                </div>
+            <div id="score-container"></div>
             <button id="reset-score">Zerar Placar</button>
         </aside>
     </div>
 
+    <div id="chat-modal" class="hidden">
+        <div id="chat-container">
+            <div id="chat-header">
+                <h3>Tire suas dúvidas com o Tutor IA</h3>
+                <button id="close-chat-btn">&times;</button>
+            </div>
+            <div id="chat-history">
+                </div>
+            <div id="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Digite sua pergunta...">
+                <button id="chat-send-btn">Enviar</button>
+            </div>
+        </div>
+    </div>
+
     <footer>
-        <p>Pratique sem limites e acompanhe seu progresso!</p>
+        <p>Desenvolvido com IA para otimizar seus estudos.</p>
     </footer>
 
     <script src="scripts.js"></script>
