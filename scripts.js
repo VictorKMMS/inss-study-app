@@ -1,15 +1,18 @@
+// --- IMPORTAÇÕES ---
 import { allQuestionBanks } from './question-bank.js';
 
 document.addEventListener('DOMContentLoaded', function() {
+    // --- VARIÁVEIS DE ESTADO GLOBAIS ---
     let userData = {};
     let currentQuestion = null;
     let isReviewMode = false;
-    let isConcursoMode = false; 
+    let isConcursoMode = false;
     let simuladoQuestions = [];
     let simuladoCurrentIndex = 0;
     let simuladoTimer;
     let chatHistory = [];
 
+    // --- SELEÇÃO DE ELEMENTOS DOM ---
     const mainApp = document.getElementById('main-app');
     const flashcardContainer = document.getElementById('flashcard-container');
     const categorySelector = document.getElementById('category-selector');
@@ -29,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatSendBtn = document.getElementById('chat-send-btn');
     const closeChatBtn = document.getElementById('close-chat-btn');
 
+    // --- LÓGICA DE DADOS E ESTADO COM LOCALSTORAGE ---
     function loadUserData() {
         const storedData = localStorage.getItem('inssTutorData');
         if (storedData) {
@@ -37,6 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
             userData = {};
         }
 
+        // Garante que o banco de questões seja sempre a versão mais atualizada,
+        // mas mantém o progresso salvo.
         userData.questionBank = allQuestionBanks;
         userData.scores = userData.scores || { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
         userData.userStats = userData.userStats || { streak: 0, lastVisit: null };
@@ -47,28 +53,33 @@ document.addEventListener('DOMContentLoaded', function() {
     function saveUserData() {
         localStorage.setItem('inssTutorData', JSON.stringify(userData));
     }
-    
+
+    // --- INICIALIZAÇÃO DO APLICATIVO ---
     function initializeAppLogic() {
         loadUserData();
-        
+
         mainApp.classList.remove('hidden');
         checkTheme();
         updateStreaks();
         updateScoreboard();
         generateFlashcard();
 
+        // Adiciona event listeners
         categorySelector.addEventListener('change', generateFlashcard);
         themeToggleBtn.addEventListener('click', toggleTheme);
         reviewModeToggle.addEventListener('change', (e) => {
             isReviewMode = e.target.checked;
+            // Desmarca o modo de concurso se o de revisão for ativado
             if (isReviewMode) {
                 concursoModeToggle.checked = false;
                 isConcursoMode = false;
             }
             generateFlashcard();
         });
+        // Novo event listener para o modo concurso
         concursoModeToggle.addEventListener('change', (e) => {
             isConcursoMode = e.target.checked;
+            // Desmarca o modo de revisão se o de concurso for ativado
             if (isConcursoMode) {
                 reviewModeToggle.checked = false;
                 isReviewMode = false;
@@ -81,19 +92,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         document.getElementById('close-results-btn').addEventListener('click', closeResults);
         chatSendBtn.addEventListener('click', handleSendMessage);
-        chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendMessage(); });
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleSendMessage();
+        });
         closeChatBtn.addEventListener('click', closeChat);
         resetScoreBtn.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
                 localStorage.removeItem('inssTutorData');
-                loadUserData();
+                loadUserData(); // Carrega os dados padrão
                 updateScoreboard();
-                updateStreaks();
+                updateStreaks(); // Reseta o streak
                 generateFlashcard();
             }
         });
     }
 
+    // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -152,8 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Não há questões de concurso nesta categoria. Tente outra.</p></div>`;
                 return;
             }
-        }
-        else {
+        } else {
             document.querySelector('.review-mode label').style.fontWeight = 'normal';
             document.querySelector('.concurso-mode label').style.fontWeight = 'normal';
             let selectedCategory = categorySelector.value;
@@ -302,59 +315,4 @@ document.addEventListener('DOMContentLoaded', function() {
             if (q.wasCorrect) correctAnswers++;
             else newErroredIds.push(q.id);
         });
-        const accuracy = ((correctAnswers / simuladoQuestions.length) * 100).toFixed(1);
-        document.getElementById('simulado-results-summary').innerHTML = `Você acertou <strong>${correctAnswers} de ${simuladoQuestions.length}</strong> questões (${accuracy}%)`;
-        const resultsList = document.getElementById('simulado-results-list');
-        resultsList.innerHTML = '';
-        simuladoQuestions.forEach((q, index) => {
-            const resultClass = q.wasCorrect ? 'correct' : 'incorrect';
-            const icon = q.wasCorrect ? '✅' : '❌';
-            resultsList.innerHTML += `<div class="result-item ${resultClass}"><div class="result-item-icon">${icon}</div><div class="result-item-details"><p><strong>Questão ${index + 1}:</strong> ${q.question}</p><p class="user-answer ${resultClass}"><strong>Sua resposta:</strong> ${q.userAnswer || 'Não respondida'}</p><p><strong>Gabarito:</strong> ${q.answer}</p></div></div>`;
-        });
-        userData.erroredQuestions = [...new Set([...userData.erroredQuestions, ...newErroredIds])];
-        saveUserData();
-    }
-    function closeResults() {
-        simuladoModal.classList.add('hidden');
-        mainApp.classList.remove('hidden');
-        generateFlashcard();
-    }
-    function openChat() {
-        chatHistory = [];
-        chatHistoryDiv.innerHTML = '';
-        const contextMessage = `<div class="chat-message tutor-context"><strong>Contexto:</strong> A IA irá te ajudar com base na questão que você errou. A explicação inicial é: "${currentQuestion.explanation}"</div>`;
-        chatHistoryDiv.innerHTML += contextMessage;
-        chatModal.classList.remove('hidden');
-        chatInput.focus();
-    }
-    function closeChat() {
-        chatModal.classList.add('hidden');
-        document.querySelector('.flashcard')?.classList.add('exiting');
-        setTimeout(generateFlashcard, 600);
-    }
-    async function handleSendMessage() {
-        const userMessage = chatInput.value.trim();
-        if (!userMessage) return;
-        chatHistoryDiv.innerHTML += `<div class="chat-message user">${userMessage}</div>`;
-        chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
-        chatInput.value = '';
-        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
-        chatHistoryDiv.innerHTML += `<div class="chat-message ai typing-indicator">Tutor IA está digitando...</div>`;
-        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
-        try {
-            const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ history: chatHistory, context: currentQuestion }) });
-            if (!response.ok) throw new Error('Erro na resposta da API');
-            const data = await response.json();
-            const aiMessage = data.response;
-            document.querySelector('.typing-indicator').remove();
-            chatHistoryDiv.innerHTML += `<div class="chat-message ai">${aiMessage}</div>`;
-            chatHistory.push({ role: 'model', parts: [{ text: aiMessage }] });
-            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
-        } catch (error) {
-            document.querySelector('.typing-indicator')?.remove();
-            chatHistoryDiv.innerHTML += `<div class="chat-message ai">Desculpe, ocorreu um erro. Tente novamente.</div>`;
-        }
-    }
-    
-    initializeAppLogic();
-});
+        const accuracy = ((
