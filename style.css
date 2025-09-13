@@ -144,3 +144,9 @@ footer { text-align: center; padding: 1rem; margin-top: 2rem; background-color: 
     .flashcard-actions button, #simulado-actions button { padding: 12px 15px; font-size: 1rem; }
     #chat-container { width: 95%; height: 90%; }
 }
+.mode-selectors .concurso-mode {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
