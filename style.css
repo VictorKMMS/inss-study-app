@@ -116,3 +116,72 @@ aside { flex: 1; min-width: 250px; }
 #close-results-btn { display: block; margin: 2rem auto 0; padding: 12px 30px; font-size: 1rem; font-weight: bold; cursor: pointer; border-radius: 8px; border: none; background-color: var(--info-color); color: white; }
 
 footer { text-align: center; padding: 1rem; margin-top: 2rem; background-color: var(--card-bg-color); border-top: 1px solid var(--border-color); color: #6c757d; }
+
+/* ============================================= */
+/* --- AJUSTES PARA DISPOSITIVOS MÓVEIS --- */
+/* Estilos aplicados quando a tela tem 768px de largura ou menos */
+/* ============================================= */
+@media (max-width: 768px) {
+
+    /* --- Ajustes no Layout Principal --- */
+    .main-container {
+        /* Empilha o conteúdo principal e o placar verticalmente */
+        flex-direction: column;
+        padding: 0 0.8rem;
+        gap: 1.5rem;
+    }
+
+    main, aside {
+        /* Garante que ambos ocupem a largura total */
+        min-width: 100%;
+    }
+
+    /* --- Ajustes no Cabeçalho --- */
+    header h1 {
+        font-size: 1.5rem; /* Reduz o tamanho do título principal */
+    }
+    .header-features {
+        position: static; /* Remove o posicionamento absoluto */
+        transform: none;
+        margin-top: 0.5rem;
+        justify-content: center;
+    }
+    .header-content {
+        flex-direction: column; /* Empilha o título e os ícones */
+    }
+
+    /* --- Ajustes nos Controles --- */
+    .mode-selectors {
+        flex-direction: column; /* Empilha os seletores de modo */
+        align-items: stretch;  /* Faz os itens ocuparem a largura total */
+        gap: 0.8rem;
+    }
+
+    #start-simulado-btn {
+        width: 100%; /* Botão de simulado ocupa a largura toda */
+    }
+
+    /* --- Ajustes nos Flashcards e Modais --- */
+    .flashcard, .simulado-container, .simulado-results-container {
+        padding: 1.5rem; /* Reduz o espaçamento interno */
+    }
+
+    .flashcard-question, #simulado-question-container {
+        font-size: 1.1rem; /* Reduz o tamanho da fonte da questão */
+        min-height: 100px;
+    }
+
+    #flashcard-container {
+        height: 420px; /* Aumenta um pouco a altura para acomodar textos com mais quebras de linha */
+    }
+    
+    .flashcard-actions button, #simulado-actions button {
+        padding: 12px 15px; /* Ajusta o padding dos botões de ação */
+        font-size: 1rem;
+    }
+
+    #chat-container {
+        width: 95%;
+        height: 90%;
+    }
+}
