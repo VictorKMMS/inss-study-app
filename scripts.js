@@ -85,8 +85,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (localStorage.getItem('inssTheme') === 'dark') {
             document.body.classList.add('dark-mode');
             themeToggleBtn.textContent = '☀️';
+        } else {
+            document.body.classList.remove('dark-mode');
+            themeToggleBtn.textContent = '🌙';
         }
     }
+
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
         if (document.body.classList.contains('dark-mode')) {
@@ -97,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
             themeToggleBtn.textContent = '🌙';
         }
     }
+
     function updateStreaks() {
         const today = new Date().toISOString().split('T')[0];
         const lastVisit = userStats.lastVisit;
@@ -124,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isReviewMode) {
             document.querySelector('.review-mode label').style.fontWeight = 'bold';
             const allQuestions = Object.values(questionBank).flat();
-            questionPool = allQuestions.filter(q => erroredQuestions.includes(q.id));
+            questionPool = allQuestions.filter(q => q && erroredQuestions.includes(q.id));
             if (questionPool.length === 0) {
                 flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você não tem questões erradas para revisar. Desmarque o modo de revisão para continuar.</p></div>`;
                 return;
@@ -139,23 +144,30 @@ document.addEventListener('DOMContentLoaded', function() {
             questionPool = questionBank[selectedCategory] || [];
         }
 
-        let availableQuestions = questionPool.filter(q => !recentlyAsked.includes(q.id));
-        if (availableQuestions.length === 0) {
-            if (questionPool.length > 0) {
-                recentlyAsked = []; // Reseta o ciclo se todas as questões do pool foram vistas
-                availableQuestions = questionPool;
-            } else {
-                flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Não há questões para esta seleção. Tente outra matéria ou desative o modo de revisão.</p></div>`;
-                return;
-            }
+        let availableQuestions = questionPool.filter(q => q && !recentlyAsked.includes(q.id));
+        
+        if (availableQuestions.length === 0 && questionPool.length > 0) {
+            // Se todas as questões do pool foram vistas, libera as mais antigas para repetição
+            recentlyAsked = recentlyAsked.slice(Math.floor(recentlyAsked.length / 2));
+            availableQuestions = questionPool.filter(q => q && !recentlyAsked.includes(q.id));
         }
         
+        if (availableQuestions.length === 0) {
+            if (isReviewMode) {
+                 flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você revisou todas as suas questões erradas. Ótimo trabalho!</p></div>`;
+                 return;
+            }
+            flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Buscando novas questões sobre o tema com a IA...</p></div>`;
+            await fetchNewQuestionsFromAI(categorySelector.value === 'all' ? 'Seguridade Social' : categorySelector.value);
+            return;
+        }
+
         const questionData = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
-        currentQuestion = { ...questionData, category: questionData.category || categorySelector.value }; // Garante a categoria
+        currentQuestion = { ...questionData, category: questionData.category || categorySelector.value };
         
         const card = document.createElement('div');
         card.className = 'flashcard';
-        card.innerHTML = `<p class="flashcard-question">${currentQuestion.question}</p><div class="flashcard-actions"><button class="btn-certo" data-choice="Certo">Certo</button><button class="btn-errado" data-choice="Errado">Errado</button></div><div class="flashcard-answer"></div>`;
+        card.innerHTML = `<p class="flashcard-question">${currentQuestion.question}</p><div class="flashcard-actions"><button type="button" class="btn-certo" data-choice="Certo">Certo</button><button type="button" class="btn-errado" data-choice="Errado">Errado</button></div><div class="flashcard-answer"></div>`;
         flashcardContainer.innerHTML = '';
         flashcardContainer.appendChild(card);
         card.querySelectorAll('.flashcard-actions button').forEach(button => button.addEventListener('click', checkAnswer));
@@ -180,6 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
             answerDiv.classList.add('correct');
             answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br>Parabéns, sua resposta está correta!<div class="answer-source"><strong>Fonte:</strong> ${currentQuestion.law}</div>`;
             const nextButton = document.createElement('button');
+            nextButton.type = 'button';
             nextButton.innerText = 'Próximo';
             nextButton.className = 'btn-proximo-acerto';
             nextButton.onclick = () => {
@@ -192,6 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
             answerDiv.classList.add('incorrect');
             answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br><div class="ai-explanation"><strong>🤖 Explicação da IA:</strong><p>${currentQuestion.explanation}</p><p>📖 <em>${currentQuestion.law}</em></p></div>`;
             const chatButton = document.createElement('button');
+            chatButton.type = 'button';
             chatButton.innerText = 'Conversar com Tutor IA';
             chatButton.className = 'btn-proximo';
             chatButton.onclick = openChat;
@@ -209,9 +223,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const SIMULADO_QUESTION_COUNT = 20;
         const SIMULADO_DURATION_MINUTES = 30;
 
-        let questionPool = Object.values(questionBank).flat();
+        let questionPool = Object.values(questionBank).flat().filter(q => q && q.id);
         if (questionPool.length < SIMULADO_QUESTION_COUNT) {
-            alert(`Não há questões suficientes para um simulado de ${SIMULADO_QUESTION_COUNT} itens. Adicione mais questões com a IA.`);
+            alert(`Não há questões suficientes para um simulado de ${SIMULADO_QUESTION_COUNT} itens. Gere mais questões com a IA.`);
             return;
         }
         simuladoQuestions = questionPool.sort(() => 0.5 - Math.random()).slice(0, SIMULADO_QUESTION_COUNT);
@@ -292,15 +306,62 @@ document.addEventListener('DOMContentLoaded', function() {
         generateFlashcard();
     }
     
-    // --- LÓGICA DO CHAT ---
-    function openChat() { /* ... igual à versão anterior ... */ }
-    function closeChat() { /* ... igual à versão anterior ... */ }
-    async function handleSendMessage() { /* ... igual à versão anterior ... */ }
-
-    // --- FETCH DE NOVAS QUESTÕES ---
-    async function fetchNewQuestionsFromAI(category) { /* ... igual à versão anterior ... */ }
-
-    // --- FUNÇÕES DE PLACAR ---
+    // --- LÓGICA DO CHAT E FETCH DE QUESTÕES ---
+    function openChat() {
+        chatHistory = [];
+        chatHistoryDiv.innerHTML = '';
+        const contextMessage = `<div class="chat-message tutor-context"><strong>Contexto:</strong> A IA irá te ajudar com base na questão que você errou. A explicação inicial é: "${currentQuestion.explanation}"</div>`;
+        chatHistoryDiv.innerHTML += contextMessage;
+        chatModal.classList.remove('hidden');
+        chatInput.focus();
+    }
+    function closeChat() {
+        chatModal.classList.add('hidden');
+        document.querySelector('.flashcard')?.classList.add('exiting');
+        setTimeout(generateFlashcard, 600);
+    }
+    async function handleSendMessage() {
+        const userMessage = chatInput.value.trim();
+        if (!userMessage) return;
+        chatHistoryDiv.innerHTML += `<div class="chat-message user">${userMessage}</div>`;
+        chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
+        chatInput.value = '';
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        chatHistoryDiv.innerHTML += `<div class="chat-message ai typing-indicator">Tutor IA está digitando...</div>`;
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        try {
+            const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ history: chatHistory, context: currentQuestion }) });
+            if (!response.ok) throw new Error('Erro na resposta da API');
+            const data = await response.json();
+            const aiMessage = data.response;
+            document.querySelector('.typing-indicator').remove();
+            chatHistoryDiv.innerHTML += `<div class="chat-message ai">${aiMessage}</div>`;
+            chatHistory.push({ role: 'model', parts: [{ text: aiMessage }] });
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        } catch (error) {
+            document.querySelector('.typing-indicator')?.remove();
+            chatHistoryDiv.innerHTML += `<div class="chat-message ai">Desculpe, ocorreu um erro. Tente novamente.</div>`;
+        }
+    }
+    async function fetchNewQuestionsFromAI(category) {
+        if (category === 'all') category = 'Seguridade Social'; // Default para 'all'
+        console.log(`Buscando nova questão de IA para: ${category}...`);
+        try {
+            const response = await fetch('/api/generate-question', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category }) });
+            if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
+            const newQuestion = await response.json();
+            if (!questionBank[category]) questionBank[category] = [];
+            newQuestion.id = `${category.substring(0,1).toUpperCase()}${Date.now()}`;
+            questionBank[category].push(newQuestion);
+            saveDataToLocalStorage();
+            console.log("Nova questão recebida e salva!", newQuestion);
+            setTimeout(generateFlashcard, 1000);
+        } catch (error) {
+            console.error("Falha ao buscar questão da IA:", error);
+            setTimeout(generateFlashcard, 3000);
+        }
+    }
+    
     function updateScoreboard() {
         scoreContainer.innerHTML = '';
         Object.keys(scores).forEach(category => {
@@ -310,5 +371,5 @@ document.addEventListener('DOMContentLoaded', function() {
         saveDataToLocalStorage();
     }
     
-    initialize(); // Inicia a aplicação
+    initialize();
 });
