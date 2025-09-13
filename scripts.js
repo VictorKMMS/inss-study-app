@@ -1,45 +1,17 @@
-// --- VARIÁVEIS DE ESTADO GLOBAIS ---
-let userData = {};
-let currentQuestion = null;
-let isReviewMode = false;
-let simuladoQuestions = [];
-let simuladoCurrentIndex = 0;
-let simuladoTimer;
-let chatHistory = [];
-
-const concursoQuestionBank = {
-    seguridade: [
-        { id: "C001", question: 'O salário-família é devido ao segurado com renda bruta mensal igual ou inferior a R$ 1.655,98.', answer: 'Certo', law: 'INSS 2022', isConcurso: true },
-        { id: "C002", question: 'O auxílio-acidente não exige carência, mas não pode ser acumulado com qualquer outro auxílio ou aposentadoria.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O auxílio-acidente pode ser acumulado com a aposentadoria, desde que o início de ambos os benefícios tenha ocorrido antes de 11/11/2019, quando entrou em vigor a Emenda Constitucional 103/2019.' },
-        { id: "C003", question: 'Considera-se para o cálculo do valor dos benefícios o salário de contribuição de 100% do período contributivo desde 1994.', answer: 'Errado', law: 'INSS 2016', isConcurso: true, explanation: 'A regra atual, a partir da Reforma da Previdência de 2019, considera o salário de contribuição de todo o período contributivo. A lei anterior considerava 80% dos maiores salários, excluindo-se os 20% menores.' },
-    ],
-    constitucional: [
-        { id: "C004", question: 'É plena a liberdade de associação para fins lícitos, sendo vedada a de caráter paramilitar.', answer: 'Certo', law: 'INSS 2022', isConcurso: true },
-        { id: "C005", question: 'A criação de associações e, na forma da lei, a de cooperativas independem de autorização, sendo proibida a interferência estatal em seu funcionamento.', answer: 'Certo', law: 'INSS 2016', isConcurso: true },
-    ]
-};
-
-const defaultQuestionBank = {
-    seguridade: [
-        { id: "S001", question: 'O princípio da seletividade e distributividade na prestação dos benefícios significa que o legislador deve selecionar os riscos sociais a serem cobertos, distribuindo a renda de forma a beneficiar os mais necessitados.', answer: 'Certo', explanation: 'Correto. Este princípio orienta a escolha das contingências sociais que serão amparadas (seletividade) e a forma de distribuir os benefícios para alcançar a justiça social (distributividade).', law: 'CF/88, Art. 194, Parágrafo único, III' },
-        { id: "S002", question: 'A pessoa jurídica em débito com o sistema da seguridade social, conforme estabelecido em lei, pode contratar com o Poder Público, mas não pode receber benefícios ou incentivos fiscais.', answer: 'Errado', explanation: 'A Constituição é clara ao vedar tanto a contratação com o Poder Público quanto o recebimento de benefícios ou incentivos fiscais ou creditícios para a pessoa jurídica em débito.', law: 'CF/88, Art. 195, § 3º' }
-    ],
-    constitucional: [
-        { id: "C006", question: 'É plena a liberdade de associação para fins lícitos, sendo vedada a de caráter paramilitar.', answer: 'Certo', explanation: 'Exatamente o que dispõe a Constituição. A liberdade de associação é um direito fundamental, com a única ressalva expressa para associações de caráter paramilitar.', law: 'CF/88, Art. 5º, XVII' }
-    ],
-};
-
-// Junta as questões do concurso com as padrão
-const allQuestionBanks = { ...defaultQuestionBank };
-for (const category in concursoQuestionBank) {
-    if (allQuestionBanks[category]) {
-        allQuestionBanks[category] = allQuestionBanks[category].concat(concursoQuestionBank[category]);
-    } else {
-        allQuestionBanks[category] = concursoQuestionBank[category];
-    }
-}
+// --- IMPORTAÇÕES ---
+import { allQuestionBanks } from './question-bank.js';
 
 document.addEventListener('DOMContentLoaded', function() {
+    // --- VARIÁVEIS DE ESTADO GLOBAIS ---
+    let userData = {};
+    let currentQuestion = null;
+    let isReviewMode = false;
+    let isConcursoMode = false; // Novo modo de estudo
+    let simuladoQuestions = [];
+    let simuladoCurrentIndex = 0;
+    let simuladoTimer;
+    let chatHistory = [];
+    
     // --- SELEÇÃO DE ELEMENTOS DOM ---
     const mainApp = document.getElementById('main-app');
     const flashcardContainer = document.getElementById('flashcard-container');
@@ -49,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const streakCounter = document.getElementById('streak-counter');
     const reviewModeToggle = document.getElementById('review-mode-toggle');
+    const concursoModeToggle = document.getElementById('concurso-mode-toggle'); // Novo elemento
     const startSimuladoBtn = document.getElementById('start-simulado-btn');
     const simuladoModal = document.getElementById('simulado-modal');
     const simuladoContainer = document.querySelector('.simulado-container');
@@ -65,16 +38,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (storedData) {
             userData = JSON.parse(storedData);
         } else {
-            userData = {
-                questionBank: allQuestionBanks,
-                scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } },
-                userStats: { streak: 0, lastVisit: null },
-                erroredQuestions: [],
-                recentlyAsked: [],
-            };
+            userData = {};
         }
-        // Garante que os valores padrão existam caso não estejam no localStorage
-        userData.questionBank = userData.questionBank || allQuestionBanks;
+
+        // Garante que o banco de questões seja sempre a versão mais atualizada,
+        // mas mantém o progresso salvo.
+        userData.questionBank = allQuestionBanks;
         userData.scores = userData.scores || { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
         userData.userStats = userData.userStats || { streak: 0, lastVisit: null };
         userData.erroredQuestions = userData.erroredQuestions || [];
@@ -100,6 +69,21 @@ document.addEventListener('DOMContentLoaded', function() {
         themeToggleBtn.addEventListener('click', toggleTheme);
         reviewModeToggle.addEventListener('change', (e) => {
             isReviewMode = e.target.checked;
+            // Desmarca o modo de concurso se o de revisão for ativado
+            if (isReviewMode) {
+                concursoModeToggle.checked = false;
+                isConcursoMode = false;
+            }
+            generateFlashcard();
+        });
+        // Novo event listener para o modo concurso
+        concursoModeToggle.addEventListener('change', (e) => {
+            isConcursoMode = e.target.checked;
+            // Desmarca o modo de revisão se o de concurso for ativado
+            if (isConcursoMode) {
+                reviewModeToggle.checked = false;
+                isReviewMode = false;
+            }
             generateFlashcard();
         });
         startSimuladoBtn.addEventListener('click', startSimulado);
@@ -159,14 +143,32 @@ document.addEventListener('DOMContentLoaded', function() {
         let questionPool;
         if (isReviewMode) {
             document.querySelector('.review-mode label').style.fontWeight = 'bold';
+            document.querySelector('.concurso-mode label').style.fontWeight = 'normal';
             const allQuestions = Object.values(userData.questionBank).flat();
             questionPool = allQuestions.filter(q => q && userData.erroredQuestions.includes(q.id));
             if (questionPool.length === 0) {
                 flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você não tem questões erradas para revisar. Desmarque o modo de revisão para continuar.</p></div>`;
                 return;
             }
-        } else {
+        } else if (isConcursoMode) { // Novo modo de filtragem
+            document.querySelector('.concurso-mode label').style.fontWeight = 'bold';
             document.querySelector('.review-mode label').style.fontWeight = 'normal';
+            let selectedCategory = categorySelector.value;
+            if (selectedCategory === 'all') {
+                 // Filtra todas as questões de concurso de todas as categorias
+                questionPool = Object.values(userData.questionBank).flat().filter(q => q && q.isConcurso);
+            } else {
+                questionPool = userData.questionBank[selectedCategory].filter(q => q && q.isConcurso);
+            }
+
+            if (questionPool.length === 0) {
+                flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Não há questões de concurso nesta categoria. Tente outra.</p></div>`;
+                return;
+            }
+        }
+        else {
+            document.querySelector('.review-mode label').style.fontWeight = 'normal';
+            document.querySelector('.concurso-mode label').style.fontWeight = 'normal';
             let selectedCategory = categorySelector.value;
             if (selectedCategory === 'all') {
                 const allCategories = Object.keys(userData.scores);
@@ -174,6 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             questionPool = userData.questionBank[selectedCategory] || [];
         }
+
         let availableQuestions = questionPool.filter(q => q && !userData.recentlyAsked.includes(q.id));
         if (availableQuestions.length === 0 && questionPool.length > 0) {
             userData.recentlyAsked = userData.recentlyAsked.slice(Math.floor(userData.recentlyAsked.length / 2));
@@ -182,6 +185,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (availableQuestions.length === 0) {
             if (isReviewMode) {
                 flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você revisou todas as suas questões erradas. Ótimo trabalho!</p></div>`;
+                return;
+            }
+            if (isConcursoMode) {
+                flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você já viu todas as questões de concurso nesta categoria. Tente outra!</p></div>`;
                 return;
             }
             flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Não há mais questões nesta categoria. Tente outra.</p></div>`;
@@ -360,12 +367,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('.typing-indicator')?.remove();
             chatHistoryDiv.innerHTML += `<div class="chat-message ai">Desculpe, ocorreu um erro. Tente novamente.</div>`;
         }
-    }
-    async function fetchNewQuestionsFromAI(category) {
-        // Esta função não faz nada, pois não temos uma API de IA
-        // Apenas exibe uma mensagem de erro
-        console.warn("Função de geração de IA não está implementada. Usando apenas o banco de questões local.");
-        flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Não foi possível gerar mais questões. Use as do banco local.</p></div>`;
     }
     
     // Inicia o aplicativo assim que o DOM for carregado
