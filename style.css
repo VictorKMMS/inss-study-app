@@ -8,6 +8,9 @@
     --primary-accent-color: #005a9e;
     --border-color: #ddd;
     --shadow-color: rgba(0,0,0,0.1);
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --info-color: #007bff;
 }
 
 body.dark-mode {
@@ -30,104 +33,29 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-header {
-    background-color: var(--header-bg-color);
-    color: #fff;
-    padding: 1rem;
-    text-align: center;
-    border-bottom: 5px solid #ffcc00;
-    position: relative;
-}
-.header-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+header { background-color: var(--header-bg-color); color: #fff; padding: 1rem; text-align: center; border-bottom: 5px solid #ffcc00; }
+.header-content { display: flex; justify-content: center; align-items: center; position: relative; max-width: 1200px; margin: 0 auto; }
 header h1 { margin: 0; font-size: 1.8rem; }
-.header-features {
-    position: absolute;
-    right: 20px;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-#streak-counter {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #ffcc00;
-    cursor: default;
-}
-#theme-toggle-btn {
-    background: none;
-    border: 2px solid #ffcc00;
-    color: #ffcc00;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+.header-features { position: absolute; right: 20px; display: flex; align-items: center; gap: 1rem; }
+#streak-counter { font-size: 1.5rem; font-weight: bold; color: #ffcc00; cursor: default; }
+#theme-toggle-btn { background: none; border: 2px solid #ffcc00; color: #ffcc00; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; cursor: pointer; display: flex; justify-content: center; align-items: center; }
 
-.main-container { /* ... (restante dos estilos, copiados da versão anterior) ... */ }
+#main-app { transition: opacity 0.3s; }
+#main-app.hidden { opacity: 0; pointer-events: none; }
+
+.main-container { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 2rem auto; padding: 0 1rem; gap: 2rem; }
 main { flex: 3; min-width: 300px; }
 aside { flex: 1; min-width: 250px; }
 #filter-container { text-align: center; margin-bottom: 1rem; }
-
-.mode-selectors {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1rem;
-    padding: 0.5rem;
-    background-color: rgba(0,0,0,0.02);
-    border-radius: 8px;
-}
+#category-selector { width: 100%; padding: 12px; font-size: 1rem; border: 2px solid var(--primary-accent-color); border-radius: 8px; background-color: var(--card-bg-color); color: var(--text-color); }
+.mode-selectors { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 1rem; padding: 0.5rem; background-color: rgba(0,0,0,0.02); border-radius: 8px; }
 .review-mode { display: flex; align-items: center; gap: 0.5rem; }
-#start-simulado-btn {
-    background-color: #8a2be2;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-}
-.flashcard, #scoreboard { background-color: var(--card-bg-color); box-shadow: 0 5px 15px var(--shadow-color); /* ... etc */ }
+#start-simulado-btn { background-color: #8a2be2; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-/* --- MODO SIMULADO --- */
-.hidden { display: none !important; }
-#simulado-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--bg-color);
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.simulado-container, .simulado-results-container { width: 90%; max-width: 800px; background-color: var(--card-bg-color); border-radius: 10px; padding: 2rem; box-shadow: 0 10px 30px var(--shadow-color); }
-#simulado-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-#simulado-info { font-weight: bold; font-size: 1.2rem; }
-#simulado-progress-bar-container { width: 100%; background-color: #ccc; border-radius: 5px; height: 10px; margin-bottom: 2rem; }
-#simulado-progress-bar { height: 100%; width: 0%; background-color: #007bff; border-radius: 5px; transition: width 0.3s; }
-#simulado-question-container { font-size: 1.3rem; min-height: 150px; }
-#simulado-actions { margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; }
-#simulado-actions button { width: 150px; padding: 15px; font-size: 1.2rem; /* ... */ }
-
-.simulado-results-container { max-height: 80vh; overflow-y: auto; }
-#simulado-results-summary { text-align: center; font-size: 1.5rem; margin: 1.5rem 0; }
-#simulado-results-list .result-item { display: flex; padding: 1rem; border-bottom: 1px solid var(--border-color); }
-#simulado-results-list .result-item.correct { background-color: rgba(40, 167, 69, 0.1); }
-#simulado-results-list .result-item.incorrect { background-color: rgba(220, 53, 69, 0.1); }
-#close-results-btn { display: block; margin: 2rem auto 0; padding: 12px 30px; /* ... */ }
-
-/* ... (todos os outros estilos de flashcard, chat, scoreboard, etc. devem ser mantidos e usar as variáveis de cor :root) ... */
+#flashcard-container { position: relative; height: 400px; perspective: 1000px; }
+.flashcard, #scoreboard { background-color: var(--card-bg-color); border-radius: 10px; box-shadow: 0 5px 15px var(--shadow-color); border: 1px solid var(--border-color); }
+.flashcard { padding: 2rem; position: absolute; width: 100%; box-sizing: border-box; transition: transform 0.6s ease-in-out, opacity 0.6s; backface-visibility: hidden; }
+.flashcard.exiting { transform: translateX(120%) rotateY(45deg); opacity: 0; }
+.flashcard-question { font-size: 1.2rem; margin-bottom: 1.5rem; min-height: 80px; }
+.flashcard-actions { display: flex; justify-content: center; gap: 1rem; }
+.flash
