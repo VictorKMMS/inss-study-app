@@ -3,54 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutor de Estudos INSS com IA</title>
+    <title>Tutor de Estudos INSS Avançado</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Tutor de Estudos INSS</h1>
-        <h2>Questões Dinâmicas com IA Conversacional</h2>
+        <div class="header-content">
+            <h1>Tutor de Estudos INSS</h1>
+            <div class="header-features">
+                <div id="streak-counter" title="Sua sequência de dias de estudo">🔥 0</div>
+                <button id="theme-toggle-btn" title="Alternar Modo Noturno">🌙</button>
+            </div>
+        </div>
     </header>
 
-    <div class="main-container">
-        <main>
-            <div id="filter-container">
-                <h3>Selecione a Matéria:</h3>
-                <select id="category-selector">
-                    <option value="all">Todas as Matérias (Aleatório)</option>
-                    <option value="seguridade">Seguridade Social</option>
-                    <option value="administrativo">Direito Administrativo</option>
-                    <option value="constitucional">Direito Constitucional</option>
-                    <option value="portugues">Língua Portuguesa</option>
-                    <option value="raciocinio">Raciocínio Lógico</option>
-                    <option value="informatica">Informática</option>
-                    <option value="etica">Ética</option>
-                </select>
-            </div>
-    
-            <div id="flashcard-container">
+    <div id="main-app">
+        <div class="main-container">
+            <main>
+                <div id="filter-container">
+                    <h3>Selecione a Matéria:</h3>
+                    <select id="category-selector">
+                        <option value="all">Todas as Matérias (Aleatório)</option>
+                        <option value="seguridade">Seguridade Social</option>
+                        <option value="administrativo">Direito Administrativo</option>
+                        <option value="constitucional">Direito Constitucional</option>
+                        <option value="portugues">Língua Portuguesa</option>
+                        <option value="raciocinio">Raciocínio Lógico</option>
+                        <option value="informatica">Informática</option>
+                        <option value="etica">Ética</option>
+                    </select>
+                    <div class="mode-selectors">
+                        <div class="review-mode">
+                            <input type="checkbox" id="review-mode-toggle">
+                            <label for="review-mode-toggle">Revisar apenas questões erradas</label>
+                        </div>
+                        <button id="start-simulado-btn">🚀 Iniciar Simulado</button>
+                    </div>
                 </div>
-        </main>
+        
+                <div id="flashcard-container">
+                    </div>
+            </main>
 
-        <aside id="scoreboard">
-            <h3>Seu Desempenho</h3>
-            <div id="score-container"></div>
-            <button id="reset-score">Zerar Placar</button>
-        </aside>
+            <aside id="scoreboard">
+                <h3>Seu Desempenho</h3>
+                <div id="score-container"></div>
+                <button id="reset-score">Zerar Placar</button>
+            </aside>
+        </div>
     </div>
 
     <div id="chat-modal" class="hidden">
-        <div id="chat-container">
-            <div id="chat-header">
-                <h3>Tire suas dúvidas com o Tutor IA</h3>
-                <button id="close-chat-btn">&times;</button>
-            </div>
-            <div id="chat-history">
+        </div>
+
+    <div id="simulado-modal" class="hidden">
+        <div class="simulado-container">
+            <div id="simulado-header">
+                <h2>Modo Simulado</h2>
+                <div id="simulado-info">
+                    <span id="simulado-progress">Questão 1/20</span>
+                    <span id="simulado-timer">Tempo: 30:00</span>
                 </div>
-            <div id="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Digite sua pergunta...">
-                <button id="chat-send-btn">Enviar</button>
             </div>
+            <div id="simulado-progress-bar-container">
+                <div id="simulado-progress-bar"></div>
+            </div>
+            <div id="simulado-question-container">
+                </div>
+            <div id="simulado-actions">
+                <button class="btn-certo">Certo</button>
+                <button class="btn-errado">Errado</button>
+            </div>
+        </div>
+        <div class="simulado-results-container hidden">
+             <div id="simulado-results-header">
+                <h2>Resultado do Simulado</h2>
+            </div>
+            <div id="simulado-results-summary"></div>
+            <div id="simulado-results-list"></div>
+            <button id="close-results-btn">Fechar</button>
         </div>
     </div>
 
