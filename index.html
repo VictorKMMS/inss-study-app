@@ -12,7 +12,7 @@
             <h1>Tutor de Estudos INSS</h1>
             <div class="header-features">
                 <div id="streak-counter" title="Sua sequência de dias de estudo">🔥 0</div>
-                <button id="theme-toggle-btn" title="Alternar Modo Noturno">🌙</button>
+                <button type="button" id="theme-toggle-btn" title="Alternar Modo Noturno">🌙</button>
             </div>
         </div>
     </header>
@@ -37,18 +37,17 @@
                             <input type="checkbox" id="review-mode-toggle">
                             <label for="review-mode-toggle">Revisar apenas questões erradas</label>
                         </div>
-                        <button id="start-simulado-btn">🚀 Iniciar Simulado</button>
+                        <button type="button" id="start-simulado-btn">🚀 Iniciar Simulado</button>
                     </div>
                 </div>
         
-                <div id="flashcard-container">
-                    </div>
+                <div id="flashcard-container"></div>
             </main>
 
             <aside id="scoreboard">
                 <h3>Seu Desempenho</h3>
                 <div id="score-container"></div>
-                <button id="reset-score">Zerar Placar</button>
+                <button type="button" id="reset-score">Zerar Placar</button>
             </aside>
         </div>
     </div>
@@ -57,12 +56,12 @@
         <div id="chat-container">
             <div id="chat-header">
                 <h3>Tire suas dúvidas com o Tutor IA</h3>
-                <button id="close-chat-btn">&times;</button>
+                <button type="button" id="close-chat-btn">&times;</button>
             </div>
             <div id="chat-history"></div>
             <div id="chat-input-area">
                 <input type="text" id="chat-input" placeholder="Digite sua pergunta...">
-                <button id="chat-send-btn">Enviar</button>
+                <button type="button" id="chat-send-btn">Enviar</button>
             </div>
         </div>
     </div>
@@ -81,8 +80,8 @@
             </div>
             <div id="simulado-question-container"></div>
             <div id="simulado-actions">
-                <button data-choice="Certo" class="btn-certo">Certo</button>
-                <button data-choice="Errado" class="btn-errado">Errado</button>
+                <button type="button" data-choice="Certo" class="btn-certo">Certo</button>
+                <button type="button" data-choice="Errado" class="btn-errado">Errado</button>
             </div>
         </div>
         <div class="simulado-results-container hidden">
@@ -91,7 +90,7 @@
             </div>
             <div id="simulado-results-summary"></div>
             <div id="simulado-results-list"></div>
-            <button id="close-results-btn">Finalizar Revisão</button>
+            <button type="button" id="close-results-btn">Finalizar Revisão</button>
         </div>
     </div>
 
