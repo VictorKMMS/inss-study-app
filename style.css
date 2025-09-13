@@ -38,23 +38,13 @@ header { background-color: var(--header-bg-color); color: #fff; padding: 1rem; t
 header h1 { margin: 0; font-size: 1.8rem; }
 .header-features { position: absolute; right: 20px; display: flex; align-items: center; gap: 1rem; }
 
-/*
- * --- ALTERAÇÃO: OCULTA O PROMPT DE LOGIN E O PERFIL DE USUÁRIO ---
- * Como o login é anônimo, esses elementos não são mais necessários.
- */
-#login-prompt {
-    display: none !important;
-}
-
-#user-profile {
-    display: none !important;
-}
-
 #streak-counter { font-size: 1.5rem; font-weight: bold; color: #ffcc00; cursor: default; }
 #theme-toggle-btn { background: none; border: 2px solid #ffcc00; color: #ffcc00; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; cursor: pointer; display: flex; justify-content: center; align-items: center; }
 
 #main-app { transition: opacity 0.3s; }
 #main-app.hidden { opacity: 0; pointer-events: none; }
+
+/* As classes de login foram removidas do CSS, pois os elementos não existem mais no HTML */
 
 .main-container { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 2rem auto; padding: 0 1rem; gap: 2rem; }
 main { flex: 3; min-width: 300px; }
@@ -135,66 +125,16 @@ footer { text-align: center; padding: 1rem; margin-top: 2rem; background-color: 
 /* Estilos aplicados quando a tela tem 768px de largura ou menos */
 /* ============================================= */
 @media (max-width: 768px) {
-
-    /* --- Ajustes no Layout Principal --- */
-    .main-container {
-        /* Empilha o conteúdo principal e o placar verticalmente */
-        flex-direction: column;
-        padding: 0 0.8rem;
-        gap: 1.5rem;
-    }
-
-    main, aside {
-        /* Garante que ambos ocupem a largura total */
-        min-width: 100%;
-    }
-
-    /* --- Ajustes no Cabeçalho --- */
-    header h1 {
-        font-size: 1.5rem; /* Reduz o tamanho do título principal */
-    }
-    .header-features {
-        position: static; /* Remove o posicionamento absoluto */
-        transform: none;
-        margin-top: 0.5rem;
-        justify-content: center;
-    }
-    .header-content {
-        flex-direction: column; /* Empilha o título e os ícones */
-    }
-
-    /* --- Ajustes nos Controles --- */
-    .mode-selectors {
-        flex-direction: column; /* Empilha os seletores de modo */
-        align-items: stretch;  /* Faz os itens ocuparem a largura total */
-        gap: 0.8rem;
-    }
-
-    #start-simulado-btn {
-        width: 100%; /* Botão de simulado ocupa a largura toda */
-    }
-
-    /* --- Ajustes nos Flashcards e Modais --- */
-    .flashcard, .simulado-container, .simulado-results-container {
-        padding: 1.5rem; /* Reduz o espaçamento interno */
-    }
-
-    .flashcard-question, #simulado-question-container {
-        font-size: 1.1rem; /* Reduz o tamanho da fonte da questão */
-        min-height: 100px;
-    }
-
-    #flashcard-container {
-        height: 420px; /* Aumenta um pouco a altura para acomodar textos com mais quebras de linha */
-    }
-    
-    .flashcard-actions button, #simulado-actions button {
-        padding: 12px 15px; /* Ajusta o padding dos botões de ação */
-        font-size: 1rem;
-    }
-
-    #chat-container {
-        width: 95%;
-        height: 90%;
-    }
+    .main-container { flex-direction: column; padding: 0 0.8rem; gap: 1.5rem; }
+    main, aside { min-width: 100%; }
+    header h1 { font-size: 1.5rem; }
+    .header-features { position: static; transform: none; margin-top: 0.5rem; justify-content: center; }
+    .header-content { flex-direction: column; }
+    .mode-selectors { flex-direction: column; align-items: stretch;  gap: 0.8rem; }
+    #start-simulado-btn { width: 100%; }
+    .flashcard, .simulado-container, .simulado-results-container { padding: 1.5rem; }
+    .flashcard-question, #simulado-question-container { font-size: 1.1rem; min-height: 100px; }
+    #flashcard-container { height: 420px; }
+    .flashcard-actions button, #simulado-actions button { padding: 12px 15px; font-size: 1rem; }
+    #chat-container { width: 95%; height: 90%; }
 }
