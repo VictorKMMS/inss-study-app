@@ -37,6 +37,19 @@ header { background-color: var(--header-bg-color); color: #fff; padding: 1rem; t
 .header-content { display: flex; justify-content: center; align-items: center; position: relative; max-width: 1200px; margin: 0 auto; }
 header h1 { margin: 0; font-size: 1.8rem; }
 .header-features { position: absolute; right: 20px; display: flex; align-items: center; gap: 1rem; }
+
+/*
+ * --- ALTERAÇÃO: OCULTA O PROMPT DE LOGIN E O PERFIL DE USUÁRIO ---
+ * Como o login é anônimo, esses elementos não são mais necessários.
+ */
+#login-prompt {
+    display: none !important;
+}
+
+#user-profile {
+    display: none !important;
+}
+
 #streak-counter { font-size: 1.5rem; font-weight: bold; color: #ffcc00; cursor: default; }
 #theme-toggle-btn { background: none; border: 2px solid #ffcc00; color: #ffcc00; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; cursor: pointer; display: flex; justify-content: center; align-items: center; }
 
