@@ -1,6 +1,7 @@
 // --- IMPORTAÇÕES ---
 import { auth, db } from './firebase-init.js';
-import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+// Remove o GoogleAuthProvider e o signInWithPopup
+import { signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -20,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- SELEÇÃO DE ELEMENTOS DOM ---
     const mainApp = document.getElementById('main-app');
     const loginPrompt = document.getElementById('login-prompt');
-    const mainLoginBtn = document.getElementById('google-login-main-btn');
+    const mainLoginBtn = document.getElementById('google-login-main-btn'); // Renomear
     const logoutBtn = document.getElementById('logout-btn');
     const userProfile = document.getElementById('user-profile');
     const userPic = document.getElementById('user-pic');
@@ -44,13 +45,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- LÓGICA DE AUTENTICAÇÃO ---
     onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
+            // Se o usuário anônimo existe
             user = firebaseUser;
             userProfile.classList.remove('hidden');
-            userPic.src = user.photoURL;
+            // Remove a linha que define a foto de perfil, já que não há uma
+            // userPic.src = user.photoURL;
             mainApp.classList.remove('hidden');
             loginPrompt.classList.add('hidden');
             loadUserData();
         } else {
+            // Se não, faz o login anônimo
+            signInAnonymously(auth).then((result) => {
+                user = result.user;
+                // A interface de usuário será atualizada pelo próprio onAuthStateChanged
+            }).catch((error) => {
+                console.error("Erro ao fazer login anônimo:", error);
+            });
             user = null;
             userProfile.classList.add('hidden');
             mainApp.classList.add('hidden');
@@ -59,16 +69,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // --- FUNÇÕES DE LOGIN/LOGOUT (RESTAURADAS) ---
-    async function signInWithGoogle() {
-        const provider = new GoogleAuthProvider();
-        try {
-            await signInWithPopup(auth, provider);
-        } catch (error) {
-            console.error("Erro ao fazer login com Google:", error);
-            alert("Não foi possível fazer o login. Tente novamente.");
-        }
-    }
+    // Remove a função signInWithGoogle, pois não é mais necessária
+    // async function signInWithGoogle() { ... }
 
+    // Mantém a função de logout para que o usuário possa "zerar" a sessão
     async function logOut() {
         try {
             await signOut(auth);
@@ -425,7 +429,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Eventos de Login/Logout
-    mainLoginBtn.addEventListener('click', signInWithGoogle);
+    // Altera o evento do botão de login principal
+    // mainLoginBtn.addEventListener('click', signInAnonymously);
+    // Não precisa de um evento, pois o login anônimo é automático
     logoutBtn.addEventListener('click', logOut);
 });
