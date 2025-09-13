@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Estudos INSS - Dinâmico</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Plataforma de Estudos INSS</h1>
+        <h2>Questões Dinâmicas para Técnico do Seguro Social</h2>
+    </header>
+
+    <div class="main-container">
+        <main>
+            <div id="filter-container">
+                <h3>Selecione a Matéria:</h3>
+                <select id="category-selector">
+                    <option value="all">Todas as Matérias (Aleatório)</option>
+                    <option value="seguridade">Seguridade Social</option>
+                    <option value="administrativo">Direito Administrativo</option>
+                    <option value="constitucional">Direito Constitucional</option>
+                    <option value="portugues">Língua Portuguesa</option>
+                    <option value="raciocinio">Raciocínio Lógico</option>
+                    <option value="informatica">Informática</option>
+                    <option value="etica">Ética</option>
+                </select>
+            </div>
+    
+            <div id="flashcard-container">
+                </div>
+        </main>
+
+        <aside id="scoreboard">
+            <h3>Seu Desempenho</h3>
+            <div id="score-container">
+                </div>
+            <button id="reset-score">Zerar Placar</button>
+        </aside>
+    </div>
+
+    <footer>
+        <p>Pratique sem limites e acompanhe seu progresso!</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
