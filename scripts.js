@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if(availableQuestions.length === 0) {
-            // Failsafe in case all questions are somehow still in the recently asked list
             availableQuestions = questionBank[selectedCategory];
         }
 
@@ -80,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const answerDiv = document.querySelector('.flashcard-answer');
         const actionsDiv = document.querySelector('.flashcard-actions');
         
-        actionsDiv.innerHTML = ''; // Limpa os botões Certo/Errado
+        actionsDiv.innerHTML = '';
         updateRecentlyAsked(currentQuestion.id);
 
         if (isCorrect) {
@@ -88,7 +87,6 @@ document.addEventListener('DOMContentLoaded', function() {
             answerDiv.classList.add('correct');
             answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br>Parabéns, sua resposta está correta!<div class="answer-source"><strong>Fonte:</strong> ${currentQuestion.law}</div>`;
             
-            // --- BOTÃO "PRÓXIMO" PARA ACERTOS ---
             const nextButton = document.createElement('button');
             nextButton.innerText = 'Próximo';
             nextButton.className = 'btn-proximo-acerto';
@@ -105,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const chatButton = document.createElement('button');
             chatButton.innerText = 'Conversar com Tutor IA';
-            chatButton.className = 'btn-proximo'; // Azul
+            chatButton.className = 'btn-proximo';
             chatButton.onclick = () => openChat();
             actionsDiv.appendChild(chatButton);
         }
@@ -128,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function handleSendMessage() {
+        // Esta função permanece a mesma da versão anterior
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
 
@@ -161,13 +160,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function fetchNewQuestionsFromAI(category) {
         // Esta função permanece a mesma da versão anterior
+        console.log(`Buscando nova questão de IA para: ${category}...`);
+        const card = document.querySelector('.flashcard');
+        if (card) {
+            card.innerHTML = `<p class="flashcard-question">Conectando com a IA do Gemini Pro para gerar uma nova questão sobre "${category}"... Aguarde!</p>`;
+        }
+        try {
+            const response = await fetch('/api/generate-question', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category }),
+            });
+            if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
+            const newQuestion = await response.json();
+            if (!questionBank[category]) questionBank[category] = [];
+            questionBank[category].push(newQuestion);
+            saveDataToLocalStorage();
+            console.log("Nova questão recebida e salva!", newQuestion);
+            setTimeout(generateFlashcard, 1000);
+        } catch (error) {
+            console.error("Falha ao buscar questão da IA:", error);
+            if (card) {
+                card.innerHTML = `<p class="flashcard-question">Ocorreu um erro ao conectar com a IA. Reiniciando com as questões existentes em 3 segundos...</p>`;
+            }
+            // --- CORREÇÃO SUTIL NO TRATAMENTO DE ERRO ---
+            setTimeout(() => {
+                // Não reseta mais o histórico, apenas tenta gerar uma nova questão do que já existe
+                generateFlashcard();
+            }, 3000);
+        }
     }
-
+    
+    // Função de inicialização
     function initialize() {
+        // O event listener que garante a atualização ao mudar de matéria
+        categorySelector.addEventListener('change', generateFlashcard);
+
         chatSendBtn.addEventListener('click', handleSendMessage);
         chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendMessage(); });
         closeChatBtn.addEventListener('click', closeChat);
-        categorySelector.addEventListener('change', generateFlashcard);
         resetScoreBtn.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
                 Object.keys(scores).forEach(category => { scores[category] = { correct: 0, incorrect: 0 }; });
