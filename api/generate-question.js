@@ -25,11 +25,16 @@ export default async function handler(request, response) {
     const result = await model.generateContent(prompt);
     const textResponse = result.response.text();
     
-    const newQuestion = JSON.parse(textResponse);
+    // --- LINHA CORRIGIDA ---
+    // Esta linha agora usa uma expressão regular para encontrar e extrair
+    // apenas o bloco de texto que começa com { e termina com }, garantindo que seja um JSON válido.
+    const jsonString = textResponse.match(/\{[\s\S]*\}/)[0];
+    const newQuestion = JSON.parse(jsonString);
+    // --- FIM DA CORREÇÃO ---
 
     return response.status(200).json(newQuestion);
   } catch (error) {
-    console.error('Erro ao chamar a API do Gemini:', error);
+    console.error('Erro ao chamar ou processar a API do Gemini:', error);
     return response.status(500).json({ error: 'Falha ao gerar a questão com a IA' });
   }
 }
