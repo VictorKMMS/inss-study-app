@@ -44,8 +44,6 @@ header h1 { margin: 0; font-size: 1.8rem; }
 #main-app { transition: opacity 0.3s; }
 #main-app.hidden { opacity: 0; pointer-events: none; }
 
-/* As classes de login foram removidas do CSS, pois os elementos não existem mais no HTML */
-
 .main-container { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 2rem auto; padding: 0 1rem; gap: 2rem; }
 main { flex: 3; min-width: 300px; }
 aside { flex: 1; min-width: 250px; }
@@ -54,6 +52,14 @@ aside { flex: 1; min-width: 250px; }
 .mode-selectors { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 1rem; padding: 0.5rem; background-color: rgba(0,0,0,0.02); border-radius: 8px; }
 .review-mode { display: flex; align-items: center; gap: 0.5rem; }
 #start-simulado-btn { background-color: #8a2be2; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+/* Adiciona estilo para a estrela */
+.concurso-star {
+    color: gold;
+    font-size: 1.5rem;
+    vertical-align: sub;
+    margin-left: 5px;
+}
 
 #flashcard-container { position: relative; height: 400px; perspective: 1000px; }
 .flashcard, #scoreboard { background-color: var(--card-bg-color); border-radius: 10px; box-shadow: 0 5px 15px var(--shadow-color); border: 1px solid var(--border-color); }
@@ -120,7 +126,7 @@ aside { flex: 1; min-width: 250px; }
 
 footer { text-align: center; padding: 1rem; margin-top: 2rem; background-color: var(--card-bg-color); border-top: 1px solid var(--border-color); color: #6c757d; }
 
-/* ============================================== */
+/* ============================================= */
 /* --- AJUSTES PARA DISPOSITIVOS MÓVEIS --- */
 /* Estilos aplicados quando a tela tem 768px de largura ou menos */
 /* ============================================= */
