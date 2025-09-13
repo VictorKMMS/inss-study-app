@@ -1,6 +1,5 @@
 // --- IMPORTAÇÕES ---
 import { auth, db } from './firebase-init.js';
-// Remove o GoogleAuthProvider e o signInWithPopup
 import { signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
@@ -21,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- SELEÇÃO DE ELEMENTOS DOM ---
     const mainApp = document.getElementById('main-app');
     const loginPrompt = document.getElementById('login-prompt');
-    const mainLoginBtn = document.getElementById('google-login-main-btn'); // Renomear
+    const mainLoginBtn = document.getElementById('google-login-main-btn'); 
     const logoutBtn = document.getElementById('logout-btn');
     const userProfile = document.getElementById('user-profile');
     const userPic = document.getElementById('user-pic');
@@ -45,34 +44,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- LÓGICA DE AUTENTICAÇÃO ---
     onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
-            // Se o usuário anônimo existe
             user = firebaseUser;
-            userProfile.classList.remove('hidden');
-            // Remove a linha que define a foto de perfil, já que não há uma
-            // userPic.src = user.photoURL;
             mainApp.classList.remove('hidden');
-            loginPrompt.classList.add('hidden');
             loadUserData();
         } else {
-            // Se não, faz o login anônimo
             signInAnonymously(auth).then((result) => {
                 user = result.user;
-                // A interface de usuário será atualizada pelo próprio onAuthStateChanged
             }).catch((error) => {
                 console.error("Erro ao fazer login anônimo:", error);
             });
-            user = null;
-            userProfile.classList.add('hidden');
-            mainApp.classList.add('hidden');
-            loginPrompt.classList.remove('hidden');
         }
     });
 
-    // --- FUNÇÕES DE LOGIN/LOGOUT (RESTAURADAS) ---
-    // Remove a função signInWithGoogle, pois não é mais necessária
-    // async function signInWithGoogle() { ... }
-
-    // Mantém a função de logout para que o usuário possa "zerar" a sessão
+    // --- FUNÇÕES DE LOGIN/LOGOUT ---
     async function logOut() {
         try {
             await signOut(auth);
@@ -80,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error("Erro ao fazer logout:", error);
         }
     }
-
+    
     // --- LÓGICA DE DADOS COM FIRESTORE ---
     async function loadUserData() {
         if (!user) return;
@@ -155,25 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
         generateFlashcard();
 
         // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
-        function checkTheme() { /* ... */ }
-        function toggleTheme() { /* ... */ }
-        function updateStreaks() { /* ... */ }
-        async function generateFlashcard() { /* ... */ }
-        function checkAnswer(event) { /* ... */ }
-        function updateScoreboard() { /* ... */ }
-        function startSimulado() { /* ... */ }
-        function displaySimuladoQuestion() { /* ... */ }
-        function handleSimuladoAnswer(userAnswer) { /* ... */ }
-        function endSimulado() { /* ... */ }
-        function closeResults() { /* ... */ }
-        function openChat() { /* ... */ }
-        function closeChat() { /* ... */ }
-        async function handleSendMessage() { /* ... */ }
-        async function fetchNewQuestionsFromAI(category) { /* ... */ }
-
-        // COLE A IMPLEMENTAÇÃO COMPLETA DAS FUNÇÕES ACIMA AQUI
-        // (Para manter a legibilidade, o código completo está abaixo)
-
         function checkTheme() {
             if (localStorage.getItem('inssTheme') === 'dark') {
                 document.body.classList.add('dark-mode');
@@ -432,5 +397,5 @@ document.addEventListener('DOMContentLoaded', function() {
     // Altera o evento do botão de login principal
     // mainLoginBtn.addEventListener('click', signInAnonymously);
     // Não precisa de um evento, pois o login anônimo é automático
-    logoutBtn.addEventListener('click', logOut);
+    // Removi a linha de logout pois não temos um botão para isso no HTML mais
 });
