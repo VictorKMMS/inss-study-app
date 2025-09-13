@@ -1,18 +1,15 @@
-// --- IMPORTAÇÕES ---
 import { allQuestionBanks } from './question-bank.js';
 
 document.addEventListener('DOMContentLoaded', function() {
-    // --- VARIÁVEIS DE ESTADO GLOBAIS ---
     let userData = {};
     let currentQuestion = null;
     let isReviewMode = false;
-    let isConcursoMode = false; // Novo modo de estudo
+    let isConcursoMode = false; 
     let simuladoQuestions = [];
     let simuladoCurrentIndex = 0;
     let simuladoTimer;
     let chatHistory = [];
-    
-    // --- SELEÇÃO DE ELEMENTOS DOM ---
+
     const mainApp = document.getElementById('main-app');
     const flashcardContainer = document.getElementById('flashcard-container');
     const categorySelector = document.getElementById('category-selector');
@@ -21,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const streakCounter = document.getElementById('streak-counter');
     const reviewModeToggle = document.getElementById('review-mode-toggle');
-    const concursoModeToggle = document.getElementById('concurso-mode-toggle'); // Novo elemento
+    const concursoModeToggle = document.getElementById('concurso-mode-toggle');
     const startSimuladoBtn = document.getElementById('start-simulado-btn');
     const simuladoModal = document.getElementById('simulado-modal');
     const simuladoContainer = document.querySelector('.simulado-container');
@@ -32,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatSendBtn = document.getElementById('chat-send-btn');
     const closeChatBtn = document.getElementById('close-chat-btn');
 
-    // --- LÓGICA DE DADOS E ESTADO COM LOCALSTORAGE ---
     function loadUserData() {
         const storedData = localStorage.getItem('inssTutorData');
         if (storedData) {
@@ -41,8 +37,6 @@ document.addEventListener('DOMContentLoaded', function() {
             userData = {};
         }
 
-        // Garante que o banco de questões seja sempre a versão mais atualizada,
-        // mas mantém o progresso salvo.
         userData.questionBank = allQuestionBanks;
         userData.scores = userData.scores || { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
         userData.userStats = userData.userStats || { streak: 0, lastVisit: null };
@@ -53,8 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function saveUserData() {
         localStorage.setItem('inssTutorData', JSON.stringify(userData));
     }
-
-    // --- INICIALIZAÇÃO DO APLICATIVO ---
+    
     function initializeAppLogic() {
         loadUserData();
         
@@ -64,22 +57,18 @@ document.addEventListener('DOMContentLoaded', function() {
         updateScoreboard();
         generateFlashcard();
 
-        // Adiciona event listeners
         categorySelector.addEventListener('change', generateFlashcard);
         themeToggleBtn.addEventListener('click', toggleTheme);
         reviewModeToggle.addEventListener('change', (e) => {
             isReviewMode = e.target.checked;
-            // Desmarca o modo de concurso se o de revisão for ativado
             if (isReviewMode) {
                 concursoModeToggle.checked = false;
                 isConcursoMode = false;
             }
             generateFlashcard();
         });
-        // Novo event listener para o modo concurso
         concursoModeToggle.addEventListener('change', (e) => {
             isConcursoMode = e.target.checked;
-            // Desmarca o modo de revisão se o de concurso for ativado
             if (isConcursoMode) {
                 reviewModeToggle.checked = false;
                 isReviewMode = false;
@@ -97,15 +86,14 @@ document.addEventListener('DOMContentLoaded', function() {
         resetScoreBtn.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
                 localStorage.removeItem('inssTutorData');
-                loadUserData(); // Carrega os dados padrão
+                loadUserData();
                 updateScoreboard();
-                updateStreaks(); // Reseta o streak
+                updateStreaks();
                 generateFlashcard();
             }
         });
     }
 
-    // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -150,12 +138,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você não tem questões erradas para revisar. Desmarque o modo de revisão para continuar.</p></div>`;
                 return;
             }
-        } else if (isConcursoMode) { // Novo modo de filtragem
+        } else if (isConcursoMode) {
             document.querySelector('.concurso-mode label').style.fontWeight = 'bold';
             document.querySelector('.review-mode label').style.fontWeight = 'normal';
             let selectedCategory = categorySelector.value;
             if (selectedCategory === 'all') {
-                 // Filtra todas as questões de concurso de todas as categorias
                 questionPool = Object.values(userData.questionBank).flat().filter(q => q && q.isConcurso);
             } else {
                 questionPool = userData.questionBank[selectedCategory].filter(q => q && q.isConcurso);
@@ -369,6 +356,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Inicia o aplicativo assim que o DOM for carregado
     initializeAppLogic();
 });
