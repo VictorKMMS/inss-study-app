@@ -1,4 +1,4 @@
-/* Estilos existentes ... (copie tudo da versão anterior e adicione/substitua o que está abaixo) */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 body {
     font-family: 'Roboto', sans-serif;
@@ -9,7 +9,88 @@ body {
     color: #333;
 }
 
-/* ... (todos os outros estilos de header, main, scoreboard, etc.) ... */
+header {
+    background-color: #003366;
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+    border-bottom: 5px solid #ffcc00;
+}
+
+header h1 { margin: 0; font-size: 2rem; }
+
+.main-container {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    gap: 2rem;
+}
+
+main { flex: 3; min-width: 300px; }
+aside { flex: 1; min-width: 250px; }
+
+#filter-container { text-align: center; margin-bottom: 2rem; }
+
+#category-selector {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 2px solid #003366;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+#flashcard-container {
+    position: relative;
+    height: 400px;
+    perspective: 1000px;
+}
+
+.flashcard {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    padding: 2rem;
+    position: absolute;
+    width: 100%;
+    box-sizing: border-box;
+    transition: transform 0.6s ease-in-out, opacity 0.6s;
+    backface-visibility: hidden;
+}
+
+.flashcard.exiting {
+    transform: translateX(120%) rotateY(45deg);
+    opacity: 0;
+}
+
+.flashcard-question { font-size: 1.2rem; margin-bottom: 1.5rem; min-height: 80px; }
+.flashcard-actions { display: flex; justify-content: center; gap: 1rem; }
+
+.flashcard-actions button {
+    width: auto;
+    min-width: 120px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.flashcard-actions button:hover { transform: scale(1.05); }
+
+/* --- CORES DOS BOTÕES CORRIGIDAS --- */
+.btn-certo { background-color: #28a745; color: white; }
+.btn-errado { background-color: #dc3545; color: white; }
+.btn-proximo { background-color: #007bff; color: white; }
+.btn-proximo-acerto { background-color: #28a745; color: white; } /* Botão verde para acerto */
+
+.flashcard-answer { margin-top: 1.5rem; padding: 1rem; border-radius: 5px; }
+.flashcard-answer.correct { border-left: 5px solid #28a745; background-color: #e9f7ef; }
+.flashcard-answer.incorrect { border-left: 5px solid #dc3545; background-color: #fbebed; }
 
 .flashcard-answer.correct .answer-source {
     margin-top: 1rem;
@@ -21,118 +102,28 @@ body {
     color: #4338ca;
 }
 
+.ai-explanation { margin-top: 1rem; }
+
+/* ... (todos os outros estilos de scoreboard, chat, etc. permanecem iguais) ... */
+#scoreboard { background-color: #fff; padding: 1.5rem; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); align-self: flex-start; }
+#scoreboard h3 { text-align: center; margin-top: 0; color: #003366; border-bottom: 2px solid #eee; padding-bottom: 1rem; }
+.score-item { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #f0f0f0; }
+#reset-score { width: 100%; margin-top: 1rem; padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; }
+
 /* --- ESTILOS DO CHAT --- */
-.hidden {
-    display: none !important;
-}
-
-#chat-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-#chat-container {
-    width: 90%;
-    max-width: 600px;
-    height: 80%;
-    max-height: 700px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-}
-
-#chat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    background-color: #003366;
-    color: #fff;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
+.hidden { display: none !important; }
+#chat-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+#chat-container { width: 90%; max-width: 600px; height: 80%; max-height: 700px; background-color: #fff; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+#chat-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background-color: #003366; color: #fff; border-top-left-radius: 10px; border-top-right-radius: 10px; }
 #chat-header h3 { margin: 0; }
+#close-chat-btn { background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }
+#chat-history { flex-grow: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+.chat-message { padding: 0.75rem 1rem; border-radius: 15px; max-width: 80%; line-height: 1.4; }
+.chat-message.user { background-color: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 3px; }
+.chat-message.ai { background-color: #e9ecef; color: #333; align-self: flex-start; border-bottom-left-radius: 3px; }
+.chat-message.tutor-context { background-color: #fffbe6; border: 1px solid #ffeeba; width: 100%; max-width: 100%; box-sizing: border-box; font-size: 0.9rem; }
+#chat-input-area { display: flex; padding: 1rem; border-top: 1px solid #ddd; }
+#chat-input { flex-grow: 1; border: 1px solid #ccc; border-radius: 20px; padding: 0.75rem; font-size: 1rem; }
+#chat-send-btn { background-color: #007bff; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; margin-left: 0.5rem; cursor: pointer; font-size: 1.2rem; }
 
-#close-chat-btn {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 2rem;
-    cursor: pointer;
-}
-
-#chat-history {
-    flex-grow: 1;
-    padding: 1.5rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.chat-message {
-    padding: 0.75rem 1rem;
-    border-radius: 15px;
-    max-width: 80%;
-    line-height: 1.4;
-}
-
-.chat-message.user {
-    background-color: #007bff;
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 3px;
-}
-
-.chat-message.ai {
-    background-color: #e9ecef;
-    color: #333;
-    align-self: flex-start;
-    border-bottom-left-radius: 3px;
-}
-
-.chat-message.tutor-context {
-    background-color: #fffbe6;
-    border: 1px solid #ffeeba;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    font-size: 0.9rem;
-}
-
-#chat-input-area {
-    display: flex;
-    padding: 1rem;
-    border-top: 1px solid #ddd;
-}
-
-#chat-input {
-    flex-grow: 1;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    padding: 0.75rem;
-    font-size: 1rem;
-}
-
-#chat-send-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    margin-left: 0.5rem;
-    cursor: pointer;
-    font-size: 1.2rem;
-}
+footer { text-align: center; padding: 1rem; margin-top: 2rem; background-color: #e9ecef; color: #6c757d; }
