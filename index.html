@@ -14,26 +14,84 @@
                 <div id="streak-counter" title="Sua sequência de dias de estudo">🔥 0</div>
                 <button type="button" id="theme-toggle-btn" title="Alternar Modo Noturno">🌙</button>
                 
-                <div id="user-area">
-                    <div id="user-profile" class="hidden">
-                        <img id="user-pic" src="" alt="Foto do usuário">
-                        <button type="button" id="logout-btn">Sair</button>
-                    </div>
                 </div>
-
-            </div>
         </div>
     </header>
 
-    <div id="login-prompt" class="login-prompt-container">
-        <h2>Bem-vindo(a)!</h2>
-        <p>Faça login para salvar seu progresso na nuvem e acessar de qualquer dispositivo.</p>
-        <button type="button" id="google-login-main-btn">Entrar com Google</button>
-    </div>
-
     <div id="main-app" class="hidden">
         <div class="main-container">
+            <main>
+                <div id="filter-container">
+                    <select id="category-selector">
+                        <option value="all">Todas as Categorias</option>
+                        <option value="seguridade">Seguridade Social</option>
+                        <option value="constitucional">Direito Constitucional</option>
+                        <option value="administrativo">Direito Administrativo</option>
+                        <option value="portugues">Língua Portuguesa</option>
+                        <option value="raciocinio">Raciocínio Lógico</option>
+                        <option value="informatica">Informática</option>
+                        <option value="etica">Ética no Serviço Público</option>
+                    </select>
+                    <div class="mode-selectors">
+                        <div class="review-mode">
+                            <label for="review-mode-toggle">Modo de Revisão (Erradas)</label>
+                            <input type="checkbox" id="review-mode-toggle">
+                        </div>
+                        <button type="button" id="start-simulado-btn">Iniciar Simulado</button>
+                    </div>
+                </div>
+                <div id="flashcard-container">
+                    </div>
+            </main>
+
+            <aside>
+                <div id="scoreboard">
+                    <h3>Placar</h3>
+                    <div id="score-container">
+                        </div>
+                    <button type="button" id="reset-score">Zerar Placar</button>
+                </div>
+            </aside>
+        </div>
+    </div>
+    
+    <div id="simulado-modal" class="hidden">
+        <div class="simulado-container">
+            <div id="simulado-header">
+                <div id="simulado-info">
+                    <span id="simulado-progress">Questão 1/20</span>
+                    <span id="simulado-timer">Tempo: 30:00</span>
+                </div>
             </div>
+            <div id="simulado-progress-bar-container">
+                <div id="simulado-progress-bar"></div>
+            </div>
+            <div id="simulado-question-container"></div>
+            <div id="simulado-actions">
+                <button type="button" class="btn-certo" data-choice="Certo">Certo</button>
+                <button type="button" class="btn-errado" data-choice="Errado">Errado</button>
+            </div>
+        </div>
+        <div class="simulado-results-container hidden">
+            <h3>Resultado do Simulado</h3>
+            <p id="simulado-results-summary"></p>
+            <div id="simulado-results-list"></div>
+            <button type="button" id="close-results-btn">Voltar para Estudo</button>
+        </div>
+    </div>
+    
+    <div id="chat-modal" class="hidden">
+        <div id="chat-container">
+            <div id="chat-header">
+                <h3>Tutor IA</h3>
+                <button type="button" id="close-chat-btn">&times;</button>
+            </div>
+            <div id="chat-history"></div>
+            <div id="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Pergunte ao Tutor IA...">
+                <button type="button" id="chat-send-btn">Enviar</button>
+            </div>
+        </div>
     </div>
 
     <footer>
