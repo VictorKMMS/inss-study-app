@@ -1,29 +1,23 @@
-// --- IMPORTAÇÕES ---
-import { auth, db } from './firebase-init.js';
-import { signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+// --- VARIÁVEIS DE ESTADO GLOBAIS ---
+let userData = {};
+let currentQuestion = null;
+let isReviewMode = false;
+let simuladoQuestions = [];
+let simuladoCurrentIndex = 0;
+let simuladoTimer;
+let chatHistory = [];
+
+const defaultQuestionBank = {
+    seguridade: [
+        { id: "S001", question: 'O princípio da seletividade e distributividade na prestação dos benefícios significa que o legislador deve selecionar os riscos sociais a serem cobertos, distribuindo a renda de forma a beneficiar os mais necessitados.', answer: 'Certo', explanation: 'Correto. Este princípio orienta a escolha das contingências sociais que serão amparadas (seletividade) e a forma de distribuir os benefícios para alcançar a justiça social (distributividade).', law: 'CF/88, Art. 194, Parágrafo único, III' },
+        { id: "S002", question: 'A pessoa jurídica em débito com o sistema da seguridade social, conforme estabelecido em lei, pode contratar com o Poder Público, mas não pode receber benefícios ou incentivos fiscais.', answer: 'Errado', explanation: 'A Constituição é clara ao vedar tanto a contratação com o Poder Público quanto o recebimento de benefícios ou incentivos fiscais ou creditícios para a pessoa jurídica em débito.', law: 'CF/88, Art. 195, § 3º' }
+    ],
+    constitucional: [
+        { id: "C001", question: 'É plena a liberdade de associação para fins lícitos, sendo vedada a de caráter paramilitar.', answer: 'Certo', explanation: 'Exatamente o que dispõe a Constituição. A liberdade de associação é um direito fundamental, com a única ressalva expressa para associações de caráter paramilitar.', law: 'CF/88, Art. 5º, XVII' }
+    ],
+};
 
 document.addEventListener('DOMContentLoaded', function() {
-    // --- VARIÁVEIS DE ESTADO GLOBAIS ---
-    let user = null;
-    let userData = {};
-    let currentQuestion = null;
-    let isReviewMode = false;
-    let simuladoQuestions = [];
-    let simuladoCurrentIndex = 0;
-    let simuladoTimer;
-    let chatHistory = [];
-
-    const defaultQuestionBank = {
-        seguridade: [
-            { id: "S001", question: 'O princípio da seletividade e distributividade na prestação dos benefícios significa que o legislador deve selecionar os riscos sociais a serem cobertos, distribuindo a renda de forma a beneficiar os mais necessitados.', answer: 'Certo', explanation: 'Correto. Este princípio orienta a escolha das contingências sociais que serão amparadas (seletividade) e a forma de distribuir os benefícios para alcançar a justiça social (distributividade).', law: 'CF/88, Art. 194, Parágrafo único, III' },
-            { id: "S002", question: 'A pessoa jurídica em débito com o sistema da seguridade social, conforme estabelecido em lei, pode contratar com o Poder Público, mas não pode receber benefícios ou incentivos fiscais.', answer: 'Errado', explanation: 'A Constituição é clara ao vedar tanto a contratação com o Poder Público quanto o recebimento de benefícios ou incentivos fiscais ou creditícios para a pessoa jurídica em débito.', law: 'CF/88, Art. 195, § 3º' }
-        ],
-        constitucional: [
-            { id: "C001", question: 'É plena a liberdade de associação para fins lícitos, sendo vedada a de caráter paramilitar.', answer: 'Certo', explanation: 'Exatamente o que dispõe a Constituição. A liberdade de associação é um direito fundamental, com a única ressalva expressa para associações de caráter paramilitar.', law: 'CF/88, Art. 5º, XVII' }
-        ],
-    };
-    
     // --- SELEÇÃO DE ELEMENTOS DOM ---
     const mainApp = document.getElementById('main-app');
     const flashcardContainer = document.getElementById('flashcard-container');
@@ -43,73 +37,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatSendBtn = document.getElementById('chat-send-btn');
     const closeChatBtn = document.getElementById('close-chat-btn');
 
-    // --- LÓGICA DE AUTENTICAÇÃO ---
-    onAuthStateChanged(auth, (firebaseUser) => {
-        if (firebaseUser) {
-            user = firebaseUser;
-            loadUserData();
+    // --- LÓGICA DE DADOS E ESTADO COM LOCALSTORAGE ---
+    function loadUserData() {
+        const storedData = localStorage.getItem('inssTutorData');
+        if (storedData) {
+            userData = JSON.parse(storedData);
         } else {
-            signInAnonymously(auth).then((result) => {
-                user = result.user;
-                loadUserData();
-            }).catch((error) => {
-                console.error("Erro ao fazer login anônimo:", error);
-                // Inicia o app mesmo sem dados do Firebase
-                initializeDefaultData();
-            });
+            userData = {
+                questionBank: defaultQuestionBank,
+                scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } },
+                userStats: { streak: 0, lastVisit: null },
+                erroredQuestions: [],
+                recentlyAsked: [],
+            };
         }
-    });
-
-    // --- FUNÇÕES DE DADOS E ESTADO ---
-    function initializeDefaultData() {
-        userData = {
-            questionBank: defaultQuestionBank,
-            scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } },
-            userStats: { streak: 0, lastVisit: null },
-            erroredQuestions: [],
-            recentlyAsked: [],
-        };
-        initializeAppLogic();
+        // Garante que os valores padrão existam caso não estejam no localStorage
+        userData.questionBank = userData.questionBank || defaultQuestionBank;
+        userData.scores = userData.scores || { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
+        userData.userStats = userData.userStats || { streak: 0, lastVisit: null };
+        userData.erroredQuestions = userData.erroredQuestions || [];
+        userData.recentlyAsked = userData.recentlyAsked || [];
     }
 
-    async function loadUserData() {
-        if (!user) {
-            initializeDefaultData();
-            return;
-        }
-        const userDocRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(userDocRef);
-        if (docSnap.exists()) {
-            userData = docSnap.data();
-            if (!userData.scores) userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
-            if (!userData.userStats) userData.userStats = { streak: 0, lastVisit: null };
-            if (!userData.erroredQuestions) userData.erroredQuestions = [];
-            if (!userData.recentlyAsked) userData.recentlyAsked = [];
-            if (!userData.questionBank) userData.questionBank = defaultQuestionBank;
-        } else {
-            initializeDefaultData();
-        }
-        initializeAppLogic();
+    function saveUserData() {
+        localStorage.setItem('inssTutorData', JSON.stringify(userData));
     }
 
-    async function saveUserData() {
-        if (!user) {
-            console.warn("Usuário não autenticado. Dados não serão salvos.");
-            return;
-        }
-        const userDocRef = doc(db, 'users', user.uid);
-        try {
-            await setDoc(userDocRef, userData, { merge: true });
-        } catch (error) {
-            console.error("Erro ao salvar dados no Firestore:", error);
-        }
-    }
-    
-    // --- LÓGICA DO APLICATIVO (INICIALIZADOR) ---
+    // --- INICIALIZAÇÃO DO APLICATIVO ---
     function initializeAppLogic() {
-        // Inicializa a interface
+        loadUserData();
+        
         mainApp.classList.remove('hidden');
         checkTheme();
+        updateStreaks();
+        updateScoreboard();
+        generateFlashcard();
 
         // Adiciona event listeners
         categorySelector.addEventListener('change', generateFlashcard);
@@ -128,20 +90,15 @@ document.addEventListener('DOMContentLoaded', function() {
         closeChatBtn.addEventListener('click', closeChat);
         resetScoreBtn.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
-                userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
-                userData.erroredQuestions = [];
-                userData.recentlyAsked = [];
-                saveUserData();
+                localStorage.removeItem('inssTutorData');
+                loadUserData(); // Carrega os dados padrão
                 updateScoreboard();
+                updateStreaks(); // Reseta o streak
+                generateFlashcard();
             }
         });
-
-        // Atualiza a UI com dados
-        updateStreaks();
-        updateScoreboard();
-        generateFlashcard();
     }
-    
+
     // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
@@ -400,4 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(generateFlashcard, 3000);
         }
     }
+    
+    // Inicia o aplicativo assim que o DOM for carregado
+    initializeAppLogic();
 });
