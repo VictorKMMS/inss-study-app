@@ -1,12 +1,19 @@
 // --- IMPORTAÇÕES ---
 import { auth, db } from './firebase-init.js';
-import { signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+import { signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', function() {
     // --- VARIÁVEIS DE ESTADO GLOBAIS ---
     let user = null;
     let userData = {};
+    let currentQuestion = null;
+    let isReviewMode = false;
+    let simuladoQuestions = [];
+    let simuladoCurrentIndex = 0;
+    let simuladoTimer;
+    let chatHistory = [];
+
     const defaultQuestionBank = {
         seguridade: [
             { id: "S001", question: 'O princípio da seletividade e distributividade na prestação dos benefícios significa que o legislador deve selecionar os riscos sociais a serem cobertos, distribuindo a renda de forma a beneficiar os mais necessitados.', answer: 'Certo', explanation: 'Correto. Este princípio orienta a escolha das contingências sociais que serão amparadas (seletividade) e a forma de distribuir os benefícios para alcançar a justiça social (distributividade).', law: 'CF/88, Art. 194, Parágrafo único, III' },
@@ -19,11 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // --- SELEÇÃO DE ELEMENTOS DOM ---
     const mainApp = document.getElementById('main-app');
-    const loginPrompt = document.getElementById('login-prompt');
-    const mainLoginBtn = document.getElementById('google-login-main-btn'); 
-    const logoutBtn = document.getElementById('logout-btn');
-    const userProfile = document.getElementById('user-profile');
-    const userPic = document.getElementById('user-pic');
     const flashcardContainer = document.getElementById('flashcard-container');
     const categorySelector = document.getElementById('category-selector');
     const scoreContainer = document.getElementById('score-container');
@@ -39,37 +41,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatHistoryDiv = document.getElementById('chat-history');
     const chatInput = document.getElementById('chat-input');
     const chatSendBtn = document.getElementById('chat-send-btn');
-    const closeChatBtn = document = document.getElementById('close-chat-btn');
+    const closeChatBtn = document.getElementById('close-chat-btn');
 
-    // --- LÓGICA DE AUTENTICAÇÃO E CARREGAMENTO ---
+    // --- LÓGICA DE AUTENTICAÇÃO ---
     onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
             user = firebaseUser;
-            // Carrega os dados do usuário, mas não bloqueia a UI
             loadUserData();
         } else {
-            // Se não, tenta fazer o login anônimo
             signInAnonymously(auth).then((result) => {
                 user = result.user;
                 loadUserData();
             }).catch((error) => {
                 console.error("Erro ao fazer login anônimo:", error);
+                // Inicia o app mesmo sem dados do Firebase
+                initializeDefaultData();
             });
         }
     });
 
-    // --- FUNÇÕES DE LOGIN/LOGOUT ---
-    async function logOut() {
-        try {
-            await signOut(auth);
-        } catch (error) {
-            console.error("Erro ao fazer logout:", error);
-        }
+    // --- FUNÇÕES DE DADOS E ESTADO ---
+    function initializeDefaultData() {
+        userData = {
+            questionBank: defaultQuestionBank,
+            scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } },
+            userStats: { streak: 0, lastVisit: null },
+            erroredQuestions: [],
+            recentlyAsked: [],
+        };
+        initializeAppLogic();
     }
-    
-    // --- LÓGICA DE DADOS COM FIRESTORE ---
+
     async function loadUserData() {
-        if (!user) return;
+        if (!user) {
+            initializeDefaultData();
+            return;
+        }
         const userDocRef = doc(db, 'users', user.uid);
         const docSnap = await getDoc(userDocRef);
         if (docSnap.exists()) {
@@ -80,23 +87,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!userData.recentlyAsked) userData.recentlyAsked = [];
             if (!userData.questionBank) userData.questionBank = defaultQuestionBank;
         } else {
-            userData = {
-                questionBank: defaultQuestionBank,
-                scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } },
-                userStats: { streak: 0, lastVisit: null },
-                erroredQuestions: [],
-                recentlyAsked: [],
-                createdAt: serverTimestamp()
-            };
+            initializeDefaultData();
         }
-        // Chamada única para as funções que dependem dos dados do usuário
-        updateStreaks();
-        updateScoreboard();
-        generateFlashcard();
+        initializeAppLogic();
     }
 
     async function saveUserData() {
-        if (!user) return;
+        if (!user) {
+            console.warn("Usuário não autenticado. Dados não serão salvos.");
+            return;
+        }
         const userDocRef = doc(db, 'users', user.uid);
         try {
             await setDoc(userDocRef, userData, { merge: true });
@@ -105,17 +105,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // --- LÓGICA DO APLICATIVO DE ESTUDOS (INICIALIZADOR) ---
-    // Esta função agora é chamada diretamente em DOMContentLoaded
+    // --- LÓGICA DO APLICATIVO (INICIALIZADOR) ---
     function initializeAppLogic() {
-        let currentQuestion = null;
-        let chatHistory = [];
-        let simuladoTimer;
-        let simuladoQuestions = [];
-        let simuladoCurrentIndex = 0;
-        let isReviewMode = false;
-        
-        // Event listeners que não dependem dos dados do usuário
+        // Inicializa a interface
+        mainApp.classList.remove('hidden');
+        checkTheme();
+
+        // Adiciona event listeners
         categorySelector.addEventListener('change', generateFlashcard);
         themeToggleBtn.addEventListener('click', toggleTheme);
         reviewModeToggle.addEventListener('change', (e) => {
@@ -140,18 +136,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Chamadas iniciais
-        mainApp.classList.remove('hidden');
-        checkTheme();
-        generateFlashcard();
+        // Atualiza a UI com dados
+        updateStreaks();
         updateScoreboard();
+        generateFlashcard();
     }
-
-    // Chamada inicial do aplicativo.
-    // Isso garante que a UI e os event listeners funcionem imediatamente.
-    initializeAppLogic();
-
-    // Funções de Estudo (restante do seu código)
+    
+    // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -175,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const today = new Date().toISOString().split('T')[0];
         const lastVisit = userData.userStats.lastVisit;
         if (lastVisit !== today) {
-            if (lastVisit && new Date(today) - new Date(lastVisit) === 86400000) {
+            if (lastVisit && (new Date(today) - new Date(lastVisit) === 86400000)) {
                 userData.userStats.streak++;
             } else {
                 userData.userStats.streak = 1;
@@ -239,9 +230,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!userData.erroredQuestions.includes(currentQuestion.id)) {
                 userData.erroredQuestions.push(currentQuestion.id);
             }
-            userData.scores[currentQuestion.category].incorrect++;
+            if(userData.scores[currentQuestion.category]) {
+              userData.scores[currentQuestion.category].incorrect++;
+            }
         } else {
-            userData.scores[currentQuestion.category].correct++;
+            if(userData.scores[currentQuestion.category]) {
+              userData.scores[currentQuestion.category].correct++;
+            }
         }
         if (isCorrect) {
             answerDiv.classList.add('correct');
