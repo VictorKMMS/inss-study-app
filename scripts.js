@@ -7,15 +7,37 @@ let simuladoCurrentIndex = 0;
 let simuladoTimer;
 let chatHistory = [];
 
+const concursoQuestionBank = {
+    seguridade: [
+        { id: "C001", question: 'O salário-família é devido ao segurado com renda bruta mensal igual ou inferior a R$ 1.655,98.', answer: 'Certo', law: 'INSS 2022', isConcurso: true },
+        { id: "C002", question: 'O auxílio-acidente não exige carência, mas não pode ser acumulado com qualquer outro auxílio ou aposentadoria.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O auxílio-acidente pode ser acumulado com a aposentadoria, desde que o início de ambos os benefícios tenha ocorrido antes de 11/11/2019, quando entrou em vigor a Emenda Constitucional 103/2019.' },
+        { id: "C003", question: 'Considera-se para o cálculo do valor dos benefícios o salário de contribuição de 100% do período contributivo desde 1994.', answer: 'Errado', law: 'INSS 2016', isConcurso: true, explanation: 'A regra atual, a partir da Reforma da Previdência de 2019, considera o salário de contribuição de todo o período contributivo. A lei anterior considerava 80% dos maiores salários, excluindo-se os 20% menores.' },
+    ],
+    constitucional: [
+        { id: "C004", question: 'É plena a liberdade de associação para fins lícitos, sendo vedada a de caráter paramilitar.', answer: 'Certo', law: 'INSS 2022', isConcurso: true },
+        { id: "C005", question: 'A criação de associações e, na forma da lei, a de cooperativas independem de autorização, sendo proibida a interferência estatal em seu funcionamento.', answer: 'Certo', law: 'INSS 2016', isConcurso: true },
+    ]
+};
+
 const defaultQuestionBank = {
     seguridade: [
         { id: "S001", question: 'O princípio da seletividade e distributividade na prestação dos benefícios significa que o legislador deve selecionar os riscos sociais a serem cobertos, distribuindo a renda de forma a beneficiar os mais necessitados.', answer: 'Certo', explanation: 'Correto. Este princípio orienta a escolha das contingências sociais que serão amparadas (seletividade) e a forma de distribuir os benefícios para alcançar a justiça social (distributividade).', law: 'CF/88, Art. 194, Parágrafo único, III' },
         { id: "S002", question: 'A pessoa jurídica em débito com o sistema da seguridade social, conforme estabelecido em lei, pode contratar com o Poder Público, mas não pode receber benefícios ou incentivos fiscais.', answer: 'Errado', explanation: 'A Constituição é clara ao vedar tanto a contratação com o Poder Público quanto o recebimento de benefícios ou incentivos fiscais ou creditícios para a pessoa jurídica em débito.', law: 'CF/88, Art. 195, § 3º' }
     ],
     constitucional: [
-        { id: "C001", question: 'É plena a liberdade de associação para fins lícitos, sendo vedada a de caráter paramilitar.', answer: 'Certo', explanation: 'Exatamente o que dispõe a Constituição. A liberdade de associação é um direito fundamental, com a única ressalva expressa para associações de caráter paramilitar.', law: 'CF/88, Art. 5º, XVII' }
+        { id: "C006", question: 'É plena a liberdade de associação para fins lícitos, sendo vedada a de caráter paramilitar.', answer: 'Certo', explanation: 'Exatamente o que dispõe a Constituição. A liberdade de associação é um direito fundamental, com a única ressalva expressa para associações de caráter paramilitar.', law: 'CF/88, Art. 5º, XVII' }
     ],
 };
+
+// Junta as questões do concurso com as padrão
+const allQuestionBanks = { ...defaultQuestionBank };
+for (const category in concursoQuestionBank) {
+    if (allQuestionBanks[category]) {
+        allQuestionBanks[category] = allQuestionBanks[category].concat(concursoQuestionBank[category]);
+    } else {
+        allQuestionBanks[category] = concursoQuestionBank[category];
+    }
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     // --- SELEÇÃO DE ELEMENTOS DOM ---
@@ -44,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
             userData = JSON.parse(storedData);
         } else {
             userData = {
-                questionBank: defaultQuestionBank,
+                questionBank: allQuestionBanks,
                 scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } },
                 userStats: { streak: 0, lastVisit: null },
                 erroredQuestions: [],
@@ -52,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         }
         // Garante que os valores padrão existam caso não estejam no localStorage
-        userData.questionBank = userData.questionBank || defaultQuestionBank;
+        userData.questionBank = userData.questionBank || allQuestionBanks;
         userData.scores = userData.scores || { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
         userData.userStats = userData.userStats || { streak: 0, lastVisit: null };
         userData.erroredQuestions = userData.erroredQuestions || [];
@@ -162,15 +184,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você revisou todas as suas questões erradas. Ótimo trabalho!</p></div>`;
                 return;
             }
-            flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Buscando novas questões sobre o tema com a IA...</p></div>`;
-            await fetchNewQuestionsFromAI(categorySelector.value === 'all' ? 'Seguridade Social' : categorySelector.value);
+            flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Não há mais questões nesta categoria. Tente outra.</p></div>`;
             return;
         }
         const questionData = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
         currentQuestion = { ...questionData, category: questionData.category || categorySelector.value };
+        const starIcon = currentQuestion.isConcurso ? `<span class="concurso-star" title="Questão de Concurso">&starf;</span>` : '';
         const card = document.createElement('div');
         card.className = 'flashcard';
-        card.innerHTML = `<p class="flashcard-question">${currentQuestion.question}</p><div class="flashcard-actions"><button type="button" class="btn-certo" data-choice="Certo">Certo</button><button type="button" class="btn-errado" data-choice="Errado">Errado</button></div><div class="flashcard-answer"></div>`;
+        card.innerHTML = `<p class="flashcard-question">${currentQuestion.question} ${starIcon}</p><div class="flashcard-actions"><button type="button" class="btn-certo" data-choice="Certo">Certo</button><button type="button" class="btn-errado" data-choice="Errado">Errado</button></div><div class="flashcard-answer"></div>`;
         flashcardContainer.innerHTML = '';
         flashcardContainer.appendChild(card);
         card.querySelectorAll('.flashcard-actions button').forEach(button => button.addEventListener('click', checkAnswer));
@@ -233,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const SIMULADO_DURATION_MINUTES = 30;
         let questionPool = Object.values(userData.questionBank).flat().filter(q => q && q.id);
         if (questionPool.length < SIMULADO_QUESTION_COUNT) {
-            alert(`Não há questões suficientes para um simulado de ${SIMULADO_QUESTION_COUNT} itens. Gere mais questões com a IA.`);
+            alert(`Não há questões suficientes para um simulado de ${SIMULADO_QUESTION_COUNT} itens. Adicione mais questões.`);
             return;
         }
         simuladoQuestions = questionPool.sort(() => 0.5 - Math.random()).slice(0, SIMULADO_QUESTION_COUNT);
@@ -259,8 +281,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function displaySimuladoQuestion() {
         const question = simuladoQuestions[simuladoCurrentIndex];
+        const starIcon = question.isConcurso ? ` &starf;` : '';
         document.getElementById('simulado-question-container').textContent = question.question;
-        document.getElementById('simulado-progress').textContent = `Questão ${simuladoCurrentIndex + 1}/${simuladoQuestions.length}`;
+        document.getElementById('simulado-progress').textContent = `Questão ${simuladoCurrentIndex + 1}/${simuladoQuestions.length}${starIcon}`;
         const progressPercent = ((simuladoCurrentIndex + 1) / simuladoQuestions.length) * 100;
         document.getElementById('simulado-progress-bar').style.width = `${progressPercent}%`;
     }
@@ -339,23 +362,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     async function fetchNewQuestionsFromAI(category) {
-        if (category === 'all') category = 'Seguridade Social';
-        console.log(`Buscando nova questão de IA para: ${category}...`);
-        try {
-            const response = await fetch('/api/generate-question', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category }) });
-            if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
-            const newQuestion = await response.json();
-            if (!userData.questionBank[category]) userData.questionBank[category] = [];
-            newQuestion.id = `${category.substring(0, 1).toUpperCase()}${Date.now()}`;
-            newQuestion.category = category;
-            userData.questionBank[category].push(newQuestion);
-            saveUserData();
-            console.log("Nova questão recebida e salva!", newQuestion);
-            setTimeout(generateFlashcard, 1000);
-        } catch (error) {
-            console.error("Falha ao buscar questão da IA:", error);
-            setTimeout(generateFlashcard, 3000);
-        }
+        // Esta função não faz nada, pois não temos uma API de IA
+        // Apenas exibe uma mensagem de erro
+        console.warn("Função de geração de IA não está implementada. Usando apenas o banco de questões local.");
+        flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Não foi possível gerar mais questões. Use as do banco local.</p></div>`;
     }
     
     // Inicia o aplicativo assim que o DOM for carregado
