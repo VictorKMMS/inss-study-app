@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 recentlyAsked: [],
             };
         }
-        // Garante que a estrutura para novas funcionalidades exista e que o banco de questões seja sempre o mais atual do código
         if (!userData.userStats) userData.userStats = { streak: 0, lastVisit: null };
         if (!userData.userStats.unlockedAchievements) userData.userStats.unlockedAchievements = [];
         if (!userData.userStats.simuladosCompletos) userData.userStats.simuladosCompletos = 0;
@@ -51,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function saveUserData() {
         const dataToSave = { ...userData };
-        delete dataToSave.questionBank; // Não salva o banco de questões no localStorage para economizar espaço
+        delete dataToSave.questionBank;
         localStorage.setItem('inssTutorData', JSON.stringify(dataToSave));
     }
     
@@ -59,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function initializeApp() {
         loadUserData();
         
-        // Event Listeners Principais
         categorySelector.addEventListener('change', () => {
             sessionQuestionCount = 1;
             generateFlashcard();
@@ -102,12 +100,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Inicializa os Módulos
         initStatistics(userData);
         initTopicExplorer();
         initAchievements(userData);
 
-        // Executa as funções de UI iniciais
         checkTheme();
         updateStreaks();
         updateScoreboard();
@@ -115,7 +111,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
-    
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -285,6 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function updateScoreboard() {
+        const scoreContainer = document.getElementById('score-container');
         if (!scoreContainer || !userData.scores) return;
         scoreContainer.innerHTML = '';
         Object.keys(userData.scores).forEach(category => {
@@ -293,9 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         saveUserData();
     }
-
     
-    // --- FUNÇÕES DO MODO SIMULADO ---
     function startSimulado() {
         const simuladoModal = document.getElementById('simulado-modal');
         const simuladoContainer = simuladoModal.querySelector('.simulado-container');
@@ -387,7 +381,6 @@ document.addEventListener('DOMContentLoaded', function() {
         generateFlashcard();
     }
     
-    // --- FUNÇÕES DO CHAT ---
     function openChat() {
         const chatModal = document.getElementById('chat-modal');
         const chatInput = document.getElementById('chat-input');
@@ -433,7 +426,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // --- FUNÇÃO DE FETCH DE NOVAS QUESTÕES ---
     async function fetchNewQuestionsFromAI(category) {
         flashcardContainer.innerHTML = `<div class="flashcard"><div class="question-text">Buscando novas questões sobre "${category}" com a IA...</div></div>`;
         try {
