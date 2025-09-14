@@ -60,6 +60,25 @@ aside { flex: 1; min-width: 250px; }
 .flashcard .concurso-star { color: #ffc107; font-size: 1.5rem; cursor: help; }
 .flashcard .question-text { font-size: 1.2rem; margin: 0; min-height: 80px; }
 
+.flashcard .enunciado-box {
+    padding: 10px;
+    margin-bottom: 15px;
+    background-color: var(--bg-color);
+    border-left: 3px solid var(--info-color);
+    font-style: italic;
+    font-size: 0.95rem;
+    border-radius: 4px;
+}
+
+.flashcard .question-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    display: block;
+}
+
 #flashcard-container { position: relative; height: 420px; perspective: 1000px; }
 .flashcard, #scoreboard { background-color: var(--card-bg-color); border-radius: 10px; box-shadow: 0 5px 15px var(--shadow-color); border: 1px solid var(--border-color); }
 .flashcard { padding: 1.5rem; position: absolute; width: 100%; box-sizing: border-box; transition: transform 0.6s ease-in-out, opacity 0.6s; backface-visibility: hidden; }
