@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             userData = {
                 questionBank: allQuestionBanks,
-                scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } },
+                scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 } },
                 userStats: { streak: 0, lastVisit: null },
                 erroredQuestions: [],
                 recentlyAsked: [],
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
         closeChatBtn.addEventListener('click', closeChat);
         resetScoreBtn.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
-                userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
+                userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 } };
                 userData.erroredQuestions = [];
                 userData.recentlyAsked = [];
                 sessionQuestionCount = 1;
@@ -135,8 +135,8 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('inssTheme', 'light');
             themeToggleBtn.textContent = '🌙';
         }
-initTopicExplorer();
-initAchievements(userData);
+        initTopicExplorer();
+        initAchievements(userData);
     }
 
     function updateStreaks() {
@@ -152,6 +152,10 @@ initAchievements(userData);
             saveUserData();
         }
         streakCounter.textContent = `🔥 ${userData.userStats.streak}`;
+        // --- GATILHO DE CONQUISTAS ---
+        if (checkAchievements(userData)) {
+            saveUserData();
+        }
     }
     
     async function generateFlashcard() {
@@ -246,7 +250,7 @@ initAchievements(userData);
         
         if (isCorrect) {
             answerDiv.classList.add('correct');
-            answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br>Parabéns, sua resposta está correta!<div class="answer-source"><strong>Fonte:</strong> ${currentQuestion.law}</div>`;
+            answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br>Parabéns, sua resposta está correta!<div class="answer-source"><strong>Fonte:</strong> ${currentQuestion.source || 'N/A'}</div>`;
             const nextButton = document.createElement('button');
             nextButton.type = 'button';
             nextButton.innerText = 'Próximo';
@@ -258,7 +262,7 @@ initAchievements(userData);
             actionsDiv.appendChild(nextButton);
         } else {
             answerDiv.classList.add('incorrect');
-            answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br><div class="ai-explanation"><strong>🤖 Explicação da IA:</strong><p>${currentQuestion.explanation}</p><p>📖 <em>${currentQuestion.law}</em></p></div>`;
+            answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br><div class="ai-explanation"><strong>🤖 Explicação da IA:</strong><p>${currentQuestion.explanation || ''}</p></div>`;
             const chatButton = document.createElement('button');
             chatButton.type = 'button';
             chatButton.innerText = 'Conversar com Tutor IA';
@@ -267,6 +271,13 @@ initAchievements(userData);
             actionsDiv.appendChild(chatButton);
         }
         updateScoreboard();
+        if (isReviewMode && isCorrect) {
+            userData.userStats.errosRevisados++;
+        }
+        // --- GATILHO DE CONQUISTAS ---
+        if (checkAchievements(userData)) {
+            saveUserData(); // Salva as novas conquistas
+        }
     }
     
     function updateScoreboard() {
@@ -346,9 +357,12 @@ initAchievements(userData);
         simuladoQuestions.forEach((q, index) => {
             const resultClass = q.wasCorrect ? 'correct' : 'incorrect';
             const icon = q.wasCorrect ? '✅' : '❌';
-            resultsList.innerHTML += `<div class="result-item ${resultClass}"><div class="result-item-icon">${icon}</div><div class="result-item-details"><p><strong>Questão ${index + 1}:</strong> ${q.question}</p><p class="user-answer ${resultClass}"><strong>Sua resposta:</strong> ${q.userAnswer || 'Não respondida'}</p><p><strong>Gabarito:</strong> ${q.answer}</p></div></div>`;
+            resultsList.innerHTML += `<div class="result-item ${resultClass}"><div class="result-item-icon">${icon}</div><div class="result-item-details"><p><strong>Questão ${index + 1}:</strong> ${q.question}</p></div></div>`;
         });
         userData.erroredQuestions = [...new Set([...userData.erroredQuestions, ...newErroredIds])];
+        userData.userStats.simuladosCompletos++; // <-- GATILHO de conquista
+        // --- GATILHO DE CONQUISTAS ---
+        checkAchievements(userData);
         saveUserData();
     }
     
@@ -362,7 +376,7 @@ initAchievements(userData);
     function openChat() {
         chatHistory = [];
         chatHistoryDiv.innerHTML = '';
-        const contextMessage = `<div class="chat-message tutor-context"><strong>Contexto:</strong> A IA irá te ajudar com base na questão que você errou. A explicação inicial é: "${currentQuestion.explanation}"</div>`;
+        const contextMessage = `<div class="chat-message tutor-context"><strong>Contexto:</strong> A IA irá te ajudar com base na questão que você errou. A explicação inicial é: "${currentQuestion.explanation || ''}"</div>`;
         chatHistoryDiv.innerHTML += contextMessage;
         chatModal.classList.remove('hidden');
         chatInput.focus();
