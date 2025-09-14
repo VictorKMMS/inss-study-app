@@ -15,6 +15,7 @@
                 <div id="streak-counter" title="Sua sequência de dias de estudo">🔥 0</div>
                 <button type="button" id="theme-toggle-btn" title="Alternar Modo Noturno">🌙</button>
                 <button type="button" id="show-topic-explorer-btn" title="Explorar um Tópico com a IA">🧠 Explorar</button>
+               <button type="button" id="show-achievements-btn" title="Ver suas Conquistas">🏆 Conquistas</button>
             </div>
         </div>
     </header>
@@ -110,6 +111,19 @@
         </div>
     </div>
     
+<div id="achievements-modal" class="hidden">
+    <div id="achievements-container">
+        <div id="achievements-header">
+            <h3>Minhas Conquistas</h3>
+            <button type="button" id="close-achievements-btn">&times;</button>
+        </div>
+        <div id="achievements-list">
+            </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
     <footer>
         <p>Desenvolvido com IA para otimizar seus estudos.</p>
     </footer>
