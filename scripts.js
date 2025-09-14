@@ -2,6 +2,7 @@
 import { allQuestionBanks } from './question-bank.js';
 import { initStatistics } from './features/statistics.js'; // Importa o novo especialista
 import { initTopicExplorer } from './features/topic-explorer.js';
+import { initAchievements, checkAchievements } from './features/achievements.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     // --- VARIÁVEIS DE ESTADO GLOBAIS ---
