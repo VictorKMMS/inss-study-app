@@ -154,7 +154,7 @@ footer { text-align: center; padding: 1rem; margin-top: 2rem; background-color: 
     .main-container { flex-direction: column; padding: 0 0.8rem; gap: 1.5rem; }
     main, aside { min-width: 100%; }
     header h1 { font-size: 1.2rem; }
-    .header-features { position: static; transform: none; margin-top: 0.5rem; justify-content: center; }
+    .header-features { position: static; transform: none; margin-top: 0.5rem; justify-content: center; flex-wrap: wrap;}
     .header-content { flex-direction: column; gap: 0.5rem; }
     .mode-selectors { flex-direction: column; align-items: stretch;  gap: 0.8rem; }
     #start-simulado-btn, #show-stats-btn { width: 100%; }
