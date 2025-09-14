@@ -5,13 +5,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- VARIÁVEIS DE ESTADO GLOBAIS ---
     let userData = {};
     let currentQuestion = null;
-    let isReviewMode = false;
-    let isConcursoMode = false;
+    let chatHistory = [];
+    let simuladoTimer;
     let simuladoQuestions = [];
     let simuladoCurrentIndex = 0;
-    let simuladoTimer;
-    let chatHistory = [];
-
+    let isReviewMode = false;
+    
     // --- SELEÇÃO DE ELEMENTOS DOM ---
     const mainApp = document.getElementById('main-app');
     const flashcardContainer = document.getElementById('flashcard-container');
@@ -21,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const streakCounter = document.getElementById('streak-counter');
     const reviewModeToggle = document.getElementById('review-mode-toggle');
-    const concursoModeToggle = document.getElementById('concurso-mode-toggle');
     const startSimuladoBtn = document.getElementById('start-simulado-btn');
     const simuladoModal = document.getElementById('simulado-modal');
     const simuladoContainer = document.querySelector('.simulado-container');
@@ -32,58 +30,36 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatSendBtn = document.getElementById('chat-send-btn');
     const closeChatBtn = document.getElementById('close-chat-btn');
 
-    // --- LÓGICA DE DADOS E ESTADO COM LOCALSTORAGE ---
+    // --- LÓGICA DE DADOS COM LOCALSTORAGE ---
     function loadUserData() {
         const storedData = localStorage.getItem('inssTutorData');
         if (storedData) {
             userData = JSON.parse(storedData);
         } else {
-            userData = {};
+            userData = {
+                scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } },
+                userStats: { streak: 0, lastVisit: null },
+                erroredQuestions: [],
+                recentlyAsked: [],
+            };
         }
-
-        // Garante que o banco de questões seja sempre a versão mais atualizada,
-        // mas mantém o progresso salvo.
         userData.questionBank = allQuestionBanks;
-        userData.scores = userData.scores || { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
-        userData.userStats = userData.userStats || { streak: 0, lastVisit: null };
-        userData.erroredQuestions = userData.erroredQuestions || [];
-        userData.recentlyAsked = userData.recentlyAsked || [];
     }
 
     function saveUserData() {
-        localStorage.setItem('inssTutorData', JSON.stringify(userData));
+        const dataToSave = { ...userData };
+        delete dataToSave.questionBank; // Não salva o banco de questões no localStorage para economizar espaço
+        localStorage.setItem('inssTutorData', JSON.stringify(dataToSave));
     }
-
-    // --- INICIALIZAÇÃO DO APLICATIVO ---
-    function initializeAppLogic() {
+    
+    // --- LÓGICA DO APLICATIVO ---
+    function initializeApp() {
         loadUserData();
-
-        mainApp.classList.remove('hidden');
-        checkTheme();
-        updateStreaks();
-        updateScoreboard();
-        generateFlashcard();
-
-        // Adiciona event listeners
+        
         categorySelector.addEventListener('change', generateFlashcard);
         themeToggleBtn.addEventListener('click', toggleTheme);
         reviewModeToggle.addEventListener('change', (e) => {
             isReviewMode = e.target.checked;
-            // Desmarca o modo de concurso se o de revisão for ativado
-            if (isReviewMode) {
-                concursoModeToggle.checked = false;
-                isConcursoMode = false;
-            }
-            generateFlashcard();
-        });
-        // Novo event listener para o modo concurso
-        concursoModeToggle.addEventListener('change', (e) => {
-            isConcursoMode = e.target.checked;
-            // Desmarca o modo de revisão se o de concurso for ativado
-            if (isConcursoMode) {
-                reviewModeToggle.checked = false;
-                isReviewMode = false;
-            }
             generateFlashcard();
         });
         startSimuladoBtn.addEventListener('click', startSimulado);
@@ -92,22 +68,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         document.getElementById('close-results-btn').addEventListener('click', closeResults);
         chatSendBtn.addEventListener('click', handleSendMessage);
-        chatInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') handleSendMessage();
-        });
+        chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendMessage(); });
         closeChatBtn.addEventListener('click', closeChat);
         resetScoreBtn.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
-                localStorage.removeItem('inssTutorData');
-                loadUserData(); // Carrega os dados padrão
+                userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
+                userData.erroredQuestions = [];
+                userData.recentlyAsked = [];
                 updateScoreboard();
-                updateStreaks(); // Reseta o streak
-                generateFlashcard();
             }
         });
-    }
 
+        checkTheme();
+        updateStreaks();
+        updateScoreboard();
+        generateFlashcard();
+    }
+    
     // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
+    
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -117,6 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
             themeToggleBtn.textContent = '🌙';
         }
     }
+
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
         if (document.body.classList.contains('dark-mode')) {
@@ -127,11 +107,12 @@ document.addEventListener('DOMContentLoaded', function() {
             themeToggleBtn.textContent = '🌙';
         }
     }
+
     function updateStreaks() {
         const today = new Date().toISOString().split('T')[0];
         const lastVisit = userData.userStats.lastVisit;
         if (lastVisit !== today) {
-            if (lastVisit && (new Date(today) - new Date(lastVisit) === 86400000)) {
+            if (lastVisit && new Date(today) - new Date(lastVisit) === 86400000) {
                 userData.userStats.streak++;
             } else {
                 userData.userStats.streak = 1;
@@ -141,34 +122,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         streakCounter.textContent = `🔥 ${userData.userStats.streak}`;
     }
+    
     async function generateFlashcard() {
         let questionPool;
         if (isReviewMode) {
             document.querySelector('.review-mode label').style.fontWeight = 'bold';
-            document.querySelector('.concurso-mode label').style.fontWeight = 'normal';
             const allQuestions = Object.values(userData.questionBank).flat();
             questionPool = allQuestions.filter(q => q && userData.erroredQuestions.includes(q.id));
             if (questionPool.length === 0) {
                 flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você não tem questões erradas para revisar. Desmarque o modo de revisão para continuar.</p></div>`;
                 return;
             }
-        } else if (isConcursoMode) {
-            document.querySelector('.concurso-mode label').style.fontWeight = 'bold';
-            document.querySelector('.review-mode label').style.fontWeight = 'normal';
-            let selectedCategory = categorySelector.value;
-            if (selectedCategory === 'all') {
-                questionPool = Object.values(userData.questionBank).flat().filter(q => q && q.isConcurso);
-            } else {
-                questionPool = userData.questionBank[selectedCategory].filter(q => q && q.isConcurso);
-            }
-
-            if (questionPool.length === 0) {
-                flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Não há questões de concurso nesta categoria. Tente outra.</p></div>`;
-                return;
-            }
         } else {
             document.querySelector('.review-mode label').style.fontWeight = 'normal';
-            document.querySelector('.concurso-mode label').style.fontWeight = 'normal';
             let selectedCategory = categorySelector.value;
             if (selectedCategory === 'all') {
                 const allCategories = Object.keys(userData.scores);
@@ -182,21 +148,21 @@ document.addEventListener('DOMContentLoaded', function() {
             userData.recentlyAsked = userData.recentlyAsked.slice(Math.floor(userData.recentlyAsked.length / 2));
             availableQuestions = questionPool.filter(q => q && !userData.recentlyAsked.includes(q.id));
         }
+        
         if (availableQuestions.length === 0) {
             if (isReviewMode) {
-                flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você revisou todas as suas questões erradas. Ótimo trabalho!</p></div>`;
-                return;
+                 flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você revisou todas as suas questões erradas. Ótimo trabalho!</p></div>`;
+                 return;
             }
-            if (isConcursoMode) {
-                flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Você já viu todas as questões de concurso nesta categoria. Tente outra!</p></div>`;
-                return;
-            }
-            flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Não há mais questões nesta categoria. Tente outra.</p></div>`;
+            flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Buscando novas questões sobre o tema com a IA...</p></div>`;
+            await fetchNewQuestionsFromAI(categorySelector.value === 'all' ? 'Seguridade Social' : categorySelector.value);
             return;
         }
+
         const questionData = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
         currentQuestion = { ...questionData, category: questionData.category || categorySelector.value };
-        const starIcon = currentQuestion.isConcurso ? `<span class="concurso-star" title="Questão de Concurso">&starf;</span>` : '';
+        
+        const starIcon = currentQuestion.isConcurso ? `<span class="concurso-star" title="Questão de Concurso">⭐</span>` : '';
         const card = document.createElement('div');
         card.className = 'flashcard';
         card.innerHTML = `<p class="flashcard-question">${currentQuestion.question} ${starIcon}</p><div class="flashcard-actions"><button type="button" class="btn-certo" data-choice="Certo">Certo</button><button type="button" class="btn-errado" data-choice="Errado">Errado</button></div><div class="flashcard-answer"></div>`;
@@ -204,26 +170,26 @@ document.addEventListener('DOMContentLoaded', function() {
         flashcardContainer.appendChild(card);
         card.querySelectorAll('.flashcard-actions button').forEach(button => button.addEventListener('click', checkAnswer));
     }
+
     function checkAnswer(event) {
         const userChoice = event.target.dataset.choice;
         const isCorrect = userChoice === currentQuestion.answer;
         const answerDiv = document.querySelector('.flashcard-answer');
         const actionsDiv = document.querySelector('.flashcard-actions');
+        
         actionsDiv.innerHTML = '';
         userData.recentlyAsked.push(currentQuestion.id);
-        if (userData.recentlyAsked.length > 50) userData.recentlyAsked.shift();
+        if(userData.recentlyAsked.length > 50) userData.recentlyAsked.shift();
+        
         if (!isCorrect) {
             if (!userData.erroredQuestions.includes(currentQuestion.id)) {
                 userData.erroredQuestions.push(currentQuestion.id);
             }
-            if(userData.scores[currentQuestion.category]) {
-              userData.scores[currentQuestion.category].incorrect++;
-            }
+            if(userData.scores[currentQuestion.category]) userData.scores[currentQuestion.category].incorrect++;
         } else {
-            if(userData.scores[currentQuestion.category]) {
-              userData.scores[currentQuestion.category].correct++;
-            }
+            if(userData.scores[currentQuestion.category]) userData.scores[currentQuestion.category].correct++;
         }
+        
         if (isCorrect) {
             answerDiv.classList.add('correct');
             answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br>Parabéns, sua resposta está correta!<div class="answer-source"><strong>Fonte:</strong> ${currentQuestion.law}</div>`;
@@ -248,6 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         updateScoreboard();
     }
+    
     function updateScoreboard() {
         if (!scoreContainer || !userData.scores) return;
         scoreContainer.innerHTML = '';
@@ -257,12 +224,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         saveUserData();
     }
+    
     function startSimulado() {
         const SIMULADO_QUESTION_COUNT = 20;
         const SIMULADO_DURATION_MINUTES = 30;
         let questionPool = Object.values(userData.questionBank).flat().filter(q => q && q.id);
         if (questionPool.length < SIMULADO_QUESTION_COUNT) {
-            alert(`Não há questões suficientes para um simulado de ${SIMULADO_QUESTION_COUNT} itens. Adicione mais questões.`);
+            alert(`Não há questões suficientes para um simulado de ${SIMULADO_QUESTION_COUNT} itens. Gere mais questões com a IA.`);
             return;
         }
         simuladoQuestions = questionPool.sort(() => 0.5 - Math.random()).slice(0, SIMULADO_QUESTION_COUNT);
@@ -286,14 +254,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
         displaySimuladoQuestion();
     }
+
     function displaySimuladoQuestion() {
         const question = simuladoQuestions[simuladoCurrentIndex];
-        const starIcon = question.isConcurso ? ` &starf;` : '';
         document.getElementById('simulado-question-container').textContent = question.question;
-        document.getElementById('simulado-progress').textContent = `Questão ${simuladoCurrentIndex + 1}/${simuladoQuestions.length}${starIcon}`;
+        document.getElementById('simulado-progress').textContent = `Questão ${simuladoCurrentIndex + 1}/${simuladoQuestions.length}`;
         const progressPercent = ((simuladoCurrentIndex + 1) / simuladoQuestions.length) * 100;
         document.getElementById('simulado-progress-bar').style.width = `${progressPercent}%`;
     }
+
     function handleSimuladoAnswer(userAnswer) {
         const currentSimuladoQuestion = simuladoQuestions[simuladoCurrentIndex];
         currentSimuladoQuestion.userAnswer = userAnswer;
@@ -305,6 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
             displaySimuladoQuestion();
         }
     }
+
     function endSimulado() {
         clearInterval(simuladoTimer);
         simuladoContainer.classList.add('hidden');
@@ -315,4 +285,81 @@ document.addEventListener('DOMContentLoaded', function() {
             if (q.wasCorrect) correctAnswers++;
             else newErroredIds.push(q.id);
         });
-        const accuracy = ((
+        const accuracy = ((correctAnswers / simuladoQuestions.length) * 100).toFixed(1);
+        document.getElementById('simulado-results-summary').innerHTML = `Você acertou <strong>${correctAnswers} de ${simuladoQuestions.length}</strong> questões (${accuracy}%)`;
+        const resultsList = document.getElementById('simulado-results-list');
+        resultsList.innerHTML = '';
+        simuladoQuestions.forEach((q, index) => {
+            const resultClass = q.wasCorrect ? 'correct' : 'incorrect';
+            const icon = q.wasCorrect ? '✅' : '❌';
+            resultsList.innerHTML += `<div class="result-item ${resultClass}"><div class="result-item-icon">${icon}</div><div class="result-item-details"><p><strong>Questão ${index + 1}:</strong> ${q.question}</p><p class="user-answer ${resultClass}"><strong>Sua resposta:</strong> ${q.userAnswer || 'Não respondida'}</p><p><strong>Gabarito:</strong> ${q.answer}</p></div></div>`;
+        });
+        userData.erroredQuestions = [...new Set([...userData.erroredQuestions, ...newErroredIds])];
+        saveUserData();
+    }
+    
+    function closeResults() {
+        simuladoModal.classList.add('hidden');
+        mainApp.classList.remove('hidden');
+        generateFlashcard();
+    }
+    
+    function openChat() {
+        chatHistory = [];
+        chatHistoryDiv.innerHTML = '';
+        const contextMessage = `<div class="chat-message tutor-context"><strong>Contexto:</strong> A IA irá te ajudar com base na questão que você errou. A explicação inicial é: "${currentQuestion.explanation}"</div>`;
+        chatHistoryDiv.innerHTML += contextMessage;
+        chatModal.classList.remove('hidden');
+        chatInput.focus();
+    }
+    function closeChat() {
+        chatModal.classList.add('hidden');
+        document.querySelector('.flashcard')?.classList.add('exiting');
+        setTimeout(generateFlashcard, 600);
+    }
+    async function handleSendMessage() {
+        const userMessage = chatInput.value.trim();
+        if (!userMessage) return;
+        chatHistoryDiv.innerHTML += `<div class="chat-message user">${userMessage}</div>`;
+        chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
+        chatInput.value = '';
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        chatHistoryDiv.innerHTML += `<div class="chat-message ai typing-indicator">Tutor IA está digitando...</div>`;
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        try {
+            const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ history: chatHistory, context: currentQuestion }) });
+            if (!response.ok) throw new Error('Erro na resposta da API');
+            const data = await response.json();
+            const aiMessage = data.response;
+            document.querySelector('.typing-indicator')?.remove();
+            chatHistoryDiv.innerHTML += `<div class="chat-message ai">${aiMessage}</div>`;
+            chatHistory.push({ role: 'model', parts: [{ text: aiMessage }] });
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        } catch (error) {
+            document.querySelector('.typing-indicator')?.remove();
+            chatHistoryDiv.innerHTML += `<div class="chat-message ai">Desculpe, ocorreu um erro. Tente novamente.</div>`;
+        }
+    }
+    async function fetchNewQuestionsFromAI(category) {
+        if (category === 'all') category = 'Seguridade Social';
+        console.log(`Buscando nova questão de IA para: ${category}...`);
+        try {
+            const response = await fetch('/api/generate-question', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category }) });
+            if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
+            const newQuestion = await response.json();
+            if (!userData.questionBank[category]) userData.questionBank[category] = [];
+            newQuestion.id = `${category.substring(0,1).toUpperCase()}${Date.now()}`;
+            newQuestion.category = category;
+            userData.questionBank[category].push(newQuestion);
+            saveUserData();
+            console.log("Nova questão recebida e salva!", newQuestion);
+            setTimeout(generateFlashcard, 1000);
+        } catch (error) {
+            console.error("Falha ao buscar questão da IA:", error);
+            setTimeout(generateFlashcard, 3000);
+        }
+    }
+    
+    // Inicia a aplicação
+    initializeApp();
+});
