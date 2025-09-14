@@ -1,6 +1,7 @@
 // --- IMPORTAÇÕES ---
 import { allQuestionBanks } from './question-bank.js';
-import { initStatistics } from './features/statistics.js';
+// A função 'updateStatsPanel' foi adicionada à importação
+import { initStatistics, updateStatsPanel } from './features/statistics.js';
 import { initTopicExplorer } from './features/topic-explorer.js';
 import { initAchievements, checkAchievements } from './features/achievements.js';
 
@@ -130,10 +131,12 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('inssTheme', 'light');
             themeToggleBtn.textContent = '🌙';
         }
-        if(!document.getElementById('stats-modal').classList.contains('hidden')){
-            const showStatsBtn = document.getElementById('show-stats-btn');
-            if (showStatsBtn) showStatsBtn.click();
-            if (showStatsBtn) showStatsBtn.click();
+        
+        // --- MELHORIA APLICADA AQUI ---
+        // Se o modal de estatísticas estiver aberto, atualiza o painel (e o gráfico)
+        // para refletir as cores do novo tema, sem precisar simular cliques.
+        if (!document.getElementById('stats-modal').classList.contains('hidden')) {
+            updateStatsPanel(userData);
         }
     }
 
