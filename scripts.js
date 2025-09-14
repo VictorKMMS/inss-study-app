@@ -1,5 +1,8 @@
 // --- IMPORTAÇÕES ---
 import { allQuestionBanks } from './question-bank.js';
+import { initStatistics } from './features/statistics.js';
+import { initTopicExplorer } from './features/topic-explorer.js';
+import { initAchievements, checkAchievements } from './features/achievements.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     // --- VARIÁVEIS DE ESTADO GLOBAIS ---
@@ -24,14 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const reviewModeToggle = document.getElementById('review-mode-toggle');
     const concursoModeToggle = document.getElementById('concurso-mode-toggle');
     const startSimuladoBtn = document.getElementById('start-simulado-btn');
-    const simuladoModal = document.getElementById('simulado-modal');
-    const simuladoContainer = document.querySelector('.simulado-container');
-    const simuladoResultsContainer = document.querySelector('.simulado-results-container');
-    const chatModal = document.getElementById('chat-modal');
-    const chatHistoryDiv = document.getElementById('chat-history');
-    const chatInput = document.getElementById('chat-input');
-    const chatSendBtn = document.getElementById('chat-send-btn');
-    const closeChatBtn = document.getElementById('close-chat-btn');
 
     // --- LÓGICA DE DADOS COM LOCALSTORAGE ---
     function loadUserData() {
@@ -46,6 +41,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 recentlyAsked: [],
             };
         }
+        // Garante que a estrutura para novas funcionalidades exista e que o banco de questões esteja sempre atualizado
+        if (!userData.userStats) userData.userStats = { streak: 0, lastVisit: null };
+        if (!userData.userStats.unlockedAchievements) userData.userStats.unlockedAchievements = [];
+        if (!userData.userStats.simuladosCompletos) userData.userStats.simuladosCompletos = 0;
+        if (!userData.userStats.errosRevisados) userData.userStats.errosRevisados = 0;
         userData.questionBank = allQuestionBanks;
     }
 
@@ -55,10 +55,11 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('inssTutorData', JSON.stringify(dataToSave));
     }
     
-    // --- LÓGICA DO APLICATIVO ---
+    // --- FUNÇÃO DE INICIALIZAÇÃO PRINCIPAL ---
     function initializeApp() {
         loadUserData();
         
+        // --- EVENT LISTENERS ---
         categorySelector.addEventListener('change', () => {
             sessionQuestionCount = 1;
             generateFlashcard();
@@ -87,9 +88,9 @@ document.addEventListener('DOMContentLoaded', function() {
             button.addEventListener('click', (e) => handleSimuladoAnswer(e.target.dataset.choice));
         });
         document.getElementById('close-results-btn').addEventListener('click', closeResults);
-        chatSendBtn.addEventListener('click', handleSendMessage);
-        chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendMessage(); });
-        closeChatBtn.addEventListener('click', closeChat);
+        document.getElementById('chat-send-btn').addEventListener('click', handleSendMessage);
+        document.getElementById('chat-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendMessage(); });
+        document.getElementById('close-chat-btn').addEventListener('click', closeChat);
         resetScoreBtn.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
                 userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
@@ -101,6 +102,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // INICIALIZA OS MÓDULOS DE FUNCIONALIDADES
+        initStatistics(userData);
+        initTopicExplorer();
+        initAchievements(userData);
+
+        // Executa as funções de UI iniciais
         checkTheme();
         updateStreaks();
         updateScoreboard();
@@ -108,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
+    
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -127,11 +135,16 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('inssTheme', 'light');
             themeToggleBtn.textContent = '🌙';
         }
+        // Atualiza o gráfico se o painel de estatísticas estiver aberto
+        if(!document.getElementById('stats-modal').classList.contains('hidden')){
+            initStatistics(userData);
+        }
     }
 
     function updateStreaks() {
         const today = new Date().toISOString().split('T')[0];
         const lastVisit = userData.userStats.lastVisit;
+        let needsSave = false;
         if (lastVisit !== today) {
             if (lastVisit && new Date(today) - new Date(lastVisit) === 86400000) {
                 userData.userStats.streak++;
@@ -139,9 +152,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 userData.userStats.streak = 1;
             }
             userData.userStats.lastVisit = today;
-            saveUserData();
+            needsSave = true;
         }
         streakCounter.textContent = `🔥 ${userData.userStats.streak}`;
+        if(checkAchievements(userData) || needsSave) saveUserData();
     }
     
     async function generateFlashcard() {
@@ -232,6 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(userData.scores[currentQuestion.category]) userData.scores[currentQuestion.category].incorrect++;
         } else {
             if(userData.scores[currentQuestion.category]) userData.scores[currentQuestion.category].correct++;
+            if (isReviewMode) userData.userStats.errosRevisados = (userData.userStats.errosRevisados || 0) + 1;
         }
         
         if (isCorrect) {
@@ -255,6 +270,10 @@ document.addEventListener('DOMContentLoaded', function() {
             chatButton.className = 'btn-proximo';
             chatButton.onclick = openChat;
             actionsDiv.appendChild(chatButton);
+        }
+        
+        if(checkAchievements(userData)) {
+            saveUserData();
         }
         updateScoreboard();
     }
@@ -338,8 +357,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const icon = q.wasCorrect ? '✅' : '❌';
             resultsList.innerHTML += `<div class="result-item ${resultClass}"><div class="result-item-icon">${icon}</div><div class="result-item-details"><p><strong>Questão ${index + 1}:</strong> ${q.question}</p><p class="user-answer ${resultClass}"><strong>Sua resposta:</strong> ${q.userAnswer || 'Não respondida'}</p><p><strong>Gabarito:</strong> ${q.answer}</p></div></div>`;
         });
+        
+        userData.userStats.simuladosCompletos = (userData.userStats.simuladosCompletos || 0) + 1;
         userData.erroredQuestions = [...new Set([...userData.erroredQuestions, ...newErroredIds])];
-        saveUserData();
+        if(checkAchievements(userData)) {
+            saveUserData();
+        }
     }
     
     function closeResults() {
@@ -350,9 +373,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function openChat() {
-        const chatHistoryDiv = document.getElementById('chat-history');
-        const chatInput = document.getElementById('chat-input');
-        const chatModal = document.getElementById('chat-modal');
         chatHistory = [];
         chatHistoryDiv.innerHTML = '';
         const contextMessage = `<div class="chat-message tutor-context"><strong>Contexto:</strong> A IA irá te ajudar com base na questão que você errou. A explicação inicial é: "${currentQuestion.explanation}"</div>`;
@@ -362,15 +382,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function closeChat() {
-        const chatModal = document.getElementById('chat-modal');
         chatModal.classList.add('hidden');
         document.querySelector('.flashcard')?.classList.add('exiting');
         setTimeout(generateFlashcard, 600);
     }
 
     async function handleSendMessage() {
-        const chatInput = document.getElementById('chat-input');
-        const chatHistoryDiv = document.getElementById('chat-history');
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
         chatHistoryDiv.innerHTML += `<div class="chat-message user">${userMessage}</div>`;
