@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 recentlyAsked: [],
             };
         }
+        // Garante que a estrutura para novas funcionalidades exista e que o banco de questões esteja sempre atualizado
         if (!userData.userStats) userData.userStats = { streak: 0, lastVisit: null };
         if (!userData.userStats.unlockedAchievements) userData.userStats.unlockedAchievements = [];
         if (!userData.userStats.simuladosCompletos) userData.userStats.simuladosCompletos = 0;
@@ -58,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function initializeApp() {
         loadUserData();
         
+        // Event Listeners Principais
         categorySelector.addEventListener('change', () => {
             sessionQuestionCount = 1;
             generateFlashcard();
@@ -82,13 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
             generateFlashcard();
         });
         startSimuladoBtn.addEventListener('click', startSimulado);
-        document.querySelectorAll('#simulado-actions button').forEach(button => {
-            button.addEventListener('click', (e) => handleSimuladoAnswer(e.target.dataset.choice));
-        });
-        document.getElementById('close-results-btn').addEventListener('click', closeResults);
-        document.getElementById('chat-send-btn').addEventListener('click', handleSendMessage);
-        document.getElementById('chat-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendMessage(); });
-        document.getElementById('close-chat-btn').addEventListener('click', closeChat);
         resetScoreBtn.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
                 userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
@@ -99,11 +94,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 generateFlashcard();
             }
         });
+        
+        // Event Listeners dos Modais
+        document.querySelectorAll('#simulado-actions button').forEach(button => {
+            button.addEventListener('click', (e) => handleSimuladoAnswer(e.target.dataset.choice));
+        });
+        document.getElementById('close-results-btn').addEventListener('click', closeResults);
+        document.getElementById('chat-send-btn').addEventListener('click', handleSendMessage);
+        document.getElementById('chat-input').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) handleSendMessage(); });
+        document.getElementById('close-chat-btn').addEventListener('click', closeChat);
 
+        // Inicializa os Módulos
         initStatistics(userData);
         initTopicExplorer();
         initAchievements(userData);
 
+        // Executa as funções de UI iniciais
         checkTheme();
         updateStreaks();
         updateScoreboard();
@@ -131,7 +137,10 @@ document.addEventListener('DOMContentLoaded', function() {
             themeToggleBtn.textContent = '🌙';
         }
         if(!document.getElementById('stats-modal').classList.contains('hidden')){
-            initStatistics(userData);
+            // Força a re-renderização do gráfico com as cores certas
+            const statsBtn = document.getElementById('show-stats-btn');
+            if (statsBtn) statsBtn.click(); // Abre
+            if (statsBtn) statsBtn.click(); // Fecha, mas o gráfico já foi atualizado
         }
     }
 
@@ -283,6 +292,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function startSimulado() {
+        const simuladoModal = document.getElementById('simulado-modal');
+        const simuladoContainer = simuladoModal.querySelector('.simulado-container');
+        const simuladoResultsContainer = simuladoModal.querySelector('.simulado-results-container');
+        
         const SIMULADO_QUESTION_COUNT = 20;
         const SIMULADO_DURATION_MINUTES = 30;
         let questionPool = Object.values(userData.questionBank).flat().filter(q => q && q.id);
@@ -293,9 +306,6 @@ document.addEventListener('DOMContentLoaded', function() {
         simuladoQuestions = questionPool.sort(() => 0.5 - Math.random()).slice(0, SIMULADO_QUESTION_COUNT);
         simuladoCurrentIndex = 0;
         mainApp.style.display = 'none';
-        const simuladoModal = document.getElementById('simulado-modal');
-        const simuladoContainer = simuladoModal.querySelector('.simulado-container');
-        const simuladoResultsContainer = simuladoModal.querySelector('.simulado-results-container');
         simuladoModal.classList.remove('hidden');
         simuladoContainer.classList.remove('hidden');
         simuladoResultsContainer.classList.add('hidden');
@@ -336,9 +346,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function endSimulado() {
-        clearInterval(simuladoTimer);
         const simuladoContainer = document.querySelector('.simulado-container');
         const simuladoResultsContainer = document.querySelector('.simulado-results-container');
+        clearInterval(simuladoTimer);
         simuladoContainer.classList.add('hidden');
         simuladoResultsContainer.classList.remove('hidden');
         let correctAnswers = 0;
