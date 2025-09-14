@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
         generateFlashcard();
     }
     
-    // --- DEFINIÇÃO DE TODAS AS FUNÇÕES ---
+    // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -293,6 +293,9 @@ document.addEventListener('DOMContentLoaded', function() {
         simuladoQuestions = questionPool.sort(() => 0.5 - Math.random()).slice(0, SIMULADO_QUESTION_COUNT);
         simuladoCurrentIndex = 0;
         mainApp.style.display = 'none';
+        const simuladoModal = document.getElementById('simulado-modal');
+        const simuladoContainer = simuladoModal.querySelector('.simulado-container');
+        const simuladoResultsContainer = simuladoModal.querySelector('.simulado-results-container');
         simuladoModal.classList.remove('hidden');
         simuladoContainer.classList.remove('hidden');
         simuladoResultsContainer.classList.add('hidden');
@@ -334,6 +337,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function endSimulado() {
         clearInterval(simuladoTimer);
+        const simuladoContainer = document.querySelector('.simulado-container');
+        const simuladoResultsContainer = document.querySelector('.simulado-results-container');
         simuladoContainer.classList.add('hidden');
         simuladoResultsContainer.classList.remove('hidden');
         let correctAnswers = 0;
@@ -360,6 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function closeResults() {
+        const simuladoModal = document.getElementById('simulado-modal');
         simuladoModal.classList.add('hidden');
         mainApp.style.display = 'block';
         sessionQuestionCount = 1;
