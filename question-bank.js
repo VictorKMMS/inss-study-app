@@ -246,8 +246,6 @@ export const allQuestionBanks = {
             question: 'A empresa Z, que pagou a quantia devida antes da prolação de sentença de primeiro grau, tem direito à extinção da punibilidade.',
             answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A lei prevê a extinção da punibilidade se o pagamento integral do débito ocorrer ANTES do início da ação fiscal. O pagamento posterior pode ser atenuante, mas não extingue a punibilidade.' 
         },
-    ]
-};
         { 
             id: "Q83", 
             enunciado: "Com relação aos recursos das decisões administrativas no âmbito do procedimento previdenciário, julgue os itens subsequentes.",
