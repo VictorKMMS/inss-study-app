@@ -39,6 +39,13 @@ const ACHIEVEMENTS_LIST = [
         description: 'Revisou 10 questões que tinha errado.',
         icon: '🧠',
         condition: (userData) => userData.userStats.errosRevisados >= 10
+    },
+    {
+        id: 'conquistas_1',
+        name: 'Caçador de Conquistas',
+        description: 'Desbloqueou sua primeira conquista.',
+        icon: '🏆',
+        condition: (userData) => userData.userStats.unlockedAchievements.length >= 1
     }
 ];
 
@@ -88,7 +95,7 @@ function renderAchievements(userData) {
         
         item.innerHTML = `
             <div class="achievement-icon">${achievement.icon}</div>
-            <div class="achievement-details">
+            <div class.achievement-details">
                 <h4>${achievement.name}</h4>
                 <p>${achievement.description}</p>
             </div>
