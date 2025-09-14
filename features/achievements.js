@@ -95,7 +95,7 @@ function renderAchievements(userData) {
         
         item.innerHTML = `
             <div class="achievement-icon">${achievement.icon}</div>
-            <div class.achievement-details">
+            <div class="achievement-details">
                 <h4>${achievement.name}</h4>
                 <p>${achievement.description}</p>
             </div>
