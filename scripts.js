@@ -134,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('inssTheme', 'light');
             themeToggleBtn.textContent = '🌙';
         }
+initTopicExplorer();
     }
 
     function updateStreaks() {
