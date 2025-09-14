@@ -1,5 +1,6 @@
 // --- IMPORTAÇÕES ---
 import { allQuestionBanks } from './question-bank.js';
+import { initStatistics } from './features/statistics.js'; // Importa o novo especialista
 
 document.addEventListener('DOMContentLoaded', function() {
     // --- VARIÁVEIS DE ESTADO GLOBAIS ---
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendMessage(); });
         closeChatBtn.addEventListener('click', closeChat);
         resetScoreBtn.addEventListener('click', () => {
-            if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões? O banco de questões geradas pela IA será mantido.')) {
+            if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
                 userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
                 userData.erroredQuestions = [];
                 userData.recentlyAsked = [];
@@ -107,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
         checkTheme();
         updateStreaks();
         updateScoreboard();
+        initStatistics(userData); // <-- CONECTA O ESPECIALISTA DE ESTATÍSTICAS
         generateFlashcard();
     }
     
@@ -273,7 +275,6 @@ document.addEventListener('DOMContentLoaded', function() {
         saveUserData();
     }
     
-    // --- FUNÇÕES DO SIMULADO (RESTAURADAS) ---
     function startSimulado() {
         const SIMULADO_QUESTION_COUNT = 20;
         const SIMULADO_DURATION_MINUTES = 30;
@@ -354,7 +355,6 @@ document.addEventListener('DOMContentLoaded', function() {
         generateFlashcard();
     }
     
-    // --- FUNÇÕES DO CHAT (RESTAURADAS) ---
     function openChat() {
         chatHistory = [];
         chatHistoryDiv.innerHTML = '';
@@ -393,10 +393,8 @@ document.addEventListener('DOMContentLoaded', function() {
             chatHistoryDiv.innerHTML += `<div class="chat-message ai">Desculpe, ocorreu um erro. Tente novamente.</div>`;
         }
     }
-    
-    // --- FUNÇÃO DE FETCH (RESTAURADA) ---
+
     async function fetchNewQuestionsFromAI(category) {
-        if (category === 'all') category = 'seguridade';
         flashcardContainer.innerHTML = `<div class="flashcard"><div class="question-text">Buscando novas questões sobre "${category}" com a IA...</div></div>`;
         try {
             const response = await fetch('/api/generate-question', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category }) });
