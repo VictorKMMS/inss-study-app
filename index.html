@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutor de Estudos INSS Avançado</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
@@ -13,6 +14,8 @@
             <div class="header-features">
                 <div id="streak-counter" title="Sua sequência de dias de estudo">🔥 0</div>
                 <button type="button" id="theme-toggle-btn" title="Alternar Modo Noturno">🌙</button>
+                <button type="button" id="show-topic-explorer-btn" title="Explorar um Tópico com a IA">🧠 Explorar</button>
+                <button type="button" id="show-achievements-btn" title="Ver suas Conquistas">🏆 Conquistas</button>
             </div>
         </div>
     </header>
@@ -42,6 +45,7 @@
                             <label for="concurso-mode-toggle">Apenas Concurso ⭐</label>
                         </div>
                         <button type="button" id="start-simulado-btn">🚀 Iniciar Simulado</button>
+                        <button type="button" id="show-stats-btn">📊 Ver Estatísticas</button>
                     </div>
                 </div>
         
@@ -55,7 +59,7 @@
             </aside>
         </div>
     </div>
-
+    
     <div id="chat-modal" class="hidden">
         <div id="chat-container">
             <div id="chat-header"><h3>Tire suas dúvidas com o Tutor IA</h3><button type="button" id="close-chat-btn">&times;</button></div>
@@ -77,6 +81,37 @@
             <button type="button" id="close-results-btn">Finalizar Revisão</button>
         </div>
     </div>
+    <div id="stats-modal" class="hidden">
+        <div id="stats-container">
+            <div id="stats-header"><h3>Painel de Desempenho</h3><button type="button" id="close-stats-btn">&times;</button></div>
+            <div id="stats-content">
+                <div class="stats-summary">
+                    <div class="stat-box"><h4>Acertos Totais</h4><p id="stats-total-correct">0</p></div>
+                    <div class="stat-box"><h4>Erros Totais</h4><p id="stats-total-incorrect">0</p></div>
+                    <div class="stat-box"><h4>Aproveitamento</h4><p id="stats-accuracy">0%</p></div>
+                </div>
+                <div class="stats-chart-container"><h4>Desempenho por Matéria</h4><canvas id="category-chart"></canvas></div>
+            </div>
+        </div>
+    </div>
+    <div id="topic-explorer-modal" class="hidden">
+        <div id="topic-explorer-container">
+            <div id="topic-explorer-header"><h3>Tutor IA - Modo Aula</h3><button type="button" id="close-topic-explorer-btn">&times;</button></div>
+            <div id="topic-explorer-content">
+                <p>Peça à IA para explicar qualquer tópico, artigo de lei ou conceito do edital.</p>
+                <textarea id="topic-input" rows="4" placeholder="Ex: Me explique o que é o Período de Graça e dê exemplos..."></textarea>
+                <button type="button" id="topic-send-btn">Gerar Explicação</button>
+                <div id="topic-result-area"></div>
+            </div>
+        </div>
+    </div>
+    <div id="achievements-modal" class="hidden">
+        <div id="achievements-container">
+            <div id="achievements-header"><h3>Minhas Conquistas</h3><button type="button" id="close-achievements-btn">&times;</button></div>
+            <div id="achievements-list"></div>
+        </div>
+    </div>
+    <div id="toast-container"></div>
 
     <footer>
         <p>Desenvolvido com IA para otimizar seus estudos.</p>
