@@ -1,0 +1,98 @@
+// features/statistics.js
+
+let categoryChart = null; // Variável para guardar a instância do gráfico
+
+// Função principal que inicializa o painel de estatísticas
+export function initStatistics(userData) {
+    const statsModal = document.getElementById('stats-modal');
+    const showStatsBtn = document.getElementById('show-stats-btn');
+    const closeStatsBtn = document.getElementById('close-stats-btn');
+
+    showStatsBtn.addEventListener('click', () => {
+        updateStatsPanel(userData);
+        statsModal.classList.remove('hidden');
+    });
+
+    closeStatsBtn.addEventListener('click', () => {
+        statsModal.classList.add('hidden');
+    });
+}
+
+// Função que calcula tudo e atualiza a UI do painel
+function updateStatsPanel(userData) {
+    const totalCorrect = document.getElementById('stats-total-correct');
+    const totalIncorrect = document.getElementById('stats-total-incorrect');
+    const accuracy = document.getElementById('stats-accuracy');
+    
+    let correctCount = 0;
+    let incorrectCount = 0;
+
+    const labels = [];
+    const correctData = [];
+    const incorrectData = [];
+
+    for (const category in userData.scores) {
+        const score = userData.scores[category];
+        correctCount += score.correct;
+        incorrectCount += score.incorrect;
+
+        labels.push(category.charAt(0).toUpperCase() + category.slice(1));
+        correctData.push(score.correct);
+        incorrectData.push(score.incorrect);
+    }
+
+    const totalQuestions = correctCount + incorrectCount;
+    const accuracyValue = totalQuestions === 0 ? 0 : ((correctCount / totalQuestions) * 100).toFixed(1);
+
+    totalCorrect.textContent = correctCount;
+    totalIncorrect.textContent = incorrectCount;
+    accuracy.textContent = `${accuracyValue}%`;
+
+    renderCategoryChart(labels, correctData, incorrectData);
+}
+
+// Função que desenha o gráfico de barras
+function renderCategoryChart(labels, correctData, incorrectData) {
+    const ctx = document.getElementById('category-chart').getContext('2d');
+    
+    // Se o gráfico já existe, destrua-o antes de desenhar um novo
+    if (categoryChart) {
+        categoryChart.destroy();
+    }
+
+    categoryChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Acertos',
+                    data: correctData,
+                    backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Erros',
+                    data: incorrectData,
+                    backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                    borderColor: 'rgba(220, 53, 69, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
+    });
+}
