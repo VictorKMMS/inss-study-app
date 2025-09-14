@@ -149,6 +149,28 @@ body.dark-mode .achievement-details p { color: #aaa; }
 
 footer { text-align: center; padding: 1rem; margin-top: 2rem; background-color: var(--card-bg-color); border-top: 1px solid var(--border-color); color: #6c757d; }
 
+/* --- ESTILOS PARA ENUNCIADO E IMAGEM --- */
+
+.flashcard .enunciado-box {
+    padding: 10px;
+    margin-bottom: 15px;
+    background-color: var(--bg-color);
+    border-left: 3px solid var(--info-color);
+    font-style: italic;
+    font-size: 0.95rem;
+    border-radius: 4px;
+}
+
+.flashcard .question-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    display: block;
+}
+
+
 /* --- AJUSTES PARA DISPOSITIVOS MÓVEIS --- */
 @media (max-width: 768px) {
     .main-container { flex-direction: column; padding: 0 0.8rem; gap: 1.5rem; }
