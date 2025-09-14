@@ -1,11 +1,174 @@
 // --- IMPORTAÇÕES ---
 import { allQuestionBanks } from './question-bank.js';
-import { initStatistics } from './features/statistics.js';
-import { initTopicExplorer } from './features/topic-explorer.js';
-import { initAchievements, checkAchievements } from './features/achievements.js';
 
 document.addEventListener('DOMContentLoaded', function() {
-    // --- VARIÁVEIS DE ESTADO GLOBAIS ---
+    
+    // --- MÓDULO DE ESTATÍSTICAS (INTEGRADO) ---
+    let categoryChart = null;
+    function initStatistics(userData) {
+        const statsModal = document.getElementById('stats-modal');
+        const showStatsBtn = document.getElementById('show-stats-btn');
+        const closeStatsBtn = document.getElementById('close-stats-btn');
+        showStatsBtn.addEventListener('click', () => {
+            updateStatsPanel(userData);
+            statsModal.classList.remove('hidden');
+        });
+        closeStatsBtn.addEventListener('click', () => {
+            statsModal.classList.add('hidden');
+        });
+    }
+    function updateStatsPanel(userData) {
+        const totalCorrectEl = document.getElementById('stats-total-correct');
+        const totalIncorrectEl = document.getElementById('stats-total-incorrect');
+        const accuracyEl = document.getElementById('stats-accuracy');
+        let correctCount = 0;
+        let incorrectCount = 0;
+        const labels = [];
+        const correctData = [];
+        const incorrectData = [];
+        if (userData && userData.scores) {
+            for (const category in userData.scores) {
+                const score = userData.scores[category];
+                correctCount += score.correct;
+                incorrectCount += score.incorrect;
+                labels.push(category.charAt(0).toUpperCase() + category.slice(1));
+                correctData.push(score.correct);
+                incorrectData.push(score.incorrect);
+            }
+        }
+        const totalQuestions = correctCount + incorrectCount;
+        const accuracyValue = totalQuestions === 0 ? 0 : ((correctCount / totalQuestions) * 100).toFixed(1);
+        totalCorrectEl.textContent = correctCount;
+        totalIncorrectEl.textContent = incorrectCount;
+        accuracyEl.textContent = `${accuracyValue}%`;
+        renderCategoryChart(labels, correctData, incorrectData);
+    }
+    function renderCategoryChart(labels, correctData, incorrectData) {
+        const ctx = document.getElementById('category-chart').getContext('2d');
+        if (categoryChart) {
+            categoryChart.destroy();
+        }
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        const textColor = isDarkMode ? '#e0e0e0' : '#333';
+        categoryChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: 'Acertos', data: correctData, backgroundColor: 'rgba(40, 167, 69, 0.7)', borderWidth: 1 },
+                    { label: 'Erros', data: incorrectData, backgroundColor: 'rgba(220, 53, 69, 0.7)', borderWidth: 1 }
+                ]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: textColor } },
+                    x: { ticks: { color: textColor } }
+                },
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top', labels: { color: textColor } }
+                }
+            }
+        });
+    }
+
+    // --- MÓDULO DE EXPLORADOR DE TÓPICOS (INTEGRADO) ---
+    function initTopicExplorer() {
+        const modal = document.getElementById('topic-explorer-modal');
+        const showBtn = document.getElementById('show-topic-explorer-btn');
+        const closeBtn = document.getElementById('close-topic-explorer-btn');
+        const sendBtn = document.getElementById('topic-send-btn');
+        const input = document.getElementById('topic-input');
+        showBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+        closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+        sendBtn.addEventListener('click', handleTopicRequest);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleTopicRequest(); }
+        });
+    }
+    async function handleTopicRequest() {
+        const input = document.getElementById('topic-input');
+        const resultArea = document.getElementById('topic-result-area');
+        const sendBtn = document.getElementById('topic-send-btn');
+        const topic = input.value.trim();
+        if (!topic) {
+            resultArea.textContent = 'Por favor, digite um tópico para explorar.';
+            return;
+        }
+        resultArea.textContent = 'Gerando explicação com o Tutor IA... Aguarde um momento.';
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'Pensando...';
+        try {
+            const response = await fetch('/api/explain-topic', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic }),
+            });
+            if (!response.ok) throw new Error('A resposta da API não foi bem-sucedida.');
+            const data = await response.json();
+            resultArea.textContent = data.explanation;
+        } catch (error) {
+            console.error("Erro ao buscar explicação do tópico:", error);
+            resultArea.textContent = 'Desculpe, ocorreu um erro ao se comunicar com a IA. Por favor, tente novamente.';
+        } finally {
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Gerar Explicação';
+        }
+    }
+
+    // --- MÓDULO DE CONQUISTAS (INTEGRADO) ---
+    const ACHIEVEMENTS_LIST = [
+        { id: 'correct_1', name: 'Primeiro Acerto!', description: 'Você acertou sua primeira questão. Continue assim!', icon: '✅', condition: (data) => Object.values(data.scores).reduce((sum, cat) => sum + cat.correct, 0) >= 1 },
+        { id: 'streak_3', name: 'Pegando o Ritmo', description: 'Estudou por 3 dias seguidos.', icon: '🔥', condition: (data) => data.userStats.streak >= 3 },
+        { id: 'seguridade_10', name: 'Iniciante em Seguridade', description: 'Acertou 10 questões de Seguridade Social.', icon: '🛡️', condition: (data) => data.scores.seguridade.correct >= 10 },
+        { id: 'simulado_1', name: 'Coragem de Aço', description: 'Completou seu primeiro simulado.', icon: '🚀', condition: (data) => data.userStats.simuladosCompletos >= 1 },
+        { id: 'error_master_10', name: 'Aprendendo com os Erros', description: 'Revisou 10 questões que tinha errado.', icon: '🧠', condition: (data) => data.userStats.errosRevisados >= 10 },
+        { id: 'conquistas_1', name: 'Caçador de Conquistas', description: 'Desbloqueou sua primeira conquista.', icon: '🏆', condition: (data) => data.userStats.unlockedAchievements.length >= 1 }
+    ];
+    function initAchievements(userData) {
+        const modal = document.getElementById('achievements-modal');
+        const showBtn = document.getElementById('show-achievements-btn');
+        const closeBtn = document.getElementById('close-achievements-btn');
+        showBtn.addEventListener('click', () => {
+            renderAchievements(userData);
+            modal.classList.remove('hidden');
+        });
+        closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+    function checkAchievements(userData) {
+        let newAchievementUnlocked = false;
+        for (const achievement of ACHIEVEMENTS_LIST) {
+            if (!userData.userStats.unlockedAchievements.includes(achievement.id)) {
+                if (achievement.condition(userData)) {
+                    userData.userStats.unlockedAchievements.push(achievement.id);
+                    showAchievementToast(achievement);
+                    newAchievementUnlocked = true;
+                }
+            }
+        }
+        return newAchievementUnlocked;
+    }
+    function renderAchievements(userData) {
+        const listContainer = document.getElementById('achievements-list');
+        listContainer.innerHTML = '';
+        for (const achievement of ACHIEVEMENTS_LIST) {
+            const isUnlocked = userData.userStats.unlockedAchievements.includes(achievement.id);
+            const item = document.createElement('div');
+            item.className = `achievement-item ${isUnlocked ? 'unlocked' : 'locked'}`;
+            item.innerHTML = `<div class="achievement-icon">${achievement.icon}</div><div class="achievement-details"><h4>${achievement.name}</h4><p>${achievement.description}</p></div>`;
+            listContainer.appendChild(item);
+        }
+    }
+    function showAchievementToast(achievement) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `🏆 Conquista Desbloqueada!<br><strong>${achievement.name}</strong>`;
+        container.appendChild(toast);
+        setTimeout(() => { toast.remove(); }, 4000);
+    }
+    
+    // --- VARIÁVEIS DE ESTADO DO APP ---
     let userData = {};
     let currentQuestion = null;
     let chatHistory = [];
@@ -28,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const concursoModeToggle = document.getElementById('concurso-mode-toggle');
     const startSimuladoBtn = document.getElementById('start-simulado-btn');
 
-    // --- LÓGICA DE DADOS COM LOCALSTORAGE ---
+    // --- LÓGICA DE DADOS ---
     function loadUserData() {
         const storedData = localStorage.getItem('inssTutorData');
         if (storedData) {
@@ -110,7 +273,6 @@ document.addEventListener('DOMContentLoaded', function() {
         generateFlashcard();
     }
     
-    // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -120,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function() {
             themeToggleBtn.textContent = '🌙';
         }
     }
-
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
         if (document.body.classList.contains('dark-mode')) {
@@ -284,7 +445,6 @@ document.addEventListener('DOMContentLoaded', function() {
         saveUserData();
     }
     
-    // --- FUNÇÕES DO MODO SIMULADO ---
     function startSimulado() {
         const simuladoModal = document.getElementById('simulado-modal');
         const simuladoContainer = simuladoModal.querySelector('.simulado-container');
@@ -340,9 +500,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function endSimulado() {
-        clearInterval(simuladoTimer);
         const simuladoContainer = document.querySelector('.simulado-container');
         const simuladoResultsContainer = document.querySelector('.simulado-results-container');
+        clearInterval(simuladoTimer);
         simuladoContainer.classList.add('hidden');
         simuladoResultsContainer.classList.remove('hidden');
         let correctAnswers = 0;
@@ -376,7 +536,6 @@ document.addEventListener('DOMContentLoaded', function() {
         generateFlashcard();
     }
     
-    // --- FUNÇÕES DO CHAT ---
     function openChat() {
         const chatModal = document.getElementById('chat-modal');
         const chatInput = document.getElementById('chat-input');
@@ -422,7 +581,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // --- FUNÇÃO DE FETCH DE NOVAS QUESTÕES ---
     async function fetchNewQuestionsFromAI(category) {
         flashcardContainer.innerHTML = `<div class="flashcard"><div class="question-text">Buscando novas questões sobre "${category}" com a IA...</div></div>`;
         try {
