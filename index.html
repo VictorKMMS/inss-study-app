@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutor de Estudos INSS Avançado</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
@@ -42,6 +43,7 @@
                             <label for="concurso-mode-toggle">Apenas Concurso ⭐</label>
                         </div>
                         <button type="button" id="start-simulado-btn">🚀 Iniciar Simulado</button>
+                        <button type="button" id="show-stats-btn">📊 Ver Estatísticas</button>
                     </div>
                 </div>
         
@@ -55,46 +57,38 @@
             </aside>
         </div>
     </div>
-
+    
     <div id="chat-modal" class="hidden">
-        <div id="chat-container">
-            <div id="chat-header">
-                <h3>Tire suas dúvidas com o Tutor IA</h3>
-                <button type="button" id="close-chat-btn">&times;</button>
-            </div>
-            <div id="chat-history"></div>
-            <div id="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Digite sua pergunta...">
-                <button type="button" id="chat-send-btn">Enviar</button>
-            </div>
         </div>
-    </div>
-
     <div id="simulado-modal" class="hidden">
-        <div class="simulado-container">
-            <div id="simulado-header">
-                <h2>Modo Simulado</h2>
-                <div id="simulado-info">
-                    <span id="simulado-progress">Questão 1/20</span>
-                    <span id="simulado-timer">Tempo: 30:00</span>
+        </div>
+
+    <div id="stats-modal" class="hidden">
+        <div id="stats-container">
+            <div id="stats-header">
+                <h3>Painel de Desempenho</h3>
+                <button type="button" id="close-stats-btn">&times;</button>
+            </div>
+            <div id="stats-content">
+                <div class="stats-summary">
+                    <div class="stat-box">
+                        <h4>Acertos Totais</h4>
+                        <p id="stats-total-correct">0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Erros Totais</h4>
+                        <p id="stats-total-incorrect">0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Aproveitamento</h4>
+                        <p id="stats-accuracy">0%</p>
+                    </div>
+                </div>
+                <div class="stats-chart-container">
+                    <h4>Desempenho por Matéria</h4>
+                    <canvas id="category-chart"></canvas>
                 </div>
             </div>
-            <div id="simulado-progress-bar-container">
-                <div id="simulado-progress-bar"></div>
-            </div>
-            <div id="simulado-question-container"></div>
-            <div id="simulado-actions">
-                <button type="button" data-choice="Certo" class="btn-certo">Certo</button>
-                <button type="button" data-choice="Errado" class="btn-errado">Errado</button>
-            </div>
-        </div>
-        <div class="simulado-results-container hidden">
-             <div id="simulado-results-header">
-                <h2>Resultado do Simulado</h2>
-            </div>
-            <div id="simulado-results-summary"></div>
-            <div id="simulado-results-list"></div>
-            <button type="button" id="close-results-btn">Finalizar Revisão</button>
         </div>
     </div>
 
