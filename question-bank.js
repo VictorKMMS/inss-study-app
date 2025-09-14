@@ -1,22 +1,94 @@
 // question-bank.js
-// Contém a base de dados completa com as 120 questões do concurso de 2022.
+// Banco de dados com enunciados e imagens
 
 export const allQuestionBanks = {
     portugues: [
-        { id: "Q01", question: 'Conclui-se da leitura do texto CB1A1-I que os benefícios da previdência social no Brasil são pouco vantajosos para os trabalhadores autônomos.', answer: 'Errado', law: 'INSS 2022 - Interpretação', isConcurso: true, explanation: 'O texto não faz um juízo de valor sobre os benefícios serem vantajosos ou não. Ele aponta que a baixa adesão se deve à baixa remuneração e incerteza do negócio.' },
-        { id: "Q02", question: 'De acordo com as informações do texto CB1A1-I, o rendimento médio mensal das pessoas que passaram a trabalhar por conta própria desde o início da pandemia é menor que o rendimento das pessoas que optaram por esse tipo de trabalho antes da pandemia.', answer: 'Certo', law: 'INSS 2022 - Interpretação', isConcurso: true, explanation: 'O texto informa explicitamente que os que começaram na pandemia ganham 31% menos (R$ 1.434) em comparação com os que já trabalhavam antes (R$ 2.074).' },
-        { id: "Q03", question: 'No texto CB1A1-I, os dados de que a maioria que trabalha por conta própria não contribui para a previdência são usados como argumento para comprovar a precarização do trabalho no Brasil.', answer: 'Certo', law: 'INSS 2022 - Interpretação', isConcurso: true, explanation: 'O texto cita a falta de contribuição como um indicador de ausência de proteção social, o que "confirma a precarização do trabalho".' },
-        { id: "Q04", question: 'No texto CB1A1-I, estariam mantidos os sentidos e a correção gramatical caso se substituísse o segmento “em comparação com as” por "quando comparadas as".', answer: 'Certo', law: 'INSS 2022 - Reescrita', isConcurso: true, explanation: 'Ambas as estruturas expressam uma relação de comparação e são gramaticalmente corretas, mantendo o sentido original da frase.' },
-        { id: "Q05", question: 'No texto CB1A1-I, os vocábulos “obtidos” e “crescido” constituem adjetivos nos contextos em que se inserem.', answer: 'Errado', law: 'INSS 2022 - Morfologia', isConcurso: true, explanation: '“Obtidos” funciona como adjetivo (particípio com função adjetiva), concordando com “dados”. No entanto, “crescido” é um verbo no particípio na locução verbal "havia crescido".' },
-        { id: "Q06", question: 'No texto CB1A1-I, seria mantida a correção gramatical caso a forma verbal “era” fosse flexionada no plural — eram —, dada a possibilidade de concordância com a expressão de porcentagem.', answer: 'Certo', law: 'INSS 2022 - Concordância', isConcurso: true, explanation: 'Com expressões de porcentagem, o verbo pode concordar tanto com o número percentual (58,3%) quanto com o substantivo a que se refere ("o percentual"). A concordância com o número (plural) é gramaticalmente aceitável.' },
-        { id: "Q07", question: 'No texto CB1A1-I, estaria preservada a coerência caso o segmento “mais recentemente” fosse deslocado para imediatamente depois de “própria”.', answer: 'Certo', law: 'INSS 2022 - Coesão/Coerência', isConcurso: true, explanation: 'O deslocamento não alteraria o sentido essencial, pois o contexto deixaria claro que "mais recentemente" ainda se refere ao ato de "começar a trabalhar".' },
-        { id: "Q08", question: 'No texto de Rachel de Queiroz, a autora incentiva uma postura otimista durante a passagem de ano, apesar de manifestar uma visão pessimista quanto ao porvir.', answer: 'Certo', law: 'INSS 2022 - Interpretação', isConcurso: true, explanation: 'A autora contrasta a visão realista e pessimista sobre a vida ("desgostos de toda espécie") com a sugestão de "dar festas" e "pensar em alegrias", demonstrando essa dualidade.' },
-        { id: "Q09", question: 'No texto de Rachel de Queiroz, o emprego da crase em “à porta” justifica-se pela regência do verbo “ver” e pelo gênero feminino da palavra “porta”.', answer: 'Errado', law: 'INSS 2022 - Crase', isConcurso: true, explanation: 'A crase em “à porta” ocorre porque se trata de uma locução adverbial de lugar com núcleo feminino. O verbo "ver" é transitivo direto e não exige preposição "a".' },
-        { id: "Q10", question: 'No trecho “murchar, perder as pétalas, secar, sumir-se”, os verbos expressam uma sequência lógica de acontecimentos.', answer: 'Certo', law: 'INSS 2022 - Semântica', isConcurso: true, explanation: 'A sequência de verbos descreve o processo de decadência de uma rosa em uma ordem cronológica e lógica.' },
-        { id: "Q11", question: 'Em “Nem se lembram dessa outra prestação que se paga a toda hora”, nas duas ocorrências, o pronome “se” é usado para indeterminar o sujeito.', answer: 'Errado', law: 'INSS 2022 - Sintaxe', isConcurso: true, explanation: 'Em "lembram-se", o "se" é parte integrante do verbo pronominal "lembrar-se". Em "paga-se", o "se" é uma partícula apassivadora (a prestação é paga).' },
-        { id: "Q12", question: 'No segundo parágrafo do texto de Rachel de Queiroz, entende-se que o pronome “ela”, em “dela”, refere-se a “rosa”.', answer: 'Certo', law: 'INSS 2022 - Coesão', isConcurso: true, explanation: 'O pronome possessivo "dela" faz referência anafórica ao termo "rosa", mencionado anteriormente no parágrafo.' },
-        { id: "Q13", question: 'O segmento “que será ela no dia seguinte” consiste em uma oração adjetiva com sentido explicativo.', answer: 'Errado', law: 'INSS 2022 - Sintaxe', isConcurso: true, explanation: 'O segmento é uma oração interrogativa direta, não uma oração adjetiva. A pontuação com ponto de interrogação no texto original confirma isso.' },
-        { id: "Q14", question: 'No trecho “os que hão de esperar nas filas”, o termo “hão” corresponde a uma forma de "haverão" e diz respeito ao tempo futuro.', answer: 'Certo', law: 'INSS 2022 - Morfologia', isConcurso: true, explanation: 'A locução verbal "hão de + infinitivo" é uma forma de expressar o tempo futuro, equivalente ao futuro do presente do indicativo ("esperarão").' },
+        // Questões do Texto CB1A1-I (Trabalhadores por conta própria)
+        { 
+            id: "Q01", 
+            enunciado: "Texto CB1A1-I: As pessoas que driblaram o desemprego trabalhando por conta própria desde o início da pandemia estão ganhando 31% menos em comparação com as que optaram por esse tipo de trabalho dois anos antes da covid-19. Entre estas, o rendimento médio mensal era de R$ 2.074, enquanto, entre aquelas, o rendimento é de R$ 1.434... (e o restante do texto sobre a precarização do trabalho)", 
+            question: 'Conclui-se da leitura do texto que os benefícios da previdência social no Brasil são pouco vantajosos para os trabalhadores autônomos.', 
+            answer: 'Errado', law: 'INSS 2022 - Interpretação', isConcurso: true, explanation: 'O texto não faz um juízo de valor sobre os benefícios serem vantajosos ou não. Ele aponta que a baixa adesão se deve à baixa remuneração e incerteza do negócio, não à qualidade dos benefícios.' 
+        },
+        { 
+            id: "Q02", 
+            enunciado: "Texto CB1A1-I: As pessoas que driblaram o desemprego trabalhando por conta própria...", 
+            question: 'De acordo com as informações do texto, o rendimento médio mensal das pessoas que passaram a trabalhar por conta própria desde o início da pandemia é menor que o rendimento que tinham as pessoas que optaram por esse tipo de trabalho dois anos antes.', 
+            answer: 'Certo', law: 'INSS 2022 - Interpretação', isConcurso: true, explanation: 'O texto informa explicitamente que os que começaram na pandemia ganham 31% menos (R$ 1.434) em comparação com os que já trabalhavam antes (R$ 2.074).' 
+        },
+        { 
+            id: "Q03", 
+            enunciado: "Texto CB1A1-I: As pessoas que driblaram o desemprego trabalhando por conta própria...", 
+            question: 'No texto, os dados de que a maioria que trabalha por conta própria não contribui para a previdência são usados como argumento para comprovar a precarização do trabalho no Brasil.', 
+            answer: 'Certo', law: 'INSS 2022 - Interpretação', isConcurso: true, explanation: 'O texto cita a falta de contribuição como um indicador de ausência de proteção social, o que "confirma a precarização do trabalho".' 
+        },
+        { 
+            id: "Q04", 
+            enunciado: "Texto CB1A1-I: As pessoas que driblaram o desemprego trabalhando por conta própria...", 
+            question: 'Estariam mantidos os sentidos e a correção gramatical caso se substituísse o segmento “em comparação com as” por "quando comparadas as".', 
+            answer: 'Certo', law: 'INSS 2022 - Reescrita', isConcurso: true, explanation: 'Ambas as estruturas expressam uma relação de comparação e são gramaticalmente corretas, mantendo o sentido original.' 
+        },
+        { 
+            id: "Q05", 
+            enunciado: "Texto CB1A1-I: As pessoas que driblaram o desemprego trabalhando por conta própria...", 
+            question: 'Os vocábulos “obtidos” e “crescido” constituem adjetivos nos contextos em que se inserem.', 
+            answer: 'Errado', law: 'INSS 2022 - Morfologia', isConcurso: true, explanation: '“Obtidos” funciona como adjetivo (particípio com função adjetiva), concordando com “dados”. No entanto, “crescido” é um verbo no particípio na locução verbal "havia crescido".' 
+        },
+        { 
+            id: "Q06", 
+            enunciado: "Texto CB1A1-I: As pessoas que driblaram o desemprego trabalhando por conta própria...", 
+            question: 'Seria mantida a correção gramatical caso a forma verbal “era” fosse flexionada no plural — eram —, dada a possibilidade de concordância com a expressão de porcentagem.', 
+            answer: 'Certo', law: 'INSS 2022 - Concordância', isConcurso: true, explanation: 'Com expressões de porcentagem, o verbo pode concordar tanto com o número percentual (58,3%) quanto com o substantivo a que se refere ("o percentual"). A concordância com o número (plural) é gramaticalmente aceitável.' 
+        },
+        { 
+            id: "Q07", 
+            enunciado: "Texto CB1A1-I: As pessoas que driblaram o desemprego trabalhando por conta própria...", 
+            question: 'Estaria preservada a coerência caso o segmento “mais recentemente” fosse deslocado para imediatamente depois de “própria”.', 
+            answer: 'Certo', law: 'INSS 2022 - Coesão/Coerência', isConcurso: true, explanation: 'O deslocamento não alteraria o sentido essencial, pois o contexto deixaria claro que "mais recentemente" ainda se refere ao ato de "começar a trabalhar".' 
+        },
+        // Questões do Texto de Rachel de Queiroz
+        {
+            id: "Q08",
+            enunciado: "Texto de Rachel de Queiroz: Ora, graças a Deus, lá se foi mais um. Um ano, quero dizer. Menos um na conta, mais uma prestação paga. E tem quem fique melancólico...",
+            question: 'No texto, a autora incentiva uma postura otimista durante a passagem de ano, apesar de manifestar uma visão pessimista quanto ao porvir.',
+            answer: 'Certo', law: 'INSS 2022 - Interpretação', isConcurso: true, explanation: 'A autora contrasta a visão realista e pessimista sobre a vida ("desgostos de toda espécie") com a sugestão de "dar festas" e "pensar em alegrias", demonstrando essa dualidade.'
+        },
+        { 
+            id: "Q09", 
+            enunciado: "Texto de Rachel de Queiroz: Ora, graças a Deus, lá se foi mais um...", 
+            question: 'O emprego da crase em “à porta” justifica-se pela regência do verbo “ver” e pelo gênero feminino da palavra “porta”.', 
+            answer: 'Errado', law: 'INSS 2022 - Crase', isConcurso: true, explanation: 'A crase em “à porta” ocorre porque se trata de uma locução adverbial de lugar com núcleo feminino. O verbo "ver" é transitivo direto e não exige preposição "a".' 
+        },
+        { 
+            id: "Q10", 
+            enunciado: "Texto de Rachel de Queiroz: Ora, graças a Deus, lá se foi mais um...", 
+            question: 'No trecho “murchar, perder as pétalas, secar, sumir-se”, os verbos expressam uma sequência lógica de acontecimentos.', 
+            answer: 'Certo', law: 'INSS 2022 - Semântica', isConcurso: true, explanation: 'A sequência de verbos descreve o processo de decadência de uma rosa em uma ordem cronológica e lógica.' 
+        },
+        { 
+            id: "Q11", 
+            enunciado: "Texto de Rachel de Queiroz: Ora, graças a Deus, lá se foi mais um...", 
+            question: 'Em “Nem se lembram dessa outra prestação que se paga a toda hora”, nas duas ocorrências, o pronome “se” é usado para indeterminar o sujeito.', 
+            answer: 'Errado', law: 'INSS 2022 - Sintaxe', isConcurso: true, explanation: 'Em "lembram-se", o "se" é parte integrante do verbo pronominal "lembrar-se". Em "paga-se", o "se" é uma partícula apassivadora (a prestação é paga).' 
+        },
+        { 
+            id: "Q12", 
+            enunciado: "Texto de Rachel de Queiroz: Ora, graças a Deus, lá se foi mais um...", 
+            question: 'No segundo parágrafo, entende-se que o pronome “ela”, em “dela”, refere-se a “rosa”.', 
+            answer: 'Certo', law: 'INSS 2022 - Coesão', isConcurso: true, explanation: 'O pronome possessivo "dela" faz referência anafórica ao termo "rosa", mencionado anteriormente no parágrafo.' 
+        },
+        { 
+            id: "Q13", 
+            enunciado: "Texto de Rachel de Queiroz: Ora, graças a Deus, lá se foi mais um...", 
+            question: 'O segmento “que será ela no dia seguinte” consiste em uma oração adjetiva com sentido explicativo.', 
+            answer: 'Errado', law: 'INSS 2022 - Sintaxe', isConcurso: true, explanation: 'O segmento é uma oração interrogativa direta, não uma oração adjetiva. A pontuação com ponto de interrogação no texto original confirma isso.' 
+        },
+        { 
+            id: "Q14", 
+            enunciado: "Texto de Rachel de Queiroz: Ora, graças a Deus, lá se foi mais um...", 
+            question: 'No trecho “os que hão de esperar nas filas”, o termo “hão” corresponde a uma forma de "haverão" e diz respeito ao tempo futuro.', 
+            answer: 'Certo', law: 'INSS 2022 - Morfologia', isConcurso: true, explanation: 'A locução verbal "hão de + infinitivo" é uma forma de expressar o tempo futuro, equivalente ao futuro do presente do indicativo ("esperarão").' 
+        },
     ],
     etica: [
         { id: "Q15", question: 'A atitude de Jonas, servidor público que tratou mal uma contribuinte, causou dano moral à contribuinte, conforme o Código de Ética.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O Código de Ética (Decreto nº 1.171/94) estabelece deveres e vedações. A conduta de Jonas é uma infração ética (violação do dever de cortesia), mas a definição e a reparação do "dano moral" pertencem à esfera do Direito Civil/Administrativo, a ser decidida judicialmente, não pelo Código de Ética em si.' },
@@ -33,11 +105,6 @@ export const allQuestionBanks = {
         { id: "Q24", question: 'A participação dos sindicatos nas negociações coletivas de trabalho pode ser dispensada mediante manifestação da maioria dos filiados.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O Art. 8º, VI, da Constituição Federal estabelece a obrigatoriedade da participação dos sindicatos nas negociações coletivas de trabalho.' },
         { id: "Q25", question: 'No caso de senador que pretenda concorrer a outro cargo eletivo, não se exige a renúncia ao mandato atual.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Senadores, assim como deputados e vereadores, não precisam renunciar aos seus mandatos para concorrer a outros cargos. A desincompatibilização (afastamento) é exigida para cargos executivos.' },
         { id: "Q26", question: 'A nacionalidade brasileira será concedida de ofício aos estrangeiros de qualquer nacionalidade que residam no Brasil há mais de quinze anos e que não possuam condenação penal.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A nacionalidade para estrangeiros residentes há mais de 15 anos ininterruptos e sem condenação penal exige requerimento do interessado, não sendo concedida de ofício (automaticamente).' },
-        { id: "Q106", question: 'São princípios da seguridade social a universalidade da cobertura, a seletividade na prestação dos benefícios e a progressividade na forma de participação no custeio.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O princípio correto não é "progressividade", mas sim "equidade na forma de participação no custeio".' },
-        { id: "Q107", question: 'O direito à saúde deve ser garantido mediante políticas sociais e econômicas que assegurem o acesso universal e igualitário, por meio de rede regionalizada e hierarquizada, em sistema único.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Essa é a descrição do Sistema Único de Saúde (SUS), conforme estabelecido nos artigos 196 e 198 da Constituição Federal.' },
-        { id: "Q108", question: 'A previdência social tem a finalidade de assegurar proteção em face de eventos como incapacidade, idade avançada, desemprego voluntário e reclusão.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A Previdência Social cobre o desemprego INVOLUNTÁRIO, não o voluntário.' },
-        { id: "Q109", question: 'A assistência social será prestada a quem dela necessitar, independentemente de contribuição, a fim de garantir, entre outros, a proteção à maternidade, à infância e à pessoa com deficiência.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Esta é uma das finalidades da assistência social, conforme o Art. 203 da Constituição, sendo um direito não contributivo.' },
-        { id: "Q110", question: 'A seguridade social será financiada por toda a sociedade, de forma direta e indireta, mediante recursos dos entes da federação e de contribuições sociais, como as incidentes sobre a receita de concursos de prognósticos.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O Art. 195 da Constituição Federal detalha as fontes de financiamento da seguridade, incluindo as receitas de concursos de prognósticos (loterias).' },
     ],
     administrativo: [
         { id: "Q27", question: 'É vedado a estrangeiros o acesso a cargos públicos.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O Art. 37, I, da Constituição Federal, assegura que os cargos, empregos e funções públicas são acessíveis aos brasileiros que preencham os requisitos legais, e também aos estrangeiros, na forma da lei.' },
@@ -59,15 +126,52 @@ export const allQuestionBanks = {
         { id: "Q41", question: 'No Windows 10, a Segurança do Windows verifica continuamente a existência de malwares e inclui um programa antivírus chamado Microsoft Defender Antivírus.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Microsoft Defender é o antivírus nativo e integrado ao Windows 10 (e versões posteriores), oferecendo proteção em tempo real contra ameaças.' },
         { id: "Q42", question: 'Para reorganizar dados fragmentados no disco rígido do Windows 10, usa-se o utilitário Desfragmentador de Disco para que ele funcione de maneira mais eficiente.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A desfragmentação organiza os arquivos no disco rígido (HDD) de forma contígua, o que pode melhorar a velocidade de leitura e a eficiência geral do sistema. O utilitário no Windows 10 chama-se "Otimizar Unidades".' },
         { id: "Q43", question: 'Para proteger arquivos no Windows 10, o usuário pode criptografá-los pelo aplicativo Windows Defender Firewall.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O Windows Defender Firewall serve para proteger a rede contra tráfego não autorizado. A criptografia de arquivos ou do disco é feita por outra ferramenta, o BitLocker.' },
-        { id: "Q44", question: 'Considerando a planilha da imagem, se for inserida na célula B8 a fórmula =SOMASE(A2:A7;”auxílio*”;B2:B7), o resultado será 2.', answer: 'Errado', law: 'INSS 2022 - Imagem', isConcurso: true, explanation: 'A fórmula SOMASE com o critério "auxílio*" soma os valores em B2:B7 se o texto correspondente em A2:A7 começar com "auxílio". As células que atendem são A3 ("auxílio") e A7 ("auxílio-reclusão"), cujos valores são 2 e 3. A soma correta é 2 + 3 = 5.' },
-        { id: "Q45", question: 'Considerando a imagem do Outlook, se o usuário clicar em "Sinalizador", a mensagem será enviada para o Lixo Eletrônico e o remetente será bloqueado.', answer: 'Errado', law: 'INSS 2022 - Imagem', isConcurso: true, explanation: 'A função "Sinalizador" serve para marcar uma mensagem para acompanhamento posterior (follow-up), destacando-a na caixa de entrada. A ação de bloquear e mover para lixo eletrônico é feita por outras opções.' },
+        { 
+            id: "Q44", 
+            enunciado: 'Considerando a planilha mostrada na figura, elaborada no Microsoft Excel 365, julgue o seguinte item.', 
+            imageUrl: './images/imagem-excel-q44.jpg',
+            question: 'Se for inserida na célula B8 a fórmula =SOMASE(A2:A7;”auxílio*”;B2:B7), o resultado a ser apresentado nessa célula será 2.', 
+            answer: 'Errado', law: 'INSS 2022 - Imagem', isConcurso: true, explanation: 'A fórmula SOMASE com o critério "auxílio*" soma os valores em B2:B7 se o texto correspondente em A2:A7 começar com "auxílio". As células que atendem são A3 ("auxílio") e A7 ("auxílio-reclusão"), cujos valores são 2 e 3. A soma correta é 2 + 3 = 5.' 
+        },
+        { 
+            id: "Q45", 
+            enunciado: 'A imagem representa uma mensagem de e-mail gerenciada por meio do Microsoft Outlook 365. A partir das informações e da imagem, julgue o item que se segue.', 
+            imageUrl: './images/imagem-outlook-q45.jpg',
+            question: 'Se o usuário tiver clicado primeiramente no ícone ... e, em seguida, em Sinalizador, a mensagem será enviada para a pasta Lixo Eletrônico e o remetente será bloqueado.', 
+            answer: 'Errado', law: 'INSS 2022 - Imagem', isConcurso: true, explanation: 'A função "Sinalizador" serve para marcar uma mensagem para acompanhamento posterior (follow-up), destacando-a na caixa de entrada. A ação de bloquear e mover para lixo eletrônico é feita por outras opções.' 
+        },
     ],
     raciocinio: [
-        { id: "Q46", question: 'A proposição P: “Se me mandou mensagem, meu filho lembrou-se de mim e quer ser lembrado por mim” é uma sentença aberta.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'Uma proposição composta, mesmo com pronomes, não é uma sentença aberta, pois seu valor lógico (Verdadeiro ou Falso) pode ser determinado se soubermos os valores das proposições simples que a compõem.' },
-        { id: "Q47", question: 'A tabela-verdade da proposição P (“Se me mandou mensagem, meu filho lembrou-se de mim e quer ser lembrado por mim”) possui 16 linhas.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A proposição P é composta por 3 proposições simples: (1) "me mandou mensagem", (2) "meu filho lembrou-se de mim", (3) "quer ser lembrado por mim". O número de linhas de uma tabela-verdade é 2^n, onde n é o número de proposições simples. Portanto, 2^3 = 8 linhas.' },
-        { id: "Q48", question: 'A negação da proposição “meu filho lembrou-se de mim e quer ser lembrado por mim” pode ser expressa por "meu filho não se lembrou de mim nem quer ser lembrado por mim".', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'Pelas Leis de De Morgan, a negação de "P e Q" é "~P ou ~Q". Portanto, a negação correta é: "meu filho não se lembrou de mim OU não quer ser lembrado por mim".' },
-        { id: "Q49", question: 'Sabe-se que 65% dos servidores gostam de atendimento ao público e, desses, 30% gostam também de trabalhos administrativos. Se todos gostam de pelo menos uma das modalidades, então mais de 30% deles gostam de trabalhos administrativos.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Seja A o conjunto dos que gostam de atendimento (65%) e B o dos que gostam de administrativo. A interseção (A ∩ B) é 30% de 65%, ou seja, 19,5%. Como a união (A ∪ B) é 100% (todos gostam de pelo menos uma), temos que A ∪ B = A + B - (A ∩ B). Logo, 100% = 65% + B - 19,5%. Isolando B, temos B = 100% - 65% + 19,5% = 54,5%. Como 54,5% é maior que 30%, a afirmação está correta.' },
-        { id: "Q50", question: 'Entre todos os servidores da repartição, mais de 20% gostam das duas modalidades de trabalho mencionadas.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A porcentagem que gosta de ambas as modalidades é 30% de 65%, o que é calculado como 0,30 * 65 = 19,5%. Como 19,5% não é mais de 20%, a afirmação está errada.' },
+        { 
+            id: "Q46", 
+            enunciado: 'P: “Se me mandou mensagem, meu filho lembrou-se de mim e quer ser lembrado por mim”. Considerando a proposição P, julgue os itens.',
+            question: 'Na proposição P, permitindo-se variar o sujeito e o objeto de cada verbo, tem-se uma sentença aberta.', 
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'Uma proposição composta, mesmo com pronomes, não é uma sentença aberta, pois seu valor lógico (Verdadeiro ou Falso) pode ser determinado se soubermos os valores das proposições simples.' 
+        },
+        { 
+            id: "Q47", 
+            enunciado: 'P: “Se me mandou mensagem, meu filho lembrou-se de mim e quer ser lembrado por mim”.',
+            question: 'A tabela-verdade da proposição P possui 16 linhas.', 
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A proposição P é composta por 3 proposições simples: (1) "me mandou mensagem", (2) "meu filho lembrou-se de mim", (3) "quer ser lembrado por mim". O número de linhas de uma tabela-verdade é 2^n, onde n é o número de proposições simples. Portanto, 2^3 = 8 linhas.' 
+        },
+        { 
+            id: "Q48", 
+            enunciado: 'P: “Se me mandou mensagem, meu filho lembrou-se de mim e quer ser lembrado por mim”.',
+            question: 'A negação da proposição “meu filho lembrou-se de mim e quer ser lembrado por mim” pode ser expressa por "meu filho não se lembrou de mim nem quer ser lembrado por mim".', 
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'Pelas Leis de De Morgan, a negação de "P e Q" é "~P ou ~Q". Portanto, a negação correta é: "meu filho não se lembrou de mim OU não quer ser lembrado por mim".' 
+        },
+        { 
+            id: "Q49", 
+            enunciado: 'Entre os servidores de certa repartição do INSS, 65% gostam de trabalhar com atendimento ao público e, desses, 30% gostam também de trabalhos administrativos.',
+            question: 'Se todos os servidores da repartição gostam de pelo menos uma das modalidades, então mais de 30% deles gostam de trabalhos administrativos.', 
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Seja A o conjunto dos que gostam de atendimento (65%) e B o dos que gostam de administrativo. A interseção (A ∩ B) é 30% de 65%, ou seja, 19,5%. Como a união (A ∪ B) é 100%, temos: 100% = 65% + B - 19,5%. Isolando B, temos B = 54,5%. Como 54,5% é maior que 30%, a afirmação está correta.' 
+        },
+        { 
+            id: "Q50", 
+            enunciado: 'Entre os servidores de certa repartição do INSS, 65% gostam de trabalhar com atendimento ao público e, desses, 30% gostam também de trabalhos administrativos.',
+            question: 'Entre todos os servidores da repartição, mais de 20% gostam das duas modalidades de trabalho mencionadas.', 
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A porcentagem que gosta de ambas as modalidades é 30% de 65%, o que é calculado como 0,30 * 65 = 19,5%. Como 19,5% não é mais de 20%, a afirmação está errada.' 
+        },
     ],
     seguridade: [
         { id: "Q51", question: 'A Constituição Federal é considerada uma fonte formal primária do direito previdenciário brasileiro.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A Constituição Federal é a lei máxima do país e, portanto, a principal fonte formal de todo o ordenamento jurídico, incluindo o direito previdenciário.' },
@@ -94,46 +198,271 @@ export const allQuestionBanks = {
         { id: "Q72", question: 'Compete ao INSS planejar, executar, acompanhar e avaliar as atividades relativas à tributação, à fiscalização, à arrecadação, à cobrança e ao recolhimento das contribuições previdenciárias.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'Essas competências (tributação, fiscalização, arrecadação) são da Secretaria Especial da Receita Federal do Brasil. Ao INSS compete a parte de concessão e manutenção dos benefícios.' },
         { id: "Q73", question: 'O salário de contribuição é o valor exato da renda mensal dos benefícios previdenciários.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O salário de contribuição é a base de cálculo para as contribuições. A Renda Mensal Inicial (RMI) do benefício é calculada a partir da média dos salários de contribuição, mas raramente é o mesmo valor.' },
         { id: "Q74", question: 'Os valores do salário de contribuição e dos benefícios de prestação continuada da previdência social são reajustados na mesma época e com os mesmos índices.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'É o princípio da isonomia. A Constituição (Art. 201, § 4º) e a Lei 8.213/91 garantem o reajustamento dos benefícios para preservar-lhes, em caráter permanente, o valor real.' },
-        { id: "Q75", question: 'Paulo aposentou-se por invalidez em 5/12/2015. Ele pode solicitar a revisão de sua aposentadoria até 1/1/2026.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O prazo decadencial para revisão do ato de concessão de benefício é de 10 anos, a contar do dia primeiro do mês seguinte ao do recebimento da primeira prestação.' },
-        { id: "Q76", question: 'Jonas, que adquiriu doença incapacitante, deve solicitar o benefício em até cinco anos, contados da data da doença.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'Não há prazo decadencial para a concessão inicial de benefícios. O direito ao benefício não decai. O que prescreve em cinco anos são as parcelas não reclamadas.' },
-        { id: "Q77", question: 'A previdência social pode cassar o benefício fraudulento de Joaquim (obtido em 5/12/2015) até 5/12/2025.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O prazo decadencial para a Administração anular seus atos de que decorram efeitos favoráveis para os destinatários é de dez anos, a contar da data em que o ato foi praticado.' },
-        { id: "Q78", question: 'Matias, que sofreu acidente de trabalho em 5/12/2015, pôde solicitar o benefício acidentário até 5/12/2020.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'Novamente, não há prazo decadencial para requerer o benefício. O direito não se perde. O que prescreve em 5 anos são as parcelas vencidas.' },
-        { id: "Q79", question: 'A empresa W, que descontou a contribuição dos trabalhadores e não a repassou à previdência, cometeu apropriação indébita previdenciária.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Esta é a definição exata do crime de apropriação indébita previdenciária, tipificado no Art. 168-A do Código Penal.' },
-        { id: "Q80", question: 'A empresa X, que deixou de recolher as contribuições devidas por dificuldades financeiras, praticou o delito de sonegação previdenciária.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O simples não recolhimento por dificuldades financeiras não configura, por si só, o crime de sonegação, que exige dolo (intenção de fraudar), como omitir informações.' },
-        { id: "Q81", question: 'A empresa Y, que declarou salário de trabalhador inferior ao efetivamente pago, cometeu o delito de sonegação previdenciária.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Omitir informações ou prestar declaração falsa para reduzir o valor da contribuição social é uma das condutas que tipificam o crime de sonegação de contribuição previdenciária (Art. 337-A do Código Penal).' },
-        { id: "Q82", question: 'A empresa Z, que pagou a quantia devida antes da prolação de sentença de primeiro grau, tem direito à extinção da punibilidade.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A lei prevê a extinção da punibilidade se o pagamento integral do débito ocorrer ANTES do início da ação fiscal. O pagamento posterior pode ser atenuante, mas não extingue a punibilidade.' },
-        { id: "Q83", question: 'Compete ao Conselho de Recursos da Previdência Social julgar os recursos de ofício interpostos contra decisões que tenham anulado lançamento de crédito previdenciário.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A matéria de custeio (lançamento de crédito previdenciário) é de competência do CARF (Conselho Administrativo de Recursos Fiscais), e não do CRPS.' },
-        { id: "Q84", question: 'Compete ao Conselho de Recursos da Previdência Social julgar os recursos contra decisões em processos de supervisão de regimes próprios de previdência social.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A competência para julgar esses recursos é do Conselho Nacional dos Regimes Próprios de Previdência Social (CNRPPS).' },
-        { id: "Q85", question: 'Se o recorrente propuser ação judicial com objeto idêntico ao do recurso administrativo, ocorrerá a desistência automática do recurso administrativo.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O ajuizamento de ação judicial com o mesmo objeto importa em renúncia tácita ao direito de recorrer na esfera administrativa e desistência do recurso interposto.' },
-        { id: "Q86", question: 'Não faz jus à pensão por morte o beneficiário condenado criminalmente, com trânsito em julgado, pela prática de crime doloso que resultou na morte do segurado.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Esta é uma causa de exclusão do direito à pensão por morte, prevista na Lei 8.213/91, para evitar que o autor do crime se beneficie de seu ato.' },
-        { id: "Q87", question: 'É constitucional o reconhecimento de pensão por morte para a pessoa que manteve união com pessoa casada (concubinato impuro).', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O STF (Tema 529 da Repercussão Geral) decidiu que não é possível o reconhecimento de direitos previdenciários decorrentes de concubinato impuro.' },
-        { id: "Q88", question: 'Para fins de concessão de benefícios e de contagem recíproca, é admitida a contagem de tempo de contribuição fictício.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A Constituição veda expressamente a contagem de tempo de contribuição fictício para fins de aposentadoria.' },
-        { id: "Q89", question: 'O valor do salário de benefício não pode ser inferior a um salário mínimo nem superior ao limite máximo do salário de contribuição.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O salário de benefício, que é a base de cálculo da aposentadoria, está sempre contido entre o piso (salário mínimo) e o teto do RGPS.' },
-        { id: "Q90", question: 'O período de carência visa resguardar o equilíbrio financeiro e atuarial do sistema previdenciário.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A carência é o número mínimo de contribuições para ter direito a um benefício. Ela evita que alguém se filie ao sistema apenas quando precisa de um benefício, protegendo o sistema.' },
-        { id: "Q91", question: 'O salário de benefício do segurado que contribui em razão de atividades concomitantes é calculado com base na soma integral dos salários de contribuição das atividades exercidas.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A Lei 13.846/2019 alterou a regra. Agora, não há mais a separação entre atividade principal e secundária, mas a soma dos salários de contribuição ainda é limitada pelo teto do INSS.' },
-        { id: "Q92", question: 'Aquele que está em gozo de benefício, exceto o auxílio-acidente, mantém a qualidade de segurado, sem limite de prazo.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Enquanto a pessoa está recebendo um benefício por incapacidade (como auxílio por incapacidade temporária ou aposentadoria por incapacidade permanente), ela mantém a qualidade de segurado.' },
-        { id: "Q93", question: 'O segurado facultativo mantém a qualidade de segurado por, no máximo, três meses após a cessação das contribuições.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O segurado facultativo mantém a qualidade de segurado por até 6 meses após a cessação das contribuições (período de graça).' },
-        { id: "Q94", question: 'Durante o período de graça, o segurado conserva todos os direitos perante a previdência social.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Durante o período de graça, o indivíduo, mesmo sem contribuir, mantém a qualidade de segurado e, por consequência, todos os seus direitos a benefícios perante o RGPS.' },
-        { id: "Q95", question: 'Ao serviço social compete esclarecer aos beneficiários seus direitos sociais e os meios de exercê-los, bem como estabelecer, junto a eles, o processo de solução de problemas.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Essa é a descrição exata da função do Serviço Social dentro do INSS, conforme previsto na Lei 8.213/91.' },
-        { id: "Q96", question: 'Na hipótese de habilitação e reabilitação profissional, é vedada a concessão de auxílio para tratamento ou exame fora do domicílio do beneficiário.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A Previdência Social pode conceder, se necessário, auxílio para tratamento ou exame fora do domicílio, como parte do processo de reabilitação profissional.' },
-        { id: "Q97", question: 'A pensão especial das pessoas com síndrome da talidomida é acumulável com rendimento ou remuneração, salvo a indenização por dano moral.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A pensão da talidomida é de natureza indenizatória e pode ser acumulada com qualquer outro benefício da Previdência Social, inclusive com a indenização por dano moral.' },
-        { id: "Q98", question: 'Os seringueiros que trabalharam na Amazônia durante a Segunda Guerra Mundial têm direito a pensão mensal vitalícia de dois salários mínimos, mesmo que possuam meios para sua subsistência.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A pensão vitalícia para os "soldados da borracha" não exige o critério de necessidade econômica (miserabilidade) para sua concessão.' },
-        { id: "Q99", question: 'A pensão especial devida aos ex-combatentes da Segunda Guerra Mundial corresponde à pensão militar deixada por segundo-tenente das Forças Armadas.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'É exatamente o que estabelece a Lei 8.059/90, que regula a pensão especial de ex-combatente.' },
-        { id: "Q100", question: 'A pensão especial concedida às vítimas de hemodiálise de Caruaru não será transmitida aos seus sucessores.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A Lei 9.422/96, que concedeu a pensão, a define como pessoal e intransferível, não gerando direito à pensão por morte.' },
-        { id: "Q101", question: 'A pensão especial concedida às vítimas do acidente nuclear ocorrido em Goiânia – GO é transmissível ao cônjuge sobrevivente ou aos herdeiros.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A pensão original concedida pela Lei 9.425/96 é intransferível. No entanto, os dependentes dos falecidos em decorrência do acidente têm direito a uma pensão própria, não se tratando de transmissão do benefício original.' },
-        { id: "Q102", question: 'O regime do anistiado político compreende, entre outros, o direito à reparação econômica, sendo vedadas a readmissão e a promoção na inatividade.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A Lei da Anistia (Lei 10.559/2002) garante, além da reparação econômica, o direito à contagem de tempo, à promoção na inatividade e à readmissão, quando for o caso.' },
-        { id: "Q103", question: 'A pensão especial concedida às pessoas atingidas pela hanseníase não é acumulável com indenizações que a União venha a pagar pelos mesmos fatos, mas não impede a fruição de benefício previdenciário.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A Lei 11.520/2007 veda a acumulação com indenizações pelos mesmos fatos, mas permite a acumulação com benefícios previdenciários do RGPS.' },
-        { id: "Q104", question: 'A pensão especial destinada às crianças com síndrome congênita do zika vírus é mensal, vitalícia e intransferível, no valor de um salário mínimo.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A Lei 13.985/2020 define a pensão como vitalícia e intransferível, não gerando direito a abono ou pensão por morte.' },
-        { id: "Q105", question: 'O seguro-desemprego concedido, durante o período de defeso, ao pescador artesanal é transferível a outrem.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O seguro-defeso é um benefício pessoal e intransferível, não podendo ser passado a outra pessoa.' },
-        { id: "Q111", question: 'São segurados obrigatórios da previdência social o servidor público ocupante de cargo em comissão e a pessoa física que exerce, por conta própria, atividade econômica de natureza urbana com fins de lucro.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O servidor em cargo comissionado (sem vínculo efetivo) é segurado do RGPS. A pessoa que exerce atividade por conta própria (autônomo) é o contribuinte individual, também segurado obrigatório.' },
-        { id: "Q112", question: 'É vedada a filiação ao RGPS, como segurado facultativo, de pessoa participante de regime próprio de previdência, salvo na hipótese de afastamento sem vencimento e desde que não permitida, nesta condição, contribuição ao regime próprio.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Esta é a regra de exceção que permite a um servidor afastado sem remuneração contribuir para o RGPS como facultativo para não perder o tempo de contribuição.' },
-        { id: "Q113", question: 'É beneficiário do RGPS, na condição de dependente, o filho não emancipado, menor de 24 anos, desde que matriculado em curso de ensino superior.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A qualidade de dependente para o filho, para fins previdenciários, cessa aos 21 anos, não sendo prorrogada pela condição de estudante universitário (Súmula 37 da TNU).' },
-        { id: "Q114", question: 'O enteado e o menor tutelado equiparam-se a filho do segurado, mediante declaração deste, desde que comprovada a dependência econômica.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A Lei 8.213/91, no Art. 16, § 2º, estabelece essa equiparação, exigindo a comprovação da dependência econômica, que não é presumida como no caso dos filhos.' },
-        { id: "Q115", question: 'A assistência social é regida pelo princípio da supremacia das exigências de rentabilidade econômica sobre o atendimento às necessidades sociais.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O princípio é exatamente o oposto: a supremacia do atendimento às necessidades sociais sobre as exigências de rentabilidade econômica.' },
-        { id: "Q116", question: 'Terão direito ao benefício de prestação continuada (BPC) a pessoa com deficiência ou a pessoa idosa com renda familiar mensal per capita igual ou inferior a um quarto do salário mínimo.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Este é o critério de renda base estabelecido pela Lei Orgânica da Assistência Social (LOAS) para a concessão do BPC, embora possa ser flexibilizado judicialmente.' },
-        { id: "Q117", question: 'O pagamento do auxílio-inclusão não será acumulado com o pagamento do benefício de prestação continuada.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O auxílio-inclusão é devido à pessoa com deficiência que recebia o BPC e passa a exercer atividade remunerada. O BPC é suspenso enquanto o auxílio-inclusão é pago.' },
-        { id: "Q118", question: 'Compete ao INSS a operacionalização do benefício de prestação continuada.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Embora o BPC seja um benefício da Assistência Social, sua gestão e operacionalização (análise, concessão, pagamento) são de responsabilidade do INSS.' },
-        { id: "Q119", question: 'É vedada a emissão de certidão de tempo de contribuição (CTC) referente a períodos de contribuição posteriores à data da aposentadoria no RGPS.', answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'É vedada a emissão de CTC para períodos que já foram utilizados para a concessão de aposentadoria em qualquer regime. Períodos posteriores, se houver contribuição, podem ser certificados.' },
-        { id: "Q120", question: 'A compensação financeira entre os regimes de previdência será realizada exclusivamente na contagem recíproca de tempo de contribuição não concomitante utilizado na concessão da aposentadoria.', answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A compensação previdenciária (Comprev) é o acerto de contas entre o RGPS e os Regimes Próprios quando um regime concede aposentadoria utilizando tempo de contribuição do outro.' },
-    ],
+        { 
+            id: "Q75", 
+            enunciado: "Paulo aposentou-se por invalidez em 5/12/2015. Joaquim obteve, fraudulentamente, benefício em 5/12/2015. Matias sofreu acidente de trabalho em 5/12/2015. Jonas encontra-se impossibilitado de trabalhar por doença incapacitante. Considerando esses dados, julgue os itens.",
+            question: 'Paulo pode solicitar a revisão de sua aposentadoria até o dia 1.º de janeiro de 2026.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O prazo decadencial para revisão do ato de concessão de benefício é de 10 anos, a contar do dia primeiro do mês seguinte ao do recebimento da primeira prestação.' 
+        },
+        { 
+            id: "Q76", 
+            enunciado: "Paulo aposentou-se por invalidez em 5/12/2015. Joaquim obteve, fraudulentamente, benefício em 5/12/2015...",
+            question: 'Jonas deve solicitar o benefício previdenciário em até cinco anos, contados da data em que ele foi acometido pela doença incapacitante.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'Não há prazo decadencial para a concessão inicial de benefícios. O direito ao benefício não decai. O que prescreve em cinco anos são as parcelas não reclamadas.' 
+        },
+        { 
+            id: "Q77", 
+            enunciado: "Paulo aposentou-se por invalidez em 5/12/2015. Joaquim obteve, fraudulentamente, benefício em 5/12/2015...",
+            question: 'A previdência social pode cassar o benefício de Joaquim até o dia 5 de dezembro de 2025.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O prazo decadencial para a Administração anular seus atos de que decorram efeitos favoráveis para os destinatários é de dez anos, a contar da data em que o ato foi praticado.' 
+        },
+        { 
+            id: "Q78", 
+            enunciado: "Paulo aposentou-se por invalidez em 5/12/2015. Joaquim obteve, fraudulentamente, benefício em 5/12/2015...",
+            question: 'Matias pôde solicitar o benefício acidentário até o dia 5 de dezembro de 2020.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'Novamente, não há prazo decadencial para requerer o benefício. O direito não se perde. O que prescreve em 5 anos são as parcelas vencidas.' 
+        },
+        { 
+            id: "Q79", 
+            enunciado: "A empresa W descontou a contribuição dos trabalhadores e não a repassou à previdência social. A empresa X deixou de recolher as contribuições devidas por dificuldades financeiras. A empresa Y declarou salário inferior ao efetivamente pago. A empresa Z pagou o débito antes da sentença.",
+            question: 'A empresa W cometeu apropriação indébita previdenciária.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Esta é a definição exata do crime de apropriação indébita previdenciária, tipificado no Art. 168-A do Código Penal.' 
+        },
+        { 
+            id: "Q80", 
+            enunciado: "A empresa W descontou e não repassou. A empresa X deixou de recolher por dificuldades financeiras...",
+            question: 'A empresa X praticou o delito de sonegação previdenciária.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O simples não recolhimento por dificuldades financeiras não configura, por si só, o crime de sonegação, que exige dolo (intenção de fraudar), como omitir informações.' 
+        },
+        { 
+            id: "Q81", 
+            enunciado: "A empresa W descontou e não repassou. A empresa X deixou de recolher por dificuldades financeiras...",
+            question: 'A empresa Y, que declarou salário de trabalhador inferior ao efetivamente pago, cometeu o delito de sonegação previdenciária.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Omitir informações ou prestar declaração falsa para reduzir o valor da contribuição social é uma das condutas que tipificam o crime de sonegação de contribuição previdenciária (Art. 337-A do Código Penal).' 
+        },
+        { 
+            id: "Q82", 
+            enunciado: "A empresa W descontou e não repassou. A empresa X deixou de recolher por dificuldades financeiras...",
+            question: 'A empresa Z, que pagou a quantia devida antes da prolação de sentença de primeiro grau, tem direito à extinção da punibilidade.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A lei prevê a extinção da punibilidade se o pagamento integral do débito ocorrer ANTES do início da ação fiscal. O pagamento posterior pode ser atenuante, mas não extingue a punibilidade.' 
+        },
+    ]
+};
+        { 
+            id: "Q83", 
+            enunciado: "Com relação aos recursos das decisões administrativas no âmbito do procedimento previdenciário, julgue os itens subsequentes.",
+            question: 'Compete ao Conselho de Recursos da Previdência Social julgar os recursos de ofício interpostos contra decisões que tenham anulado lançamento de crédito previdenciário.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A matéria de custeio (lançamento de crédito previdenciário) é de competência do CARF (Conselho Administrativo de Recursos Fiscais), e não do CRPS, que julga matérias de benefícios.'
+        },
+        { 
+            id: "Q84", 
+            enunciado: "Com relação aos recursos das decisões administrativas no âmbito do procedimento previdenciário, julgue os itens subsequentes.",
+            question: 'Compete ao Conselho de Recursos da Previdência Social julgar os recursos interpostos contra decisões proferidas em processos de supervisão e de fiscalização de regimes próprios de previdência social.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A competência para julgar esses recursos é do Conselho Nacional dos Regimes Próprios de Previdência Social (CNRPPS), e não do CRPS.'
+        },
+        { 
+            id: "Q85", 
+            enunciado: "Com relação aos recursos das decisões administrativas no âmbito do procedimento previdenciário, julgue os itens subsequentes.",
+            question: 'Se o recorrente propuser ação com objeto idêntico ao do recurso interposto por ele perante o Conselho de Recursos da Previdência Social, será automática a sua desistência do recurso.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O ajuizamento de ação judicial com o mesmo objeto importa em renúncia tácita ao direito de recorrer na esfera administrativa e desistência do recurso interposto.'
+        },
+        { 
+            id: "Q86", 
+            enunciado: "No que diz respeito ao plano de benefícios da previdência social, julgue os itens a seguir.",
+            question: 'Não faz jus à pensão por morte o pretenso beneficiário que tenha sido condenado criminalmente, por sentença transitada em julgado, pela prática de crime que tenha dolosamente causado a morte do segurado.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Esta é uma causa de exclusão do direito à pensão por morte, prevista na Lei 8.213/91, para evitar que o autor do crime se beneficie de seu ato.'
+        },
+        { 
+            id: "Q87", 
+            enunciado: "No que diz respeito ao plano de benefícios da previdência social, julgue os itens a seguir.",
+            question: 'É constitucional o reconhecimento do direito previdenciário à pensão por morte para a pessoa que tenha mantido, durante longo período e com aparência familiar, união com pessoa casada.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O STF (Tema 529 da Repercussão Geral) decidiu que não é possível o reconhecimento de direitos previdenciários decorrentes de concubinato impuro (quando um dos envolvidos é casado e não separado de fato).'
+        },
+        { 
+            id: "Q88", 
+            enunciado: "No que diz respeito ao plano de benefícios da previdência social, julgue os itens a seguir.",
+            question: 'Para fins de concessão dos benefícios previdenciários e de contagem recíproca, é admitida a contagem de tempo de contribuição fictício.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A Constituição veda expressamente a contagem de tempo de contribuição fictício para fins de aposentadoria.'
+        },
+        { 
+            id: "Q89", 
+            enunciado: "No que diz respeito ao plano de benefícios da previdência social, julgue os itens a seguir.",
+            question: 'O valor do salário de benefício não pode ser inferior ao de um salário mínimo nem superior ao do limite máximo do salário de contribuição na data de início do benefício.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O salário de benefício, que é a base de cálculo da aposentadoria, está sempre contido entre o piso (salário mínimo) e o teto do RGPS.'
+        },
+        { 
+            id: "Q90", 
+            enunciado: "No que diz respeito ao plano de benefícios da previdência social, julgue os itens a seguir.",
+            question: 'O período de carência visa resguardar o equilíbrio financeiro e atuarial do sistema previdenciário.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A carência é o número mínimo de contribuições para ter direito a um benefício. Ela evita que alguém se filie ao sistema apenas quando precisa de um benefício, protegendo o sistema.'
+        },
+        { 
+            id: "Q91", 
+            enunciado: "No que diz respeito ao plano de benefícios da previdência social, julgue os itens a seguir.",
+            question: 'O salário de benefício do segurado que contribui em razão de atividades concomitantes é calculado com base na soma dos salários de contribuição das atividades exercidas na data do requerimento ou do óbito.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'Para atividades concomitantes, a Lei 13.846/2019 alterou a regra. A soma dos salários de contribuição é feita, mas não de forma integral e irrestrita; há um cálculo específico, e o resultado final é limitado ao teto do INSS.'
+        },
+        { 
+            id: "Q92", 
+            enunciado: "Quanto à manutenção, à perda e ao restabelecimento da qualidade de segurado, julgue os itens que se seguem.",
+            question: 'Aquele que esteja em gozo de benefício, exceto do auxílio-acidente, mantém a qualidade de segurado, independentemente de contribuições, sem limite de prazo.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Enquanto a pessoa está recebendo um benefício por incapacidade (como auxílio por incapacidade temporária ou aposentadoria por incapacidade permanente), ela mantém a qualidade de segurado.'
+        },
+        { 
+            id: "Q93", 
+            enunciado: "Quanto à manutenção, à perda e ao restabelecimento da qualidade de segurado, julgue os itens que se seguem.",
+            question: 'O segurado facultativo mantém essa qualidade por, no máximo, três meses após a cessação das contribuições.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O segurado facultativo mantém a qualidade de segurado por até 6 meses após a cessação das contribuições (período de graça).'
+        },
+        { 
+            id: "Q94", 
+            enunciado: "Quanto à manutenção, à perda e ao restabelecimento da qualidade de segurado, julgue os itens que se seguem.",
+            question: 'Durante o período de graça, o segurado conserva todos os direitos perante a previdência social.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Durante o período de graça, o indivíduo, mesmo sem contribuir, mantém a qualidade de segurado e, por consequência, todos os seus direitos a benefícios perante o RGPS.'
+        },
+        { 
+            id: "Q95", 
+            enunciado: "Em relação aos serviços previdenciários, julgue os itens seguintes.",
+            question: 'Ao serviço social compete esclarecer aos beneficiários seus direitos sociais e os meios de exercê-los, bem como estabelecer, juntamente com eles, o processo de solução dos problemas que emergirem da sua relação com a previdência social.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Essa é a descrição exata da função do Serviço Social dentro do INSS, conforme previsto na Lei 8.213/91.'
+        },
+        { 
+            id: "Q96", 
+            enunciado: "Em relação aos serviços previdenciários, julgue os itens seguintes.",
+            question: 'Na hipótese de habilitação e reabilitação profissional, é vedada a concessão de auxílio para tratamento ou exame fora do domicílio do beneficiário.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A Previdência Social pode conceder, se necessário, auxílio para tratamento ou exame fora do domicílio, como parte do processo de reabilitação profissional.'
+        },
+        { 
+            id: "Q97", 
+            enunciado: "Acerca dos benefícios decorrentes de legislações especiais e do seguro defeso, julgue os próximos itens.",
+            question: 'A pensão especial concedida às pessoas com síndrome da talidomida é acumulável com rendimento ou remuneração, salvo a indenização por dano moral.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A pensão da talidomida é de natureza indenizatória e pode ser acumulada com qualquer outro benefício da Previdência Social, inclusive com a indenização por dano moral.'
+        },
+        { 
+            id: "Q98", 
+            enunciado: "Acerca dos benefícios decorrentes de legislações especiais e do seguro defeso, julgue os próximos itens.",
+            question: 'Os seringueiros que trabalharam na Amazônia durante a Segunda Guerra Mundial têm direito a pensão mensal vitalícia de dois salários mínimos, mesmo que possuam meios para sua subsistência.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A pensão vitalícia para os "soldados da borracha" não exige o critério de necessidade econômica (miserabilidade) para sua concessão.'
+        },
+        { 
+            id: "Q99", 
+            enunciado: "Acerca dos benefícios decorrentes de legislações especiais e do seguro defeso, julgue os próximos itens.",
+            question: 'A pensão especial devida aos ex-combatentes da Segunda Guerra Mundial corresponde à pensão militar deixada por segundo-tenente das Forças Armadas.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'É exatamente o que estabelece a Lei 8.059/90, que regula a pensão especial de ex-combatente.'
+        },
+        { 
+            id: "Q100", 
+            enunciado: "Acerca dos benefícios decorrentes de legislações especiais e do seguro defeso, julgue os próximos itens.",
+            question: 'A pensão especial concedida às vítimas de hemodiálise de Caruaru não será transmitida aos seus sucessores.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A Lei 9.422/96, que concedeu a pensão, a define como pessoal e intransferível, não gerando direito à pensão por morte.'
+        },
+        { 
+            id: "Q101", 
+            enunciado: "Acerca dos benefícios decorrentes de legislações especiais e do seguro defeso, julgue os próximos itens.",
+            question: 'A pensão especial concedida às vítimas do acidente nuclear ocorrido em Goiânia – GO é transmissível ao cônjuge sobrevivente ou aos herdeiros.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A pensão original concedida pela Lei 9.425/96 é intransferível. No entanto, os dependentes dos falecidos em decorrência do acidente têm direito a uma pensão própria, não se tratando de transmissão do benefício original.'
+        },
+        { 
+            id: "Q102", 
+            enunciado: "Acerca dos benefícios decorrentes de legislações especiais e do seguro defeso, julgue os próximos itens.",
+            question: 'O regime do anistiado político compreende, entre outros, o direito à reparação econômica, sendo vedadas a readmissão e a promoção na inatividade.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A Lei da Anistia (Lei 10.559/2002) garante, além da reparação econômica, o direito à contagem de tempo, à promoção na inatividade e à readmissão, quando for o caso.'
+        },
+        { 
+            id: "Q103", 
+            enunciado: "Acerca dos benefícios decorrentes de legislações especiais e do seguro defeso, julgue os próximos itens.",
+            question: 'A pensão especial concedida às pessoas atingidas pela hanseníase não é acumulável com indenizações que a União venha a pagar pelos mesmos fatos, mas não impede a fruição de benefício previdenciário.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A Lei 11.520/2007 veda a acumulação com indenizações pelos mesmos fatos, mas permite a acumulação com benefícios previdenciários do RGPS.'
+        },
+        { 
+            id: "Q104", 
+            enunciado: "Acerca dos benefícios decorrentes de legislações especiais e do seguro defeso, julgue os próximos itens.",
+            question: 'A pensão especial destinada às crianças com síndrome congênita do zika vírus é mensal, vitalícia e intransferível, no valor de um salário mínimo.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A Lei 13.985/2020 define a pensão como vitalícia e intransferível, não gerando direito a abono ou pensão por morte.'
+        },
+        { 
+            id: "Q105", 
+            enunciado: "Acerca dos benefícios decorrentes de legislações especiais e do seguro defeso, julgue os próximos itens.",
+            question: 'O seguro-desemprego concedido, durante o período de defeso, ao pescador artesanal é transferível a outrem.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O seguro-defeso é um benefício pessoal e intransferível, não podendo ser passado a outra pessoa.'
+        },
+        { 
+            id: "Q108", 
+            enunciado: "A seguridade social compreende um conjunto integrado de ações de iniciativa dos poderes públicos e da sociedade. A esse respeito, julgue os itens a seguir.",
+            question: 'A previdência social tem a finalidade de assegurar aos seus contribuintes a proteção em face de eventos como incapacidade, idade avançada, desemprego voluntário e reclusão.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A Previdência Social cobre o desemprego INVOLUNTÁRIO, não o voluntário.'
+        },
+        { 
+            id: "Q109", 
+            enunciado: "A seguridade social compreende um conjunto integrado de ações de iniciativa dos poderes públicos e da sociedade. A esse respeito, julgue os itens a seguir.",
+            question: 'A assistência social será prestada a quem dela necessitar, independentemente de contribuição, a fim de garantir, entre outros, a proteção à maternidade, à infância e à pessoa com deficiência.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Esta é uma das finalidades da assistência social, conforme o Art. 203 da Constituição, sendo um direito não contributivo.'
+        },
+        { 
+            id: "Q110", 
+            enunciado: "A seguridade social compreende um conjunto integrado de ações de iniciativa dos poderes públicos e da sociedade. A esse respeito, julgue os itens a seguir.",
+            question: 'A seguridade social será financiada por toda a sociedade, de forma direta e indireta, mediante recursos dos entes da federação e de contribuições sociais, como as incidentes sobre a receita de concursos de prognósticos.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O Art. 195 da Constituição Federal detalha as fontes de financiamento da seguridade, incluindo as receitas de concursos de prognósticos (loterias).'
+        },
+        { 
+            id: "Q111", 
+            enunciado: "Quanto ao Regime Geral de Previdência Social (RGPS), seus segurados e respectivos dependentes, julgue os próximos itens.",
+            question: 'São segurados obrigatórios da previdência social o servidor público ocupante de cargo em comissão e a pessoa física que exerce, por conta própria, atividade econômica de natureza urbana com fins de lucro.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O servidor em cargo comissionado (sem vínculo efetivo) é segurado do RGPS. A pessoa que exerce atividade por conta própria (autônomo) é o contribuinte individual, também segurado obrigatório.'
+        },
+        { 
+            id: "Q112", 
+            enunciado: "Quanto ao Regime Geral de Previdência Social (RGPS), seus segurados e respectivos dependentes, julgue os próximos itens.",
+            question: 'É vedada a filiação ao RGPS, como segurado facultativo, de pessoa participante de regime próprio de previdência, salvo na hipótese de afastamento sem vencimento e desde que não permitida, nesta condição, contribuição ao regime próprio.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Esta é a regra de exceção que permite a um servidor afastado sem remuneração contribuir para o RGPS como facultativo para não perder o tempo de contribuição.'
+        },
+        { 
+            id: "Q113", 
+            enunciado: "Quanto ao Regime Geral de Previdência Social (RGPS), seus segurados e respectivos dependentes, julgue os próximos itens.",
+            question: 'É beneficiário do RGPS, na condição de dependente, o filho não emancipado, menor de 24 anos, desde que matriculado em curso de ensino superior.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'A qualidade de dependente para o filho, para fins previdenciários, cessa aos 21 anos, não sendo prorrogada pela condição de estudante universitário (Súmula 37 da TNU).'
+        },
+        { 
+            id: "Q114", 
+            enunciado: "Quanto ao Regime Geral de Previdência Social (RGPS), seus segurados e respectivos dependentes, julgue os próximos itens.",
+            question: 'O enteado e o menor tutelado equiparam-se a filho do segurado, mediante declaração deste, desde que comprovada a dependência econômica.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A Lei 8.213/91, no Art. 16, § 2º, estabelece essa equiparação, exigindo a comprovação da dependência econômica, que não é presumida como no caso dos filhos.'
+        },
+        { 
+            id: "Q115", 
+            enunciado: "No que diz respeito ao benefício de prestação continuada e ao auxílio-inclusão conforme as disposições da Lei Orgânica da Assistência Social (LOAS), julgue os itens subsecutivos.",
+            question: 'A assistência social é regida pelo princípio da supremacia das exigências de rentabilidade econômica sobre o atendimento às necessidades sociais.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'O princípio é exatamente o oposto: a supremacia do atendimento às necessidades sociais sobre as exigências de rentabilidade econômica.'
+        },
+        { 
+            id: "Q116", 
+            enunciado: "No que diz respeito ao benefício de prestação continuada e ao auxílio-inclusão conforme as disposições da Lei Orgânica da Assistência Social (LOAS), julgue os itens subsecutivos.",
+            question: 'Terão direito ao benefício de prestação continuada (BPC) a pessoa com deficiência ou a pessoa idosa com renda familiar mensal per capita igual ou inferior a um quarto do salário mínimo.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Este é o critério de renda base estabelecido pela Lei Orgânica da Assistência Social (LOAS) para a concessão do BPC, embora possa ser flexibilizado judicialmente.'
+        },
+        { 
+            id: "Q117", 
+            enunciado: "No que diz respeito ao benefício de prestação continuada e ao auxílio-inclusão conforme as disposições da Lei Orgânica da Assistência Social (LOAS), julgue os itens subsecutivos.",
+            question: 'O pagamento do auxílio-inclusão não será acumulado com o pagamento do benefício de prestação continuada.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'O auxílio-inclusão é devido à pessoa com deficiência que recebia o BPC e passa a exercer atividade remunerada. O BPC é suspenso enquanto o auxílio-inclusão é pago.'
+        },
+        { 
+            id: "Q118", 
+            enunciado: "No que diz respeito ao benefício de prestação continuada e ao auxílio-inclusão conforme as disposições da Lei Orgânica da Assistência Social (LOAS), julgue os itens subsecutivos.",
+            question: 'Compete ao INSS a operacionalização do benefício de prestação continuada.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'Embora o BPC seja um benefício da Assistência Social, sua gestão e operacionalização (análise, concessão, pagamento) são de responsabilidade do INSS.'
+        },
+        { 
+            id: "Q119", 
+            enunciado: "Em relação à certidão de tempo de contribuição, à contagem recíproca e à compensação previdenciária, julgue os itens a seguir.",
+            question: 'É vedada a emissão de certidão de tempo de contribuição (CTC) referente a períodos de contribuição posteriores à data da aposentadoria no RGPS.',
+            answer: 'Errado', law: 'INSS 2022', isConcurso: true, explanation: 'É vedada a emissão de CTC para períodos que já foram utilizados para a concessão de aposentadoria em qualquer regime. Períodos posteriores, se houver contribuição, podem ser certificados.'
+        },
+        { 
+            id: "Q120", 
+            enunciado: "Em relação à certidão de tempo de contribuição, à contagem recíproca e à compensação previdenciária, julgue os itens a seguir.",
+            question: 'A compensação financeira entre os regimes de previdência será realizada exclusivamente na contagem recíproca de tempo de contribuição não concomitante utilizado na concessão da aposentadoria.',
+            answer: 'Certo', law: 'INSS 2022', isConcurso: true, explanation: 'A compensação previdenciária (Comprev) é o acerto de contas entre o RGPS e os Regimes Próprios quando um regime concede aposentadoria utilizando tempo de contribuição do outro.'
+        },
+    ]
 };
