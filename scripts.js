@@ -93,16 +93,14 @@ document.addEventListener('DOMContentLoaded', function() {
         chatSendBtn.addEventListener('click', handleSendMessage);
         chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendMessage(); });
         closeChatBtn.addEventListener('click', closeChat);
-
-        // --- LÓGICA DO BOTÃO DE RESET (CORRIGIDA) ---
         resetScoreBtn.addEventListener('click', () => {
-            if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico? Isso permitirá que todas as questões apareçam novamente.')) {
+            if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões? O banco de questões geradas pela IA será mantido.')) {
                 userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
                 userData.erroredQuestions = [];
-                userData.recentlyAsked = []; // <-- ESTA LINHA FOI ADICIONADA PARA LIMPAR O HISTÓRICO
+                userData.recentlyAsked = [];
                 sessionQuestionCount = 1;
-                updateScoreboard(); // Salva as alterações
-                generateFlashcard(); // Gera uma nova questão com o baralho "limpo"
+                updateScoreboard();
+                generateFlashcard();
             }
         });
 
@@ -170,17 +168,17 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('.concurso-mode label').style.fontWeight = 'normal';
             let selectedCategory = categorySelector.value;
             if (selectedCategory === 'all') {
-                const allCategories = Object.keys(userData.scores);
-                selectedCategory = allCategories[Math.floor(Math.random() * allCategories.length)];
+                questionPool = allQuestions;
+            } else {
+                questionPool = userData.questionBank[selectedCategory] || [];
             }
-            questionPool = userData.questionBank[selectedCategory] || [];
         }
 
         let availableQuestions = questionPool.filter(q => q && !userData.recentlyAsked.includes(q.id));
         
         if (availableQuestions.length === 0) {
             if (questionPool.length > 0 && (isReviewMode || isConcursoMode)) {
-                let msg = isReviewMode ? 'Você revisou todas as suas questões erradas. Ótimo trabalho!' : 'Você respondeu todas as questões de concurso disponíveis para esta seleção.';
+                let msg = isReviewMode ? 'Você revisou todas as suas questões erradas. Ótimo trabalho!' : 'Você respondeu todas as questões de concurso disponíveis.';
                 flashcardContainer.innerHTML = `<div class="flashcard"><div class="question-text">${msg}</div></div>`;
                 return;
             }
@@ -275,16 +273,151 @@ document.addEventListener('DOMContentLoaded', function() {
         saveUserData();
     }
     
-    function startSimulado() { /* ... Lógica do simulado ... */ }
-    function displaySimuladoQuestion() { /* ... Lógica do simulado ... */ }
-    function handleSimuladoAnswer(userAnswer) { /* ... Lógica do simulado ... */ }
-    function endSimulado() { /* ... Lógica do simulado ... */ }
-    function closeResults() { /* ... Lógica do simulado ... */ }
-    function openChat() { /* ... Lógica do chat ... */ }
-    function closeChat() { /* ... Lógica do chat ... */ }
-    async function handleSendMessage() { /* ... Lógica do chat ... */ }
-    async function fetchNewQuestionsFromAI(category) { /* ... Lógica da IA ... */ }
+    // --- FUNÇÕES DO SIMULADO (RESTAURADAS) ---
+    function startSimulado() {
+        const SIMULADO_QUESTION_COUNT = 20;
+        const SIMULADO_DURATION_MINUTES = 30;
+        let questionPool = Object.values(userData.questionBank).flat().filter(q => q && q.id);
+        if (questionPool.length < SIMULADO_QUESTION_COUNT) {
+            alert(`Não há questões suficientes para um simulado de ${SIMULADO_QUESTION_COUNT} itens. Gere mais questões com a IA.`);
+            return;
+        }
+        simuladoQuestions = questionPool.sort(() => 0.5 - Math.random()).slice(0, SIMULADO_QUESTION_COUNT);
+        simuladoCurrentIndex = 0;
+        mainApp.style.display = 'none';
+        simuladoModal.classList.remove('hidden');
+        simuladoContainer.classList.remove('hidden');
+        simuladoResultsContainer.classList.add('hidden');
+        let timeLeft = SIMULADO_DURATION_MINUTES * 60;
+        document.getElementById('simulado-timer').textContent = `Tempo: ${SIMULADO_DURATION_MINUTES}:00`;
+        clearInterval(simuladoTimer);
+        simuladoTimer = setInterval(() => {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('simulado-timer').textContent = `Tempo: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            if (timeLeft <= 0) {
+                alert("Tempo esgotado!");
+                endSimulado();
+            }
+        }, 1000);
+        displaySimuladoQuestion();
+    }
 
+    function displaySimuladoQuestion() {
+        const question = simuladoQuestions[simuladoCurrentIndex];
+        document.getElementById('simulado-question-container').textContent = question.question;
+        document.getElementById('simulado-progress').textContent = `Questão ${simuladoCurrentIndex + 1}/${simuladoQuestions.length}`;
+        const progressPercent = ((simuladoCurrentIndex + 1) / simuladoQuestions.length) * 100;
+        document.getElementById('simulado-progress-bar').style.width = `${progressPercent}%`;
+    }
+
+    function handleSimuladoAnswer(userAnswer) {
+        const currentSimuladoQuestion = simuladoQuestions[simuladoCurrentIndex];
+        currentSimuladoQuestion.userAnswer = userAnswer;
+        currentSimuladoQuestion.wasCorrect = (userAnswer === currentSimuladoQuestion.answer);
+        simuladoCurrentIndex++;
+        if (simuladoCurrentIndex >= simuladoQuestions.length) {
+            endSimulado();
+        } else {
+            displaySimuladoQuestion();
+        }
+    }
+
+    function endSimulado() {
+        clearInterval(simuladoTimer);
+        simuladoContainer.classList.add('hidden');
+        simuladoResultsContainer.classList.remove('hidden');
+        let correctAnswers = 0;
+        const newErroredIds = [];
+        simuladoQuestions.forEach(q => {
+            if (q.wasCorrect) correctAnswers++;
+            else newErroredIds.push(q.id);
+        });
+        const accuracy = ((correctAnswers / simuladoQuestions.length) * 100).toFixed(1);
+        document.getElementById('simulado-results-summary').innerHTML = `Você acertou <strong>${correctAnswers} de ${simuladoQuestions.length}</strong> questões (${accuracy}%)`;
+        const resultsList = document.getElementById('simulado-results-list');
+        resultsList.innerHTML = '';
+        simuladoQuestions.forEach((q, index) => {
+            const resultClass = q.wasCorrect ? 'correct' : 'incorrect';
+            const icon = q.wasCorrect ? '✅' : '❌';
+            resultsList.innerHTML += `<div class="result-item ${resultClass}"><div class="result-item-icon">${icon}</div><div class="result-item-details"><p><strong>Questão ${index + 1}:</strong> ${q.question}</p><p class="user-answer ${resultClass}"><strong>Sua resposta:</strong> ${q.userAnswer || 'Não respondida'}</p><p><strong>Gabarito:</strong> ${q.answer}</p></div></div>`;
+        });
+        userData.erroredQuestions = [...new Set([...userData.erroredQuestions, ...newErroredIds])];
+        saveUserData();
+    }
+    
+    function closeResults() {
+        simuladoModal.classList.add('hidden');
+        mainApp.style.display = 'block';
+        sessionQuestionCount = 1;
+        generateFlashcard();
+    }
+    
+    // --- FUNÇÕES DO CHAT (RESTAURADAS) ---
+    function openChat() {
+        chatHistory = [];
+        chatHistoryDiv.innerHTML = '';
+        const contextMessage = `<div class="chat-message tutor-context"><strong>Contexto:</strong> A IA irá te ajudar com base na questão que você errou. A explicação inicial é: "${currentQuestion.explanation}"</div>`;
+        chatHistoryDiv.innerHTML += contextMessage;
+        chatModal.classList.remove('hidden');
+        chatInput.focus();
+    }
+
+    function closeChat() {
+        chatModal.classList.add('hidden');
+        document.querySelector('.flashcard')?.classList.add('exiting');
+        setTimeout(generateFlashcard, 600);
+    }
+
+    async function handleSendMessage() {
+        const userMessage = chatInput.value.trim();
+        if (!userMessage) return;
+        chatHistoryDiv.innerHTML += `<div class="chat-message user">${userMessage}</div>`;
+        chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
+        chatInput.value = '';
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        chatHistoryDiv.innerHTML += `<div class="chat-message ai typing-indicator">Tutor IA está digitando...</div>`;
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        try {
+            const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ history: chatHistory, context: currentQuestion }) });
+            if (!response.ok) throw new Error('Erro na resposta da API');
+            const data = await response.json();
+            const aiMessage = data.response;
+            document.querySelector('.typing-indicator')?.remove();
+            chatHistoryDiv.innerHTML += `<div class="chat-message ai">${aiMessage}</div>`;
+            chatHistory.push({ role: 'model', parts: [{ text: aiMessage }] });
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        } catch (error) {
+            document.querySelector('.typing-indicator')?.remove();
+            chatHistoryDiv.innerHTML += `<div class="chat-message ai">Desculpe, ocorreu um erro. Tente novamente.</div>`;
+        }
+    }
+    
+    // --- FUNÇÃO DE FETCH (RESTAURADA) ---
+    async function fetchNewQuestionsFromAI(category) {
+        if (category === 'all') category = 'seguridade';
+        flashcardContainer.innerHTML = `<div class="flashcard"><div class="question-text">Buscando novas questões sobre "${category}" com a IA...</div></div>`;
+        try {
+            const response = await fetch('/api/generate-question', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category }) });
+            if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+            const newQuestion = await response.json();
+            
+            if (!userData.questionBank[category]) userData.questionBank[category] = [];
+            newQuestion.id = `${category.substring(0,1).toUpperCase()}${Date.now()}`;
+            newQuestion.category = category;
+            
+            userData.questionBank[category].push(newQuestion);
+            saveUserData();
+
+            console.log("Nova questão recebida e salva!", newQuestion);
+            generateFlashcard();
+        } catch (error) {
+            console.error("Falha ao buscar questão da IA:", error);
+            flashcardContainer.innerHTML = `<div class="flashcard"><div class="question-text">Ocorreu um erro ao conectar com a IA. Verifique sua conexão ou a configuração da API e tente novamente.</div></div>`;
+        }
+    }
+    
     // Inicia a aplicação
     initializeApp();
 });
