@@ -58,7 +58,6 @@ function updateStatsPanel(userData) {
 function renderCategoryChart(labels, correctData, incorrectData) {
     const ctx = document.getElementById('category-chart').getContext('2d');
     
-    // Se um gráfico anterior já existir, ele é destruído para evitar sobreposição
     if (categoryChart) {
         categoryChart.destroy();
     }
