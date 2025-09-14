@@ -1,5 +1,5 @@
 // --- IMPORTAÇÕES ---
-import { allQuestionBanks } from './question-bank.js';
+import { allQuestionBanks as defaultQuestionBank } from './question-bank.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     // --- VARIÁVEIS DE ESTADO GLOBAIS ---
@@ -30,26 +30,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatSendBtn = document.getElementById('chat-send-btn');
     const closeChatBtn = document.getElementById('close-chat-btn');
 
-    // --- LÓGICA DE DADOS COM LOCALSTORAGE ---
+    // --- LÓGICA DE DADOS COM LOCALSTORAGE (ATUALIZADA) ---
     function loadUserData() {
         const storedData = localStorage.getItem('inssTutorData');
         if (storedData) {
             userData = JSON.parse(storedData);
+            // Se não houver um banco de questões salvo (versão antiga), carrega o padrão
+            if (!userData.questionBank) {
+                userData.questionBank = defaultQuestionBank;
+            }
         } else {
+            // Primeira vez do usuário, carrega tudo do padrão
             userData = {
+                questionBank: defaultQuestionBank,
                 scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } },
                 userStats: { streak: 0, lastVisit: null },
                 erroredQuestions: [],
                 recentlyAsked: [],
             };
         }
-        userData.questionBank = allQuestionBanks;
     }
 
     function saveUserData() {
-        const dataToSave = { ...userData };
-        delete dataToSave.questionBank; // Não salva o banco de questões no localStorage para economizar espaço
-        localStorage.setItem('inssTutorData', JSON.stringify(dataToSave));
+        // Agora salvamos o objeto userData COMPLETO, incluindo o questionBank modificado.
+        localStorage.setItem('inssTutorData', JSON.stringify(userData));
     }
     
     // --- LÓGICA DO APLICATIVO ---
@@ -72,10 +76,11 @@ document.addEventListener('DOMContentLoaded', function() {
         closeChatBtn.addEventListener('click', closeChat);
         resetScoreBtn.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
+                // Mantém o banco de questões, mas reseta o progresso
                 userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
                 userData.erroredQuestions = [];
                 userData.recentlyAsked = [];
-                updateScoreboard();
+                updateScoreboard(); // A função updateScoreboard já salva os dados
             }
         });
 
@@ -86,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
+    // (As funções abaixo agora operam em um userData que persiste o questionBank)
     
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
@@ -155,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
                  return;
             }
             flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Buscando novas questões sobre o tema com a IA...</p></div>`;
-            await fetchNewQuestionsFromAI(categorySelector.value === 'all' ? 'Seguridade Social' : categorySelector.value);
+            await fetchNewQuestionsFromAI(categorySelector.value === 'all' ? 'seguridade' : categorySelector.value);
             return;
         }
 
@@ -312,11 +318,13 @@ document.addEventListener('DOMContentLoaded', function() {
         chatModal.classList.remove('hidden');
         chatInput.focus();
     }
+
     function closeChat() {
         chatModal.classList.add('hidden');
         document.querySelector('.flashcard')?.classList.add('exiting');
         setTimeout(generateFlashcard, 600);
     }
+
     async function handleSendMessage() {
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
@@ -340,9 +348,10 @@ document.addEventListener('DOMContentLoaded', function() {
             chatHistoryDiv.innerHTML += `<div class="chat-message ai">Desculpe, ocorreu um erro. Tente novamente.</div>`;
         }
     }
+
     async function fetchNewQuestionsFromAI(category) {
-        if (category === 'all') category = 'Seguridade Social';
-        console.log(`Buscando nova questão de IA para: ${category}...`);
+        if (category === 'all') category = 'seguridade';
+        flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Buscando novas questões sobre "${category}" com a IA...</p></div>`;
         try {
             const response = await fetch('/api/generate-question', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category }) });
             if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
@@ -353,10 +362,10 @@ document.addEventListener('DOMContentLoaded', function() {
             userData.questionBank[category].push(newQuestion);
             saveUserData();
             console.log("Nova questão recebida e salva!", newQuestion);
-            setTimeout(generateFlashcard, 1000);
+            generateFlashcard();
         } catch (error) {
             console.error("Falha ao buscar questão da IA:", error);
-            setTimeout(generateFlashcard, 3000);
+            flashcardContainer.innerHTML = `<div class="flashcard"><p class="flashcard-question">Ocorreu um erro ao conectar com a IA. Verifique sua conexão ou a configuração da API.</p></div>`;
         }
     }
     
