@@ -1,5 +1,5 @@
 // --- IMPORTAÇÕES ---
-import { allQuestionBanks } from './question-bank.js';
+import { allQuestionBanks as defaultQuestionBank } from './question-bank.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     // --- VARIÁVEIS DE ESTADO GLOBAIS ---
@@ -38,21 +38,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const storedData = localStorage.getItem('inssTutorData');
         if (storedData) {
             userData = JSON.parse(storedData);
+            if (!userData.questionBank) {
+                userData.questionBank = defaultQuestionBank;
+            }
         } else {
             userData = {
+                questionBank: defaultQuestionBank,
                 scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } },
                 userStats: { streak: 0, lastVisit: null },
                 erroredQuestions: [],
                 recentlyAsked: [],
             };
         }
-        userData.questionBank = allQuestionBanks;
     }
 
     function saveUserData() {
-        const dataToSave = { ...userData };
-        delete dataToSave.questionBank;
-        localStorage.setItem('inssTutorData', JSON.stringify(dataToSave));
+        localStorage.setItem('inssTutorData', JSON.stringify(userData));
     }
     
     // --- LÓGICA DO APLICATIVO ---
@@ -91,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendMessage(); });
         closeChatBtn.addEventListener('click', closeChat);
         resetScoreBtn.addEventListener('click', () => {
-            if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
+            if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões? O banco de questões geradas pela IA será mantido.')) {
                 userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
                 userData.erroredQuestions = [];
                 userData.recentlyAsked = [];
@@ -108,7 +109,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
-    
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -157,11 +157,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('.concurso-mode label').style.fontWeight = 'bold';
             document.querySelector('.review-mode label').style.fontWeight = 'normal';
             let selectedCategory = categorySelector.value;
-            if (selectedCategory === 'all') {
-                questionPool = allQuestions.filter(q => q && q.isConcurso);
-            } else {
-                questionPool = (userData.questionBank[selectedCategory] || []).filter(q => q && q.isConcurso);
-            }
+            questionPool = (selectedCategory === 'all')
+                ? allQuestions.filter(q => q && q.isConcurso)
+                : (userData.questionBank[selectedCategory] || []).filter(q => q && q.isConcurso);
         } else {
             document.querySelector('.review-mode label').style.fontWeight = 'normal';
             document.querySelector('.concurso-mode label').style.fontWeight = 'normal';
@@ -174,23 +172,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         let availableQuestions = questionPool.filter(q => q && !userData.recentlyAsked.includes(q.id));
-        if (availableQuestions.length === 0 && questionPool.length > 0) {
-            userData.recentlyAsked = userData.recentlyAsked.slice(Math.floor(userData.recentlyAsked.length / 2));
-            availableQuestions = questionPool.filter(q => q && !userData.recentlyAsked.includes(q.id));
-        }
         
-        // --- LÓGICA CORRIGIDA PARA CHAMAR A IA ---
         if (availableQuestions.length === 0) {
-            if (isReviewMode) {
-                 flashcardContainer.innerHTML = `<div class="flashcard"><div class="question-text">Você revisou todas as suas questões erradas. Ótimo trabalho!</div></div>`;
-                 return;
-            }
-            if (isConcursoMode) {
-                flashcardContainer.innerHTML = `<div class="flashcard"><div class="question-text">Você respondeu todas as questões de concurso disponíveis para esta seleção.</div></div>`;
+            if (questionPool.length > 0 && (isReviewMode || isConcursoMode)) {
+                let msg = isReviewMode ? 'Você revisou todas as suas questões erradas. Ótimo trabalho!' : 'Você respondeu todas as questões de concurso disponíveis.';
+                flashcardContainer.innerHTML = `<div class="flashcard"><div class="question-text">${msg}</div></div>`;
                 return;
             }
-            // SE CHEGOU AQUI, ESTÁ NO MODO NORMAL E AS QUESTÕES ACABARAM. CHAMA A IA.
-            await fetchNewQuestionsFromAI(categorySelector.value === 'all' ? 'seguridade' : categorySelector.value);
+            
+            const categoryToFetch = categorySelector.value === 'all' ? 'seguridade' : categorySelector.value;
+            await fetchNewQuestionsFromAI(categoryToFetch);
             return;
         }
 
@@ -273,28 +264,122 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function startSimulado() {
-        // A função de simulado permanece a mesma
+        const SIMULADO_QUESTION_COUNT = 20;
+        const SIMULADO_DURATION_MINUTES = 30;
+        let questionPool = Object.values(userData.questionBank).flat().filter(q => q && q.id);
+        if (questionPool.length < SIMULADO_QUESTION_COUNT) {
+            alert(`Não há questões suficientes para um simulado de ${SIMULADO_QUESTION_COUNT} itens. Gere mais questões com a IA.`);
+            return;
+        }
+        simuladoQuestions = questionPool.sort(() => 0.5 - Math.random()).slice(0, SIMULADO_QUESTION_COUNT);
+        simuladoCurrentIndex = 0;
+        mainApp.style.display = 'none';
+        simuladoModal.classList.remove('hidden');
+        simuladoContainer.classList.remove('hidden');
+        simuladoResultsContainer.classList.add('hidden');
+        let timeLeft = SIMULADO_DURATION_MINUTES * 60;
+        document.getElementById('simulado-timer').textContent = `Tempo: ${SIMULADO_DURATION_MINUTES}:00`;
+        clearInterval(simuladoTimer);
+        simuladoTimer = setInterval(() => {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('simulado-timer').textContent = `Tempo: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            if (timeLeft <= 0) {
+                alert("Tempo esgotado!");
+                endSimulado();
+            }
+        }, 1000);
+        displaySimuladoQuestion();
     }
+
     function displaySimuladoQuestion() {
-        // A função de simulado permanece a mesma
+        const question = simuladoQuestions[simuladoCurrentIndex];
+        document.getElementById('simulado-question-container').textContent = question.question;
+        document.getElementById('simulado-progress').textContent = `Questão ${simuladoCurrentIndex + 1}/${simuladoQuestions.length}`;
+        const progressPercent = ((simuladoCurrentIndex + 1) / simuladoQuestions.length) * 100;
+        document.getElementById('simulado-progress-bar').style.width = `${progressPercent}%`;
     }
+
     function handleSimuladoAnswer(userAnswer) {
-        // A função de simulado permanece a mesma
+        const currentSimuladoQuestion = simuladoQuestions[simuladoCurrentIndex];
+        currentSimuladoQuestion.userAnswer = userAnswer;
+        currentSimuladoQuestion.wasCorrect = (userAnswer === currentSimuladoQuestion.answer);
+        simuladoCurrentIndex++;
+        if (simuladoCurrentIndex >= simuladoQuestions.length) {
+            endSimulado();
+        } else {
+            displaySimuladoQuestion();
+        }
     }
+
     function endSimulado() {
-        // A função de simulado permanece a mesma
+        clearInterval(simuladoTimer);
+        simuladoContainer.classList.add('hidden');
+        simuladoResultsContainer.classList.remove('hidden');
+        let correctAnswers = 0;
+        const newErroredIds = [];
+        simuladoQuestions.forEach(q => {
+            if (q.wasCorrect) correctAnswers++;
+            else newErroredIds.push(q.id);
+        });
+        const accuracy = ((correctAnswers / simuladoQuestions.length) * 100).toFixed(1);
+        document.getElementById('simulado-results-summary').innerHTML = `Você acertou <strong>${correctAnswers} de ${simuladoQuestions.length}</strong> questões (${accuracy}%)`;
+        const resultsList = document.getElementById('simulado-results-list');
+        resultsList.innerHTML = '';
+        simuladoQuestions.forEach((q, index) => {
+            const resultClass = q.wasCorrect ? 'correct' : 'incorrect';
+            const icon = q.wasCorrect ? '✅' : '❌';
+            resultsList.innerHTML += `<div class="result-item ${resultClass}"><div class="result-item-icon">${icon}</div><div class="result-item-details"><p><strong>Questão ${index + 1}:</strong> ${q.question}</p><p class="user-answer ${resultClass}"><strong>Sua resposta:</strong> ${q.userAnswer || 'Não respondida'}</p><p><strong>Gabarito:</strong> ${q.answer}</p></div></div>`;
+        });
+        userData.erroredQuestions = [...new Set([...userData.erroredQuestions, ...newErroredIds])];
+        saveUserData();
     }
+    
     function closeResults() {
-        // A função de simulado permanece a mesma
+        simuladoModal.classList.add('hidden');
+        mainApp.style.display = 'block';
+        sessionQuestionCount = 1;
+        generateFlashcard();
     }
+    
     function openChat() {
-        // A função de chat permanece a mesma
+        chatHistory = [];
+        chatHistoryDiv.innerHTML = '';
+        const contextMessage = `<div class="chat-message tutor-context"><strong>Contexto:</strong> A IA irá te ajudar com base na questão que você errou. A explicação inicial é: "${currentQuestion.explanation}"</div>`;
+        chatHistoryDiv.innerHTML += contextMessage;
+        chatModal.classList.remove('hidden');
+        chatInput.focus();
     }
+
     function closeChat() {
-        // A função de chat permanece a mesma
+        chatModal.classList.add('hidden');
+        document.querySelector('.flashcard')?.classList.add('exiting');
+        setTimeout(generateFlashcard, 600);
     }
+
     async function handleSendMessage() {
-        // A função de chat permanece a mesma
+        const userMessage = chatInput.value.trim();
+        if (!userMessage) return;
+        chatHistoryDiv.innerHTML += `<div class="chat-message user">${userMessage}</div>`;
+        chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
+        chatInput.value = '';
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        chatHistoryDiv.innerHTML += `<div class="chat-message ai typing-indicator">Tutor IA está digitando...</div>`;
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        try {
+            const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ history: chatHistory, context: currentQuestion }) });
+            if (!response.ok) throw new Error('Erro na resposta da API');
+            const data = await response.json();
+            const aiMessage = data.response;
+            document.querySelector('.typing-indicator')?.remove();
+            chatHistoryDiv.innerHTML += `<div class="chat-message ai">${aiMessage}</div>`;
+            chatHistory.push({ role: 'model', parts: [{ text: aiMessage }] });
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        } catch (error) {
+            document.querySelector('.typing-indicator')?.remove();
+            chatHistoryDiv.innerHTML += `<div class="chat-message ai">Desculpe, ocorreu um erro. Tente novamente.</div>`;
+        }
     }
 
     async function fetchNewQuestionsFromAI(category) {
@@ -309,9 +394,7 @@ document.addEventListener('DOMContentLoaded', function() {
             newQuestion.id = `${category.substring(0,1).toUpperCase()}${Date.now()}`;
             newQuestion.category = category;
             
-            // Adiciona a nova questão ao banco de dados em memória
             userData.questionBank[category].push(newQuestion);
-            // Salva a nova questão permanentemente
             saveUserData();
 
             console.log("Nova questão recebida e salva!", newQuestion);
