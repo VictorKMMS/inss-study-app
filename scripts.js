@@ -41,11 +41,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 recentlyAsked: [],
             };
         }
-        // Garante que a estrutura para novas funcionalidades exista
+        // Garante que a estrutura para novas funcionalidades exista e que o banco de questões esteja sempre atualizado
+        if (!userData.userStats) userData.userStats = { streak: 0, lastVisit: null };
         if (!userData.userStats.unlockedAchievements) userData.userStats.unlockedAchievements = [];
         if (!userData.userStats.simuladosCompletos) userData.userStats.simuladosCompletos = 0;
         if (!userData.userStats.errosRevisados) userData.userStats.errosRevisados = 0;
-
         userData.questionBank = allQuestionBanks;
     }
 
@@ -82,6 +82,12 @@ document.addEventListener('DOMContentLoaded', function() {
             sessionQuestionCount = 1;
             generateFlashcard();
         });
+        startSimuladoBtn.addEventListener('click', startSimulado);
+        document.querySelectorAll('#simulado-actions button').forEach(button => {
+            button.addEventListener('click', (e) => handleSimuladoAnswer(e.target.dataset.choice));
+        });
+        document.getElementById('close-results-btn').addEventListener('click', closeResults);
+        
         resetScoreBtn.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
                 userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
@@ -105,8 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         generateFlashcard();
     }
     
-    // --- DEFINIÇÃO DAS FUNÇÕES DE ESTUDO PRINCIPAIS ---
-    
+    // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -126,11 +131,16 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('inssTheme', 'light');
             themeToggleBtn.textContent = '🌙';
         }
+        // Atualiza o gráfico se o painel de estatísticas estiver aberto
+        if(!document.getElementById('stats-modal').classList.contains('hidden')){
+            initStatistics(userData); // A função interna irá recriar o gráfico com as cores certas
+        }
     }
 
     function updateStreaks() {
         const today = new Date().toISOString().split('T')[0];
         const lastVisit = userData.userStats.lastVisit;
+        let needsSave = false;
         if (lastVisit !== today) {
             if (lastVisit && new Date(today) - new Date(lastVisit) === 86400000) {
                 userData.userStats.streak++;
@@ -138,9 +148,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 userData.userStats.streak = 1;
             }
             userData.userStats.lastVisit = today;
+            needsSave = true;
         }
         streakCounter.textContent = `🔥 ${userData.userStats.streak}`;
-        if(checkAchievements(userData)) saveUserData();
+        if(checkAchievements(userData) || needsSave) saveUserData();
     }
     
     async function generateFlashcard() {
@@ -231,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(userData.scores[currentQuestion.category]) userData.scores[currentQuestion.category].incorrect++;
         } else {
             if(userData.scores[currentQuestion.category]) userData.scores[currentQuestion.category].correct++;
-            if (isReviewMode) userData.userStats.errosRevisados++;
+            if (isReviewMode) userData.userStats.errosRevisados = (userData.userStats.errosRevisados || 0) + 1;
         }
         
         if (isCorrect) {
@@ -273,7 +284,6 @@ document.addEventListener('DOMContentLoaded', function() {
         saveUserData();
     }
     
-    // --- FUNÇÕES DO MODO SIMULADO ---
     function startSimulado() {
         const SIMULADO_QUESTION_COUNT = 20;
         const SIMULADO_DURATION_MINUTES = 30;
@@ -344,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
             resultsList.innerHTML += `<div class="result-item ${resultClass}"><div class="result-item-icon">${icon}</div><div class="result-item-details"><p><strong>Questão ${index + 1}:</strong> ${q.question}</p><p class="user-answer ${resultClass}"><strong>Sua resposta:</strong> ${q.userAnswer || 'Não respondida'}</p><p><strong>Gabarito:</strong> ${q.answer}</p></div></div>`;
         });
         
-        userData.userStats.simuladosCompletos++;
+        userData.userStats.simuladosCompletos = (userData.userStats.simuladosCompletos || 0) + 1;
         userData.erroredQuestions = [...new Set([...userData.erroredQuestions, ...newErroredIds])];
         if(checkAchievements(userData)) {
             saveUserData();
@@ -358,7 +368,6 @@ document.addEventListener('DOMContentLoaded', function() {
         generateFlashcard();
     }
     
-    // --- FUNÇÕES DO CHAT ---
     function openChat() {
         const chatHistoryDiv = document.getElementById('chat-history');
         const chatInput = document.getElementById('chat-input');
@@ -404,7 +413,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // --- FUNÇÃO DE FETCH DE NOVAS QUESTÕES ---
     async function fetchNewQuestionsFromAI(category) {
         flashcardContainer.innerHTML = `<div class="flashcard"><div class="question-text">Buscando novas questões sobre "${category}" com a IA...</div></div>`;
         try {
@@ -417,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
             newQuestion.category = category;
             
             userData.questionBank[category].push(newQuestion);
-            saveUserData(); // Salva o banco de questões atualizado com a nova questão.
+            saveUserData();
 
             console.log("Nova questão recebida e salva!", newQuestion);
             generateFlashcard();
