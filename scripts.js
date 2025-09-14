@@ -136,6 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
             themeToggleBtn.textContent = '🌙';
         }
 initTopicExplorer();
+initAchievements(userData);
     }
 
     function updateStreaks() {
