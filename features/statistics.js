@@ -2,14 +2,14 @@
 
 let categoryChart = null; // Variável para guardar a instância do gráfico
 
-// Função principal que será exportada e chamada pelo script principal
+// Função principal que inicializa o painel de estatísticas
 export function initStatistics(userData) {
     const statsModal = document.getElementById('stats-modal');
     const showStatsBtn = document.getElementById('show-stats-btn');
     const closeStatsBtn = document.getElementById('close-stats-btn');
 
     showStatsBtn.addEventListener('click', () => {
-        updateStatsPanel(userData); // Calcula e atualiza os dados antes de mostrar
+        updateStatsPanel(userData);
         statsModal.classList.remove('hidden');
     });
 
@@ -18,7 +18,7 @@ export function initStatistics(userData) {
     });
 }
 
-// Função que faz todos os cálculos e atualiza os elementos do painel
+// Função que calcula tudo e atualiza a UI do painel
 function updateStatsPanel(userData) {
     const totalCorrectEl = document.getElementById('stats-total-correct');
     const totalIncorrectEl = document.getElementById('stats-total-incorrect');
@@ -31,6 +31,7 @@ function updateStatsPanel(userData) {
     const correctData = [];
     const incorrectData = [];
 
+    // Garante que userData.scores exista antes de iterar
     if (userData && userData.scores) {
         for (const category in userData.scores) {
             const score = userData.scores[category];
@@ -53,7 +54,7 @@ function updateStatsPanel(userData) {
     renderCategoryChart(labels, correctData, incorrectData);
 }
 
-// Função que usa a biblioteca Chart.js para desenhar o gráfico
+// Função que desenha o gráfico de barras
 function renderCategoryChart(labels, correctData, incorrectData) {
     const ctx = document.getElementById('category-chart').getContext('2d');
     
