@@ -41,6 +41,7 @@ header h1 { margin: 0; font-size: 1.8rem; }
 #theme-toggle-btn { background: none; border: 2px solid #ffcc00; color: #ffcc00; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; cursor: pointer; display: flex; justify-content: center; align-items: center; }
 
 #main-app { transition: opacity 0.3s; }
+
 .main-container { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 2rem auto; padding: 0 1rem; gap: 2rem; }
 main { flex: 3; min-width: 300px; }
 aside { flex: 1; min-width: 250px; }
@@ -51,32 +52,10 @@ aside { flex: 1; min-width: 250px; }
 .review-mode label, .concurso-mode label { cursor: pointer; }
 #start-simulado-btn { background-color: #8a2be2; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-.flashcard .question-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border-color);
-}
-.flashcard .question-number {
-    font-size: 0.9rem;
-    font-weight: bold;
-    background-color: var(--primary-accent-color);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 5px;
-}
-.flashcard .concurso-star {
-    color: #ffc107;
-    font-size: 1.5rem;
-    cursor: help;
-}
-.flashcard .question-text {
-    font-size: 1.2rem;
-    margin: 0;
-    min-height: 80px;
-}
+.flashcard .question-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
+.flashcard .question-number { font-size: 0.9rem; font-weight: bold; background-color: var(--primary-accent-color); color: white; padding: 2px 8px; border-radius: 5px; }
+.flashcard .concurso-star { color: #ffc107; font-size: 1.5rem; cursor: help; }
+.flashcard .question-text { font-size: 1.2rem; margin: 0; min-height: 80px; }
 
 #flashcard-container { position: relative; height: 420px; perspective: 1000px; }
 .flashcard, #scoreboard { background-color: var(--card-bg-color); border-radius: 10px; box-shadow: 0 5px 15px var(--shadow-color); border: 1px solid var(--border-color); }
@@ -140,6 +119,19 @@ aside { flex: 1; min-width: 250px; }
 #simulado-results-list .result-item-details .user-answer.correct { color: var(--success-color); }
 #close-results-btn { display: block; margin: 2rem auto 0; padding: 12px 30px; font-size: 1rem; font-weight: bold; cursor: pointer; border-radius: 8px; border: none; background-color: var(--info-color); color: white; }
 
+/* --- ESTILOS DO PAINEL DE ESTATÍSTICAS --- */
+#show-stats-btn { background-color: #17a2b8; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+#stats-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+#stats-container { width: 90%; max-width: 800px; background-color: var(--card-bg-color); border-radius: 10px; box-shadow: 0 10px 30px var(--shadow-color); display: flex; flex-direction: column; }
+#stats-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background-color: var(--header-bg-color); color: #fff; border-top-left-radius: 10px; border-top-right-radius: 10px; }
+#stats-header h3 { margin: 0; }
+#close-stats-btn { background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }
+#stats-content { padding: 1.5rem; max-height: 75vh; overflow-y: auto; }
+.stats-summary { display: flex; justify-content: space-around; text-align: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+.stat-box h4 { margin: 0 0 0.5rem 0; color: var(--primary-accent-color); }
+.stat-box p { margin: 0; font-size: 2rem; font-weight: bold; }
+.stats-chart-container { width: 100%; max-width: 600px; margin: 0 auto; }
+
 footer { text-align: center; padding: 1rem; margin-top: 2rem; background-color: var(--card-bg-color); border-top: 1px solid var(--border-color); color: #6c757d; }
 
 /* --- AJUSTES PARA DISPOSITIVOS MÓVEIS --- */
@@ -150,8 +142,8 @@ footer { text-align: center; padding: 1rem; margin-top: 2rem; background-color: 
     .header-features { position: static; transform: none; margin-top: 0.5rem; justify-content: center; }
     .header-content { flex-direction: column; gap: 0.5rem; }
     .mode-selectors { flex-direction: column; align-items: stretch;  gap: 0.8rem; }
-    #start-simulado-btn { width: 100%; }
-    .flashcard, .simulado-container, .simulado-results-container { padding: 1.5rem; }
+    #start-simulado-btn, #show-stats-btn { width: 100%; }
+    .flashcard, .simulado-container, .simulado-results-container, #stats-container { padding: 1.5rem; }
     .flashcard .question-text { font-size: 1.1rem; min-height: 100px; }
     #flashcard-container { height: 450px; }
     .flashcard-actions button, #simulado-actions button { padding: 12px 15px; font-size: 1rem; }
