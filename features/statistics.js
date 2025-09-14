@@ -2,14 +2,14 @@
 
 let categoryChart = null; // Variável para guardar a instância do gráfico
 
-// Função principal que inicializa o painel de estatísticas
+// Função principal que será exportada e chamada pelo script principal
 export function initStatistics(userData) {
     const statsModal = document.getElementById('stats-modal');
     const showStatsBtn = document.getElementById('show-stats-btn');
     const closeStatsBtn = document.getElementById('close-stats-btn');
 
     showStatsBtn.addEventListener('click', () => {
-        updateStatsPanel(userData);
+        updateStatsPanel(userData); // Calcula e atualiza os dados antes de mostrar
         statsModal.classList.remove('hidden');
     });
 
@@ -18,11 +18,11 @@ export function initStatistics(userData) {
     });
 }
 
-// Função que calcula tudo e atualiza a UI do painel
+// Função que faz todos os cálculos e atualiza os elementos do painel
 function updateStatsPanel(userData) {
-    const totalCorrect = document.getElementById('stats-total-correct');
-    const totalIncorrect = document.getElementById('stats-total-incorrect');
-    const accuracy = document.getElementById('stats-accuracy');
+    const totalCorrectEl = document.getElementById('stats-total-correct');
+    const totalIncorrectEl = document.getElementById('stats-total-incorrect');
+    const accuracyEl = document.getElementById('stats-accuracy');
     
     let correctCount = 0;
     let incorrectCount = 0;
@@ -31,34 +31,39 @@ function updateStatsPanel(userData) {
     const correctData = [];
     const incorrectData = [];
 
-    for (const category in userData.scores) {
-        const score = userData.scores[category];
-        correctCount += score.correct;
-        incorrectCount += score.incorrect;
+    if (userData && userData.scores) {
+        for (const category in userData.scores) {
+            const score = userData.scores[category];
+            correctCount += score.correct;
+            incorrectCount += score.incorrect;
 
-        labels.push(category.charAt(0).toUpperCase() + category.slice(1));
-        correctData.push(score.correct);
-        incorrectData.push(score.incorrect);
+            labels.push(category.charAt(0).toUpperCase() + category.slice(1));
+            correctData.push(score.correct);
+            incorrectData.push(score.incorrect);
+        }
     }
 
     const totalQuestions = correctCount + incorrectCount;
     const accuracyValue = totalQuestions === 0 ? 0 : ((correctCount / totalQuestions) * 100).toFixed(1);
 
-    totalCorrect.textContent = correctCount;
-    totalIncorrect.textContent = incorrectCount;
-    accuracy.textContent = `${accuracyValue}%`;
+    totalCorrectEl.textContent = correctCount;
+    totalIncorrectEl.textContent = incorrectCount;
+    accuracyEl.textContent = `${accuracyValue}%`;
 
     renderCategoryChart(labels, correctData, incorrectData);
 }
 
-// Função que desenha o gráfico de barras
+// Função que usa a biblioteca Chart.js para desenhar o gráfico
 function renderCategoryChart(labels, correctData, incorrectData) {
     const ctx = document.getElementById('category-chart').getContext('2d');
     
-    // Se o gráfico já existe, destrua-o antes de desenhar um novo
+    // Se um gráfico anterior já existir, ele é destruído para evitar sobreposição
     if (categoryChart) {
         categoryChart.destroy();
     }
+
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    const textColor = isDarkMode ? '#e0e0e0' : '#333';
 
     categoryChart = new Chart(ctx, {
         type: 'bar',
@@ -84,13 +89,18 @@ function renderCategoryChart(labels, correctData, incorrectData) {
         options: {
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: { color: textColor }
+                },
+                x: {
+                    ticks: { color: textColor }
                 }
             },
             responsive: true,
             plugins: {
                 legend: {
                     position: 'top',
+                    labels: { color: textColor }
                 }
             }
         }
