@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 recentlyAsked: [],
             };
         }
-        // Garante que a estrutura para novas funcionalidades exista e que o banco de questões esteja sempre atualizado
         if (!userData.userStats) userData.userStats = { streak: 0, lastVisit: null };
         if (!userData.userStats.unlockedAchievements) userData.userStats.unlockedAchievements = [];
         if (!userData.userStats.simuladosCompletos) userData.userStats.simuladosCompletos = 0;
@@ -59,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function initializeApp() {
         loadUserData();
         
-        // --- EVENT LISTENERS ---
         categorySelector.addEventListener('change', () => {
             sessionQuestionCount = 1;
             generateFlashcard();
@@ -102,20 +100,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // INICIALIZA OS MÓDULOS DE FUNCIONALIDADES
         initStatistics(userData);
         initTopicExplorer();
         initAchievements(userData);
 
-        // Executa as funções de UI iniciais
         checkTheme();
         updateStreaks();
         updateScoreboard();
         generateFlashcard();
     }
     
-    // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
-    
+    // --- DEFINIÇÃO DE TODAS AS FUNÇÕES ---
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -135,7 +130,6 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('inssTheme', 'light');
             themeToggleBtn.textContent = '🌙';
         }
-        // Atualiza o gráfico se o painel de estatísticas estiver aberto
         if(!document.getElementById('stats-modal').classList.contains('hidden')){
             initStatistics(userData);
         }
@@ -201,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const questionData = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
         let categoryOfQuestion = 'geral';
         for (const category in userData.questionBank) {
-            if (userData.questionBank[category].some(q => q.id === questionData.id)) {
+            if (userData.questionBank[category] && userData.questionBank[category].some(q => q.id === questionData.id)) {
                 categoryOfQuestion = category;
                 break;
             }
@@ -373,6 +367,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function openChat() {
+        const chatModal = document.getElementById('chat-modal');
+        const chatInput = document.getElementById('chat-input');
+        const chatHistoryDiv = document.getElementById('chat-history');
         chatHistory = [];
         chatHistoryDiv.innerHTML = '';
         const contextMessage = `<div class="chat-message tutor-context"><strong>Contexto:</strong> A IA irá te ajudar com base na questão que você errou. A explicação inicial é: "${currentQuestion.explanation}"</div>`;
@@ -382,12 +379,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function closeChat() {
+        const chatModal = document.getElementById('chat-modal');
         chatModal.classList.add('hidden');
         document.querySelector('.flashcard')?.classList.add('exiting');
         setTimeout(generateFlashcard, 600);
     }
 
     async function handleSendMessage() {
+        const chatInput = document.getElementById('chat-input');
+        const chatHistoryDiv = document.getElementById('chat-history');
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
         chatHistoryDiv.innerHTML += `<div class="chat-message user">${userMessage}</div>`;
