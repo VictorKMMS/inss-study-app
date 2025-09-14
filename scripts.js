@@ -1,6 +1,6 @@
 // --- IMPORTAÇÕES ---
 import { allQuestionBanks } from './question-bank.js';
-import { initStatistics } from './features/statistics.js'; // Importa o novo especialista
+import { initStatistics } from './features/statistics.js';
 import { initTopicExplorer } from './features/topic-explorer.js';
 import { initAchievements, checkAchievements } from './features/achievements.js';
 
@@ -27,32 +27,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const reviewModeToggle = document.getElementById('review-mode-toggle');
     const concursoModeToggle = document.getElementById('concurso-mode-toggle');
     const startSimuladoBtn = document.getElementById('start-simulado-btn');
-    const simuladoModal = document.getElementById('simulado-modal');
-    const simuladoContainer = document.querySelector('.simulado-container');
-    const simuladoResultsContainer = document.querySelector('.simulado-results-container');
-    const chatModal = document.getElementById('chat-modal');
-    const chatHistoryDiv = document.getElementById('chat-history');
-    const chatInput = document.getElementById('chat-input');
-    const chatSendBtn = document.getElementById('chat-send-btn');
-    const closeChatBtn = document.getElementById('close-chat-btn');
 
     // --- LÓGICA DE DADOS COM LOCALSTORAGE ---
     function loadUserData() {
         const storedData = localStorage.getItem('inssTutorData');
         if (storedData) {
             userData = JSON.parse(storedData);
-            if (!userData.questionBank) {
-                userData.questionBank = allQuestionBanks;
-            }
         } else {
             userData = {
-                questionBank: allQuestionBanks,
-                scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 } },
+                scores: { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } },
                 userStats: { streak: 0, lastVisit: null },
                 erroredQuestions: [],
                 recentlyAsked: [],
             };
         }
+        // Garante que a estrutura para novas funcionalidades exista
+        if (!userData.userStats.unlockedAchievements) userData.userStats.unlockedAchievements = [];
+        if (!userData.userStats.simuladosCompletos) userData.userStats.simuladosCompletos = 0;
+        if (!userData.userStats.errosRevisados) userData.userStats.errosRevisados = 0;
+
+        userData.questionBank = allQuestionBanks;
     }
 
     function saveUserData() {
@@ -61,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('inssTutorData', JSON.stringify(dataToSave));
     }
     
-    // --- LÓGICA DO APLICATIVO ---
+    // --- FUNÇÃO DE INICIALIZAÇÃO PRINCIPAL ---
     function initializeApp() {
         loadUserData();
         
@@ -88,17 +82,9 @@ document.addEventListener('DOMContentLoaded', function() {
             sessionQuestionCount = 1;
             generateFlashcard();
         });
-        startSimuladoBtn.addEventListener('click', startSimulado);
-        document.querySelectorAll('#simulado-actions button').forEach(button => {
-            button.addEventListener('click', (e) => handleSimuladoAnswer(e.target.dataset.choice));
-        });
-        document.getElementById('close-results-btn').addEventListener('click', closeResults);
-        chatSendBtn.addEventListener('click', handleSendMessage);
-        chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendMessage(); });
-        closeChatBtn.addEventListener('click', closeChat);
         resetScoreBtn.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja zerar todo o seu placar e histórico de questões?')) {
-                userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 } };
+                userData.scores = { seguridade: { correct: 0, incorrect: 0 }, administrativo: { correct: 0, incorrect: 0 }, constitucional: { correct: 0, incorrect: 0 }, portugues: { correct: 0, incorrect: 0 }, raciocinio: { correct: 0, incorrect: 0 }, informatica: { correct: 0, incorrect: 0 }, etica: { correct: 0, incorrect: 0 } };
                 userData.erroredQuestions = [];
                 userData.recentlyAsked = [];
                 sessionQuestionCount = 1;
@@ -107,14 +93,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // Inicializa os módulos
+        initStatistics(userData);
+        initTopicExplorer();
+        initAchievements(userData);
+
+        // Executa as funções de UI iniciais
         checkTheme();
         updateStreaks();
         updateScoreboard();
-        initStatistics(userData); // <-- CONECTA O ESPECIALISTA DE ESTATÍSTICAS
         generateFlashcard();
     }
     
-    // --- DEFINIÇÃO DE TODAS AS FUNÇÕES DE ESTUDO ---
+    // --- DEFINIÇÃO DAS FUNÇÕES DE ESTUDO PRINCIPAIS ---
     
     function checkTheme() {
         if (localStorage.getItem('inssTheme') === 'dark') {
@@ -135,8 +126,6 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('inssTheme', 'light');
             themeToggleBtn.textContent = '🌙';
         }
-        initTopicExplorer();
-        initAchievements(userData);
     }
 
     function updateStreaks() {
@@ -149,13 +138,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 userData.userStats.streak = 1;
             }
             userData.userStats.lastVisit = today;
-            saveUserData();
         }
         streakCounter.textContent = `🔥 ${userData.userStats.streak}`;
-        // --- GATILHO DE CONQUISTAS ---
-        if (checkAchievements(userData)) {
-            saveUserData();
-        }
+        if(checkAchievements(userData)) saveUserData();
     }
     
     async function generateFlashcard() {
@@ -246,11 +231,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if(userData.scores[currentQuestion.category]) userData.scores[currentQuestion.category].incorrect++;
         } else {
             if(userData.scores[currentQuestion.category]) userData.scores[currentQuestion.category].correct++;
+            if (isReviewMode) userData.userStats.errosRevisados++;
         }
         
         if (isCorrect) {
             answerDiv.classList.add('correct');
-            answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br>Parabéns, sua resposta está correta!<div class="answer-source"><strong>Fonte:</strong> ${currentQuestion.source || 'N/A'}</div>`;
+            answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br>Parabéns, sua resposta está correta!<div class="answer-source"><strong>Fonte:</strong> ${currentQuestion.law}</div>`;
             const nextButton = document.createElement('button');
             nextButton.type = 'button';
             nextButton.innerText = 'Próximo';
@@ -262,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
             actionsDiv.appendChild(nextButton);
         } else {
             answerDiv.classList.add('incorrect');
-            answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br><div class="ai-explanation"><strong>🤖 Explicação da IA:</strong><p>${currentQuestion.explanation || ''}</p></div>`;
+            answerDiv.innerHTML = `<strong>Gabarito: ${currentQuestion.answer}</strong><br><div class="ai-explanation"><strong>🤖 Explicação da IA:</strong><p>${currentQuestion.explanation}</p><p>📖 <em>${currentQuestion.law}</em></p></div>`;
             const chatButton = document.createElement('button');
             chatButton.type = 'button';
             chatButton.innerText = 'Conversar com Tutor IA';
@@ -270,14 +256,11 @@ document.addEventListener('DOMContentLoaded', function() {
             chatButton.onclick = openChat;
             actionsDiv.appendChild(chatButton);
         }
+        
+        if(checkAchievements(userData)) {
+            saveUserData();
+        }
         updateScoreboard();
-        if (isReviewMode && isCorrect) {
-            userData.userStats.errosRevisados++;
-        }
-        // --- GATILHO DE CONQUISTAS ---
-        if (checkAchievements(userData)) {
-            saveUserData(); // Salva as novas conquistas
-        }
     }
     
     function updateScoreboard() {
@@ -290,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
         saveUserData();
     }
     
+    // --- FUNÇÕES DO MODO SIMULADO ---
     function startSimulado() {
         const SIMULADO_QUESTION_COUNT = 20;
         const SIMULADO_DURATION_MINUTES = 30;
@@ -357,13 +341,14 @@ document.addEventListener('DOMContentLoaded', function() {
         simuladoQuestions.forEach((q, index) => {
             const resultClass = q.wasCorrect ? 'correct' : 'incorrect';
             const icon = q.wasCorrect ? '✅' : '❌';
-            resultsList.innerHTML += `<div class="result-item ${resultClass}"><div class="result-item-icon">${icon}</div><div class="result-item-details"><p><strong>Questão ${index + 1}:</strong> ${q.question}</p></div></div>`;
+            resultsList.innerHTML += `<div class="result-item ${resultClass}"><div class="result-item-icon">${icon}</div><div class="result-item-details"><p><strong>Questão ${index + 1}:</strong> ${q.question}</p><p class="user-answer ${resultClass}"><strong>Sua resposta:</strong> ${q.userAnswer || 'Não respondida'}</p><p><strong>Gabarito:</strong> ${q.answer}</p></div></div>`;
         });
+        
+        userData.userStats.simuladosCompletos++;
         userData.erroredQuestions = [...new Set([...userData.erroredQuestions, ...newErroredIds])];
-        userData.userStats.simuladosCompletos++; // <-- GATILHO de conquista
-        // --- GATILHO DE CONQUISTAS ---
-        checkAchievements(userData);
-        saveUserData();
+        if(checkAchievements(userData)) {
+            saveUserData();
+        }
     }
     
     function closeResults() {
@@ -373,22 +358,29 @@ document.addEventListener('DOMContentLoaded', function() {
         generateFlashcard();
     }
     
+    // --- FUNÇÕES DO CHAT ---
     function openChat() {
+        const chatHistoryDiv = document.getElementById('chat-history');
+        const chatInput = document.getElementById('chat-input');
+        const chatModal = document.getElementById('chat-modal');
         chatHistory = [];
         chatHistoryDiv.innerHTML = '';
-        const contextMessage = `<div class="chat-message tutor-context"><strong>Contexto:</strong> A IA irá te ajudar com base na questão que você errou. A explicação inicial é: "${currentQuestion.explanation || ''}"</div>`;
+        const contextMessage = `<div class="chat-message tutor-context"><strong>Contexto:</strong> A IA irá te ajudar com base na questão que você errou. A explicação inicial é: "${currentQuestion.explanation}"</div>`;
         chatHistoryDiv.innerHTML += contextMessage;
         chatModal.classList.remove('hidden');
         chatInput.focus();
     }
 
     function closeChat() {
+        const chatModal = document.getElementById('chat-modal');
         chatModal.classList.add('hidden');
         document.querySelector('.flashcard')?.classList.add('exiting');
         setTimeout(generateFlashcard, 600);
     }
 
     async function handleSendMessage() {
+        const chatInput = document.getElementById('chat-input');
+        const chatHistoryDiv = document.getElementById('chat-history');
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
         chatHistoryDiv.innerHTML += `<div class="chat-message user">${userMessage}</div>`;
@@ -412,6 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // --- FUNÇÃO DE FETCH DE NOVAS QUESTÕES ---
     async function fetchNewQuestionsFromAI(category) {
         flashcardContainer.innerHTML = `<div class="flashcard"><div class="question-text">Buscando novas questões sobre "${category}" com a IA...</div></div>`;
         try {
@@ -424,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
             newQuestion.category = category;
             
             userData.questionBank[category].push(newQuestion);
-            saveUserData();
+            saveUserData(); // Salva o banco de questões atualizado com a nova questão.
 
             console.log("Nova questão recebida e salva!", newQuestion);
             generateFlashcard();
