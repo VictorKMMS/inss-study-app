@@ -21,46 +21,55 @@
         <div class="main-container">
             <main>
                 <div id="filter-container">
+                    <h3>Selecione a Matéria:</h3>
                     <select id="category-selector">
-                        <option value="all">Todas as Categorias</option>
+                        <option value="all">Todas as Matérias (Aleatório)</option>
                         <option value="seguridade">Seguridade Social</option>
-                        <option value="constitucional">Direito Constitucional</option>
                         <option value="administrativo">Direito Administrativo</option>
+                        <option value="constitucional">Direito Constitucional</option>
                         <option value="portugues">Língua Portuguesa</option>
                         <option value="raciocinio">Raciocínio Lógico</option>
                         <option value="informatica">Informática</option>
-                        <option value="etica">Ética no Serviço Público</option>
+                        <option value="etica">Ética</option>
                     </select>
                     <div class="mode-selectors">
                         <div class="review-mode">
-                            <label for="review-mode-toggle">Modo de Revisão (Erradas)</label>
                             <input type="checkbox" id="review-mode-toggle">
+                            <label for="review-mode-toggle">Revisar apenas questões erradas</label>
                         </div>
-                        <div class="concurso-mode">
-                            <label for="concurso-mode-toggle">Apenas Concurso</label>
-                            <input type="checkbox" id="concurso-mode-toggle">
-                        </div>
-                        <button type="button" id="start-simulado-btn">Iniciar Simulado</button>
+                        <button type="button" id="start-simulado-btn">🚀 Iniciar Simulado</button>
                     </div>
                 </div>
-                <div id="flashcard-container">
-                    </div>
+        
+                <div id="flashcard-container"></div>
             </main>
 
-            <aside>
-                <div id="scoreboard">
-                    <h3>Placar</h3>
-                    <div id="score-container">
-                        </div>
-                    <button type="button" id="reset-score">Zerar Placar</button>
-                </div>
+            <aside id="scoreboard">
+                <h3>Seu Desempenho</h3>
+                <div id="score-container"></div>
+                <button type="button" id="reset-score">Zerar Placar</button>
             </aside>
         </div>
     </div>
-    
+
+    <div id="chat-modal" class="hidden">
+        <div id="chat-container">
+            <div id="chat-header">
+                <h3>Tire suas dúvidas com o Tutor IA</h3>
+                <button type="button" id="close-chat-btn">&times;</button>
+            </div>
+            <div id="chat-history"></div>
+            <div id="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Digite sua pergunta...">
+                <button type="button" id="chat-send-btn">Enviar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="simulado-modal" class="hidden">
         <div class="simulado-container">
             <div id="simulado-header">
+                <h2>Modo Simulado</h2>
                 <div id="simulado-info">
                     <span id="simulado-progress">Questão 1/20</span>
                     <span id="simulado-timer">Tempo: 30:00</span>
@@ -71,29 +80,17 @@
             </div>
             <div id="simulado-question-container"></div>
             <div id="simulado-actions">
-                <button type="button" class="btn-certo" data-choice="Certo">Certo</button>
-                <button type="button" class="btn-errado" data-choice="Errado">Errado</button>
+                <button type="button" data-choice="Certo" class="btn-certo">Certo</button>
+                <button type="button" data-choice="Errado" class="btn-errado">Errado</button>
             </div>
         </div>
         <div class="simulado-results-container hidden">
-            <h3>Resultado do Simulado</h3>
-            <p id="simulado-results-summary"></p>
+             <div id="simulado-results-header">
+                <h2>Resultado do Simulado</h2>
+            </div>
+            <div id="simulado-results-summary"></div>
             <div id="simulado-results-list"></div>
-            <button type="button" id="close-results-btn">Voltar para Estudo</button>
-        </div>
-    </div>
-    
-    <div id="chat-modal" class="hidden">
-        <div id="chat-container">
-            <div id="chat-header">
-                <h3>Tutor IA</h3>
-                <button type="button" id="close-chat-btn">&times;</button>
-            </div>
-            <div id="chat-history"></div>
-            <div id="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Pergunte ao Tutor IA...">
-                <button type="button" id="chat-send-btn">Enviar</button>
-            </div>
+            <button type="button" id="close-results-btn">Finalizar Revisão</button>
         </div>
     </div>
 
@@ -101,7 +98,6 @@
         <p>Desenvolvido com IA para otimizar seus estudos.</p>
     </footer>
 
-    <script type="module" src="question-bank.js"></script>
     <script type="module" src="scripts.js"></script>
 </body>
 </html>
