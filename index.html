@@ -14,6 +14,7 @@
             <div class="header-features">
                 <div id="streak-counter" title="Sua sequência de dias de estudo">🔥 0</div>
                 <button type="button" id="theme-toggle-btn" title="Alternar Modo Noturno">🌙</button>
+                <button type="button" id="show-topic-explorer-btn" title="Explorar um Tópico com a IA">🧠 Explorar</button>
             </div>
         </div>
     </header>
@@ -92,6 +93,23 @@
         </div>
     </div>
 
+    <!-- Modal do Explorador de Tópicos -->
+    <div id="topic-explorer-modal" class="hidden">
+        <div id="topic-explorer-container">
+            <div id="topic-explorer-header">
+                <h3>Tutor IA - Modo Aula</h3>
+                <button type="button" id="close-topic-explorer-btn">&times;</button>
+            </div>
+            <div id="topic-explorer-content">
+                <p>Peça à IA para explicar qualquer tópico, artigo de lei ou conceito do edital.</p>
+                <textarea id="topic-input" rows="4" placeholder="Ex: Me explique o que é o Período de Graça e dê exemplos..."></textarea>
+                <button type="button" id="topic-send-btn">Gerar Explicação</button>
+                <div id="topic-result-area">
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <footer>
         <p>Desenvolvido com IA para otimizar seus estudos.</p>
     </footer>
